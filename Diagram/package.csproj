@@ -4,10 +4,10 @@
   </PropertyGroup>
   <!--Title, Description, Tags, Product-->
   <PropertyGroup>
-    <Title>ScriptInjection for Blazor</Title>
-    <Description>Excubo.Blazor.ScriptInjection allows you to inject a script tag into the pages body on demand, with the guarantee that the script tag will appear once and only once.</Description>
-    <PackageTags>blazor,js,script,html</PackageTags>
-    <Product>Excubo.Blazor.ScriptInjection</Product>
+    <Title>Diagram component library for Blazor</Title>
+    <Description>Excubo.Blazor.Diagrams is a Blazor component library for a lightweight and highly customizable diagram component.</Description>
+    <PackageTags>blazor,html,diagram,flowchart</PackageTags>
+    <Product>Excubo.Blazor.Diagrams</Product>
   </PropertyGroup>
   <!--Author, Company-->
   <PropertyGroup>
@@ -16,14 +16,14 @@
   </PropertyGroup>
   <!--Repository-->
   <PropertyGroup>
-    <PackageProjectUrl>https://github.com/excubo-ag/Blazor.ScriptInjection</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/excubo-ag/Blazor.ScriptInjection</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/excubo-ag/Blazor.Diagrams</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/excubo-ag/Blazor.Diagrams</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <!--PackageId, Version-->
   <PropertyGroup>
-    <PackageId>Excubo.Blazor.ScriptInjection</PackageId>
-    <Version>1.0.4</Version>
+    <PackageId>Excubo.Blazor.Diagrams</PackageId>
+    <Version>0.1.0</Version>
   </PropertyGroup>
   <!--Self Include-->
   <ItemGroup>
