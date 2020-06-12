@@ -1,0 +1,25 @@
+﻿@inherits NodeBase
+<g transform="translate(@GetCoordinates()) scale(@Zoom) translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
+    <rect width="@DiamondWidth"
+          height="@DiamondHeight"
+          transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
+          style="@(Hidden? "display:none" : "")"
+          stroke="transparent"
+          stroke-width="@(1 / Zoom)rem"
+          fill="none"
+          @onmouseover="OnBorderOver"
+          @onmouseout="OnBorderOut" />
+    <rect width="@DiamondWidth"
+          height="@DiamondHeight"
+          transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
+          @onmouseover="OnNodeOver"
+          @onmouseout="OnNodeOut"
+          stroke="@Stroke"
+          stroke-width="2px"
+          fill="@Fill" 
+          style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+</g>
+@code {
+    private double DiamondWidth => Width * Math.Sqrt(2);
+    private double DiamondHeight => Height * Math.Sqrt(2);
+}

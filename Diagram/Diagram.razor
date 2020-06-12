@@ -1,0 +1,24 @@
+﻿@using Excubo.Blazor.Diagrams.__Internal 
+
+<CascadingValue Value="@this" IsFixed="true">
+    <div class="diagram-canvas"
+         @ref="canvas"
+         tabindex="-1"
+         @onkeydown="OnKeyPress"
+         @onmousemove="OnMouseMove"
+         @onmousemove:preventDefault
+         @onmousedown="OnMouseDown"
+         @onmouseup="OnMouseUp"
+         @onmousewheel="OnMouseWheel"
+         @onmousewheel:preventDefault>
+        <svg class="diagram-nodes">
+            @ChildContent
+        </svg>
+        <Renderer @ref="node_content_renderer" Region="div" />
+    </div>
+</CascadingValue>
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    private ElementReference canvas;
+    private Renderer node_content_renderer;
+}

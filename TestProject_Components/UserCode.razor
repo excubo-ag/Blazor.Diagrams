@@ -1,0 +1,124 @@
+﻿@page "/simple"
+@using Excubo.Blazor.Diagrams
+
+<Diagram @ref="Diagram">
+    <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved">
+        <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
+        <Node Id="def" X="1000" Y="500">
+            Hello node @context.Id
+        </Node>
+        <!---->
+        @foreach (var state in states)
+        {
+            <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
+            <Node @key="state.Id" Id="@state.Id" X="state.X" Y="state.Y" Type="NodeType.Rectangle">
+                State @state.Id
+            </Node>
+        }
+        @foreach (var decision in decisions)
+        {
+            <!-- Builtin node, node-type specified by strongly typed component -->
+            <DiamondNode @key="decision.Id" Id="@decision.Id" X="decision.X" Y="decision.Y">
+                <div style="color:green; width: 100px; height: 100px">Decision @decision.Id</div>
+            </DiamondNode>
+        }
+        <!-- Custom node, inherits from NodeBase. Border (i.e. where links can be docked) is assumed to be rectangular, unless specified in the code the user wrote -->
+        <UserNodeCode Id="abc" X="10" Y="20">
+            Hello custom node
+        </UserNodeCode>
+    </Nodes>
+    <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
+    <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Curved">
+        <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get Straight -->
+        <Link Source="@(Diagram.GetAnchorTo("abc"))" Target="@(Diagram.GetAnchorTo("def"))" />
+    </Links>
+    <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
+</Diagram>
+
+@code {
+    public class MyNodeDefinition
+    {
+        public string Id { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+    List<MyNodeDefinition> states = new List<MyNodeDefinition>
+    {
+        new MyNodeDefinition
+        {
+            Id = "state1",
+            X = 100,
+            Y = 0
+        },
+        new MyNodeDefinition
+        {
+            Id = "state2",
+            X = 400,
+            Y = 20
+        }
+    };
+    List<MyNodeDefinition> decisions = new List<MyNodeDefinition>
+{
+        new MyNodeDefinition
+        {
+            Id = "decision1",
+            X = 100,
+            Y = 100
+        }
+    };
+    List<MyNodeDefinition> created_nodes = new List<MyNodeDefinition>
+    {
+
+    };
+    private Diagram Diagram { get; set; }
+    private void NodeAdded(NodeBase node)
+    {
+        created_nodes.Add(new MyNodeDefinition
+        {
+            Id = node.Id,
+            X = node.X,
+            Y = node.Y
+        });
+    }
+    private void NodeRemoved(NodeBase node)
+    {
+        // the node needs to be removed from the collections we manage
+        MyNodeDefinition match;
+        match = decisions.FirstOrDefault(d => d.Id == node.Id);
+        if (match != null)
+        {
+            decisions.Remove(match);
+        }
+        match = states.FirstOrDefault(d => d.Id == node.Id);
+        if (match != null)
+        {
+            states.Remove(match);
+        }
+        match = created_nodes.FirstOrDefault(d => d.Id == node.Id);
+        if (match != null)
+        {
+            created_nodes.Remove(match);
+        }
+    }
+    private void LinkModified(LinkBase link)
+    {
+        // user code, e.g. change color
+    }
+    private void LinkRemoved(LinkBase link)
+    {
+
+    }
+    private void LinkAdded(LinkBase link)
+    {
+        Console.WriteLine($"A link was added: {link.Source} -> {link.Target}");
+    }
+    private bool BeforeLinkRemoved(LinkBase link)
+    {
+        // user code, e.g. display a dialog to let the user decide whether to actually delete
+        return true; // return false if the action should be cancelled.
+    }
+    public void Export()
+    {
+        // the export (serialization) of the diagrams state is user-code that
+    }
+}

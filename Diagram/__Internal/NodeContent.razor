@@ -1,0 +1,15 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime js
+    <div style="
+             position: absolute;
+             left: calc(@(X)px - @(Zoom * Width)px / 2);
+             top: calc(@(Y)px - @(Zoom * Height)px / 2);
+             pointer-events: none;
+             transform: scale(@Zoom);
+             transform-origin: 0 0;"
+         @ref="element">
+        @ChildContent
+    </div>
+@code {
+    private ElementReference element;
+}

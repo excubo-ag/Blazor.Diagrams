@@ -1,0 +1,31 @@
+﻿@inherits LinkBase
+@using Excubo.Blazor.Diagrams.Extensions
+
+@if (Source != null && Target != null)
+{
+    var sx = Source.X.ToNeutralString();
+    var sy = Source.Y.ToNeutralString();
+    var tx = Target.X.ToNeutralString();
+    var ty = Target.Y.ToNeutralString();
+    string curve_part;
+    if (CurveTopBottom)
+    {
+        var mid_y = ((Source.Y + Target.Y) / 2).ToNeutralString();
+        curve_part = $"{sx} {mid_y}, {tx} {mid_y}";
+    }
+    else
+    {
+        var mid_x = ((Source.X + Target.X) / 2).ToNeutralString();
+        curve_part = $"{mid_x} {sy}, {mid_x} {ty}";
+    }
+    <path d="M @sx @sy 
+             C @curve_part, 
+               @tx @ty"
+          stroke-width="3"
+          fill="none"
+          stroke="black" />
+}
+@code {
+    [Parameter]
+    public bool CurveTopBottom { get; set; }
+}
