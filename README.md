@@ -6,6 +6,8 @@
 
 Excubo.Blazor.Diagrams is a native-Blazor diagram component library. The project status is in alpha. API might still change considerably.
 
+![Ready to install?](screenshot.png)
+
 ## How to use
 
 ### 1. Install the nuget package Excubo.Blazor.Diagrams
