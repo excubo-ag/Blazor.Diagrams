@@ -1,6 +1,7 @@
 ﻿@using Excubo.Blazor.Diagrams
 @inherits NodeBase
 @using Excubo.Blazor.Diagrams.Extensions
+<!--This using statement helps with locales that do not have the period as decimal separator: The DOM expects the period as decimal separator.-->
 @using (var temporary_culture = new CultureSwapper())
 {
     <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
