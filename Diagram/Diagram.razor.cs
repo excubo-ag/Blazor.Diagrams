@@ -80,7 +80,10 @@ namespace Excubo.Blazor.Diagrams
             }
             if (ActiveNode != null)
             {
-                Nodes.OnMouseMove(ActiveNode, e.RelativeXTo(this), e.RelativeYTo(this));
+                if (e.Buttons == 1)
+                {
+                    Nodes.OnMouseMove(ActiveNode, e.RelativeXTo(this), e.RelativeYTo(this));
+                }
             }
             else if (Links.NewLink != null)
             {
