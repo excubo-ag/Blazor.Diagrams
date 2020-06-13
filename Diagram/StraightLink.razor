@@ -1,12 +1,15 @@
 ﻿@inherits LinkBase
-
-@if (Source != null && Target != null)
+@using Excubo.Blazor.Diagrams.Extensions
+@using (var temporary_culture = new CultureSwapper())
 {
-    <line x1="@Source.X"
-          y1="@Source.Y"
-          x2="@Target.X"
-          y2="@Target.Y"
-          stroke="black"
-          stroke-width="@(Source.Node != null && Target.Node != null ? "4px" : "2px")"
-          style="@(Selected ? "stroke-dasharray: 8 2; animation: diagram-link-unfinished 0.4s ease infinite;" : "")"/>
+    if (Source != null && Target != null)
+    {
+        <line x1="@Source.X"
+              y1="@Source.Y"
+              x2="@Target.X"
+              y2="@Target.Y"
+              stroke="black"
+              stroke-width="@(Source.Node != null && Target.Node != null ? "4px" : "2px")"
+              style="@(Selected ? "stroke-dasharray: 8 2; animation: diagram-link-unfinished 0.4s ease infinite;" : "")" />
+    }
 }

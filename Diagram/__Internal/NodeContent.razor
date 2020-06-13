@@ -1,15 +1,24 @@
 ﻿@using Microsoft.JSInterop
+@using Excubo.Blazor.Diagrams.Extensions
+
 @inject IJSRuntime js
+
+@using (var temporary_culture = new CultureSwapper())
+{
     <div style="
-             position: absolute;
-             left: calc(@(X)px - @(Zoom * Width)px / 2);
-             top: calc(@(Y)px - @(Zoom * Height)px / 2);
-             pointer-events: none;
-             transform: scale(@Zoom);
-             transform-origin: 0 0;"
+                 position: absolute;
+                 left: calc(@(X)px - @(Zoom * Width)px / 2);
+                 top: calc(@(Y)px - @(Zoom * Height)px / 2);
+                 pointer-events: none;
+                 transform: scale(@Zoom);
+                 transform-origin: 0 0;"
          @ref="element">
-        @ChildContent
+        @using (var suspension = temporary_culture.Suspend())
+        {
+            @ChildContent
+        }
     </div>
+}
 @code {
     private ElementReference element;
 }

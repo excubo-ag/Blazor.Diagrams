@@ -52,7 +52,7 @@ namespace Excubo.Blazor.Diagrams
         protected void OnBorderOut(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown);
         protected string GetCoordinates()
         {
-            return $"{CanvasX.ToNeutralString()} {CanvasY.ToNeutralString()}";
+            return $"{CanvasX} {CanvasY}";
         }
         public void UpdatePosition(double x, double y)
         {
