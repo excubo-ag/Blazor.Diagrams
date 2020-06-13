@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Publish
-      run: dotnet publish "TestProject_ClientSide/TestProject_ClientSide.csproj" -c Release -o /app/publish
+      run: dotnet publish "TestProject_ClientSide/TestProject_ClientSide.csproj" -c Release -o app/publish
     - name: Deploy to Github Pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
