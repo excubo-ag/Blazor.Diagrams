@@ -32,3 +32,9 @@
         <!--End of the customizable part-->
     </g>
 }
+@code {
+    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    {
+        return (Width / 2, 0);
+    }
+}

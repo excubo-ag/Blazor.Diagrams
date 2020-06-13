@@ -31,6 +31,7 @@ namespace Excubo.Blazor.Diagrams
             builder.AddAttribute(4, nameof(Fill), Fill);
             builder.AddAttribute(5, nameof(Stroke), Stroke);
             builder.AddAttribute(6, nameof(ChildContent), ChildContent);
+            builder.AddComponentReferenceCapture(7, (r) => actual_node = (NodeBase)r);
             builder.CloseComponent();
         }
         [Parameter] public NodeType Type { get; set; }
@@ -50,6 +51,15 @@ namespace Excubo.Blazor.Diagrams
                 }
                 return NodeType.Rectangle;
             }
+        }
+        private NodeBase actual_node;
+        public override (double RelativeX, double RelativeY) GetDefaultPort()
+        {
+            if (actual_node == null)
+            {
+                return base.GetDefaultPort();
+            }
+            return actual_node.GetDefaultPort();
         }
     }
 }

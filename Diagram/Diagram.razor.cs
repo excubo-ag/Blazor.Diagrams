@@ -189,10 +189,7 @@ namespace Excubo.Blazor.Diagrams
         public NodeAnchor GetAnchorTo(string node_id)
         {
             var node = Nodes.Find(node_id);
-            return node == null ? null : new NodeAnchor
-            {
-                Node = node
-            };
+            return node == null ? null : NodeAnchor.WithDefaultNodePort(node);
         }
     }
 }

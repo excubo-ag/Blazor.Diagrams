@@ -21,3 +21,9 @@
               style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
     </g>
 }
+@code {
+    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    {
+        return (Width / 2, 0);
+    }
+}

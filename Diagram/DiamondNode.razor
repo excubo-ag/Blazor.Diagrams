@@ -26,4 +26,8 @@
 @code {
     private double DiamondWidth => Width * Math.Sqrt(2);
     private double DiamondHeight => Height * Math.Sqrt(2);
+    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    {
+        return (0, -Height);
+    }
 }

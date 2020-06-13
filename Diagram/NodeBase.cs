@@ -11,6 +11,8 @@ namespace Excubo.Blazor.Diagrams
     {
         private double x;
         private double y;
+        private double width = 100;
+        private double height = 100;
         public event PropertyChangedEventHandler PropertyChanged;
         private void TriggerPropertyChanged(string property_name)
         {
@@ -43,8 +45,8 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public RenderFragment<NodeBase> ChildContent { get; set; }
         [CascadingParameter] public Nodes Nodes { get; set; }
-        public double Width { get; set; } = 100;
-        public double Height { get; set; } = 100;
+        public double Width { get => width; set { if (value == width) { return; } width = value; TriggerPropertyChanged(nameof(Width)); } }
+        public double Height { get => height; set { if (value == height) { return; } height = value; TriggerPropertyChanged(nameof(Height)); } }
         public bool Selected { get; private set; }
         protected void OnNodeOver(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Node);
         protected void OnNodeOut(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown);
@@ -130,5 +132,9 @@ namespace Excubo.Blazor.Diagrams
         }
         protected double Zoom => Nodes.Diagram.NavigationSettings.Zoom;
         #endregion
+        public virtual (double RelativeX, double RelativeY) GetDefaultPort()
+        {
+            return (0, 0);
+        }
     }
 }
