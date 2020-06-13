@@ -28,9 +28,11 @@
         </UserNodeCode>
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
-    <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Angled">
+    <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Curved">
         <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get Straight -->
         <Link Source="@(Diagram.GetAnchorTo("abc"))" Target="@(Diagram.GetAnchorTo("def"))" />
+        <Link Source="@(Diagram.GetAnchorTo("state1"))" Target="@(Diagram.GetAnchorTo("decision1"))" />
+        <Link Source="@(Diagram.GetAnchorTo("decision1"))" Target="@(Diagram.GetAnchorTo("state2"))" />
     </Links>
     <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
 </Diagram>
