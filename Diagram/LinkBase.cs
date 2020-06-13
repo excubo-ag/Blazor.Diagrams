@@ -20,6 +20,10 @@ namespace Excubo.Blazor.Diagrams
         /// Callback for when the link has been created. This is only invoked for links that are created during interactive usage of the diagram, not for links that are provided declaratively.
         /// </summary>
         [Parameter] public Action<LinkBase> OnCreate { get; set; }
+        /// <summary>
+        /// Arrow settings for the link. For an arrow at the target, set Arrow.Target, for arrows on both ends, set Arrow.Both. Defaults to Arrow.None.
+        /// </summary>
+        [Parameter] public Arrow Arrow { get; set; }
         [CascadingParameter] public Links Links { get; set; }
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
         public bool Selected { get; private set; }
