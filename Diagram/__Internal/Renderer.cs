@@ -10,13 +10,13 @@ namespace Excubo.Blazor.Diagrams.__Internal
     {
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
+            builder.OpenElement(0, Region);
             foreach (var (key, fragment) in fragments)
             {
-                builder.OpenElement(0, Region);
                 builder.SetKey(key);
                 builder.AddContent(1, fragment);
-                builder.CloseElement();
             }
+            builder.CloseElement();
             base.BuildRenderTree(builder);
         }
         private readonly Dictionary<string, RenderFragment> fragments = new Dictionary<string, RenderFragment>();
