@@ -1,7 +1,6 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using System;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -17,17 +16,42 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// The current zoom level
         /// </summary>
-        [Parameter] public double Zoom { get; set; } = 1.0; // higher means larger objects. TODO allow @bind-Zoom?
+        [Parameter] public double Zoom { get; set; } = 1.0;
+        [Parameter] public EventCallback<double> ZoomChanged { get; set; }
+        private double min_zoom = double.Epsilon;
+        private double max_zoom = double.PositiveInfinity;
         /// <summary>
         /// The minimum zoom level. Must be smaller than MaxZoom and greater than zero.
         /// </summary>
-        [Parameter] public double MinZoom { get; set; } = double.Epsilon; // TODO disallow non-positive values. If MinZoom > MaxZoom, swap
+        [Parameter] public double MinZoom
+        {
+            get => min_zoom; 
+            set
+            {
+                min_zoom = value;
+                if (max_zoom < min_zoom)
+                {
+                    (min_zoom, max_zoom) = (max_zoom, min_zoom);
+                }
+            }
+        }
         /// <summary>
         /// the maximum zoom level.Must be larger than MinZoom and less than infinity.
         /// </summary>
-        [Parameter] public double MaxZoom { get; set; } = double.PositiveInfinity; // TODO disallow non-positive values. If MinZoom > MaxZoom, swap
+        [Parameter] public double MaxZoom 
+        {
+            get => max_zoom;
+            set
+            {
+                max_zoom = value;
+                if (max_zoom < min_zoom)
+                {
+                    (min_zoom, max_zoom) = (max_zoom, min_zoom);
+                }
+            }
+        }
         /// <summary>
-        /// Whether panning feels like dragging the canvas or dragging the nodes.
+        /// Whether panning feels like dragging the canvas or dragging all elements.
         /// </summary>
         [Parameter] public bool InversedPanning { get; set; }
         /// <summary>
@@ -48,10 +72,18 @@ namespace Excubo.Blazor.Diagrams
             if (e.DeltaY > 0)
             {
                 Zoom *= 1.05;
+                if (Zoom > MaxZoom)
+                {
+                    Zoom = MaxZoom;
+                }
             }
             else
             {
                 Zoom /= 1.05;
+                if (Zoom < MinZoom)
+                {
+                    Zoom = MinZoom;
+                }
             }
             Origin.X = canvas_x - cursor_x / Zoom;
             Origin.Y = canvas_y - cursor_y / Zoom;

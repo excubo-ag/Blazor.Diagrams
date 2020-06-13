@@ -154,6 +154,5 @@ Longer term goals include
 
 ## Known issues
 
-- Min/Max zoom is not respected
 - Not all events are implemented
 

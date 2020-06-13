@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagram", "Diagram", "{419FC38D-DC1B-4201-BCB4-D4A00F780B10}"
 	ProjectSection(SolutionItems) = preProject
-		Diagram\README.md = Diagram\README.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor.Diagrams", "Diagram\Blazor.Diagrams.csproj", "{C9FCB75D-219A-4F76-9ED3-CC331F1E78CC}"
