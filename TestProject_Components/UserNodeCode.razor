@@ -43,7 +43,9 @@
                           @onmouseout="OnBorderOut" />
                 </g>
             </g>
-        }</NodeBorder>;
+        }
+    </NodeBorder>;
+    @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
         return (Width / 2, 0);

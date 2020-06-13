@@ -104,16 +104,6 @@ A sample custom node is:
     <g transform="translate(@GetCoordinates()) scale(@Zoom)">
         <!--Beginning of the customizable part-->
         <g transform="translate(@(-Width / 2) @(-Height / 2))">
-            <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
-            <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
-            <rect width="@Width"
-                  height="@Height"
-                  style="@(Hidden? "display:none" : "")"
-                  stroke="transparent"
-                  stroke-width="@(1 / Zoom)rem"
-                  fill="none"
-                  @onmouseover="OnBorderOver"
-                  @onmouseout="OnBorderOut" />
             <!--This defines the area which can be interacted with to select/move the node. -->
             <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
             <rect width="@Width"
@@ -128,6 +118,35 @@ A sample custom node is:
         <!--End of the customizable part-->
     </g>
 }
+@code {
+    @*This part is essentially the same as the node above, except it's just the border. This is where links can be connected to. This does not need to be equivalent to the border, but can be any shape.*@
+    public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
+        @using (var temporary_culture = new CultureSwapper())
+        {
+            <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
+            <g transform="translate(@GetCoordinates()) scale(@Zoom)">
+                <!--Beginning of the customizable part-->
+                <g transform="translate(@(-Width / 2) @(-Height / 2))">
+                    <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
+                    <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
+                    <rect width="@Width"
+                          height="@Height"
+                          style="@(Hidden? "display:none" : "")"
+                          stroke="@(Hovered ? "#EEEEEE" : "transparent")"
+                          stroke-width="@(1 / Zoom)rem"
+                          fill="none"
+                          @onmouseover="OnBorderOver"
+                          @onmouseout="OnBorderOut" />
+                </g>
+            </g>
+        }</NodeBorder>;
+    @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
+    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    {
+        return (Width / 2, 0);
+    }
+}
+
 ```
 
 The same shape is defined twice: The second definition is for the shape itself, the first definition is the invisible border where links can be connected to. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.
