@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public class NodeBase : ComponentBase, INotifyPropertyChanged
+    public abstract class NodeBase : ComponentBase, INotifyPropertyChanged
     {
         private double x;
         private double y;
@@ -48,10 +48,11 @@ namespace Excubo.Blazor.Diagrams
         public double Width { get => width; set { if (value == width) { return; } width = value; TriggerPropertyChanged(nameof(Width)); } }
         public double Height { get => height; set { if (value == height) { return; } height = value; TriggerPropertyChanged(nameof(Height)); } }
         public bool Selected { get; private set; }
-        protected void OnNodeOver(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Node);
-        protected void OnNodeOut(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown);
-        protected void OnBorderOver(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Border);
-        protected void OnBorderOut(MouseEventArgs _) => Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown);
+        public bool Hovered { get; private set; }
+        protected void OnNodeOver(MouseEventArgs _) { Hovered = true;  Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Node); StateHasChanged(); }
+        protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown); StateHasChanged(); }
+        protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Border); StateHasChanged(); }
+        protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown); StateHasChanged(); }
         protected string GetCoordinates()
         {
             return $"{CanvasX} {CanvasY}";
@@ -84,6 +85,7 @@ namespace Excubo.Blazor.Diagrams
             }
             content_added = true;
             Nodes.Diagram.AddNodeContentFragment(GetChildContentWrapper());
+            Nodes.Diagram.AddNodeBorderFragment(node_border);
         }
         protected RenderFragment GetChildContentWrapper()
         {
@@ -111,7 +113,6 @@ namespace Excubo.Blazor.Diagrams
             Selected = false;
             StateHasChanged();
         }
-        protected NodeContent content_reference;
         protected bool Hidden { get; set; } = true;
         protected void GetSize(double[] result)
         {
@@ -128,6 +129,7 @@ namespace Excubo.Blazor.Diagrams
                 Width,
                 Height,
                 Nodes.Diagram.NavigationSettings.Zoom);
+            node_border_reference?.TriggerStateHasChanged();
             base.OnAfterRender(first_render);
         }
         protected double Zoom => Nodes.Diagram.NavigationSettings.Zoom;
@@ -136,5 +138,8 @@ namespace Excubo.Blazor.Diagrams
         {
             return (0, 0);
         }
+        public abstract RenderFragment node_border { get; }
+        protected NodeContent content_reference;
+        protected NodeBorder node_border_reference;
     }
 }

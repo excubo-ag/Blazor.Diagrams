@@ -15,10 +15,14 @@
             @ChildContent
         </svg>
         <Renderer @ref="node_content_renderer" Region="div" />
+        <svg class="diagram-nodes" style="pointer-events: none">
+            <Renderer @ref="node_border_renderer" Region="g" />
+        </svg>
     </div>
 </CascadingValue>
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
     private ElementReference canvas;
     private Renderer node_content_renderer;
+    private Renderer node_border_renderer;
 }

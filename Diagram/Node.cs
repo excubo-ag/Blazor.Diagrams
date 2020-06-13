@@ -61,5 +61,6 @@ namespace Excubo.Blazor.Diagrams
             }
             return actual_node.GetDefaultPort();
         }
+        public override RenderFragment node_border => actual_node?.node_border;
     }
 }

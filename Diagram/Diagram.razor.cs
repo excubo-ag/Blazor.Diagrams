@@ -185,9 +185,13 @@ namespace Excubo.Blazor.Diagrams
             }
         }
         #endregion
-        public void AddNodeContentFragment(RenderFragment content)
+        internal void AddNodeContentFragment(RenderFragment content)
         {
             node_content_renderer.Add(content);
+        }
+        internal void AddNodeBorderFragment(RenderFragment content)
+        {
+            node_border_renderer.Add(content);
         }
         public NodeAnchor GetAnchorTo(string node_id)
         {
