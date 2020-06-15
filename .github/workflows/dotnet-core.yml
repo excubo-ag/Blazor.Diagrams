@@ -23,11 +23,16 @@ jobs:
       run: dotnet build -c Release --no-restore
     - name: Publish
       run: dotnet publish "TestProject_ClientSide/TestProject_ClientSide.csproj" -c Release -o app/publish
+    - name: Rewrite base href
+      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+      with:
+        html_path: app/publish/index.html
+        base_href: /Blazor.Diagrams/
     - name: Deploy to Github Pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BASE_BRANCH: master # The branch the action should deploy from.
-        BRANCH: gh-pages-from-actions # The branch the action should deploy to.
+        BRANCH: gh-pages # The branch the action should deploy to.
         FOLDER: app/publish/wwwroot # The folder the action should deploy.
         SINGLE_COMMIT: true
