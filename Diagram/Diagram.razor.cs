@@ -67,6 +67,7 @@ namespace Excubo.Blazor.Diagrams
         }
         #region interaction
         internal ActiveNode ActiveNode { get; set; }
+        internal LinkBase ActiveLink { get;set; }
         internal (NodeBase Node, HoverType Type) CurrentlyHoveredNode { get; set; }
         public NavigationSettings NavigationSettings { get; set; }
         protected override void OnParametersSet()
@@ -89,9 +90,9 @@ namespace Excubo.Blazor.Diagrams
                     Nodes.OnMouseMove(ActiveNode, e.RelativeXTo(this), e.RelativeYTo(this));
                 }
             }
-            else if (Links.NewLink != null)
+            else if (ActiveLink != null)
             {
-                Links.OnMouseMove(e.RelativeXTo(this), e.RelativeYTo(this));
+                Links.OnMouseMove(ActiveLink, e.RelativeXTo(this), e.RelativeYTo(this));
             }
             else if (e.Buttons == 1)
             {
@@ -110,7 +111,10 @@ namespace Excubo.Blazor.Diagrams
             }
             else
             {
-                pan_point = null;
+                if (pan_point != null)
+                {
+                    pan_point = null;
+                }
             }
         }
         private void OnMouseWheel(WheelEventArgs e)
@@ -149,14 +153,18 @@ namespace Excubo.Blazor.Diagrams
             }
             if (CurrentlyHoveredNode.Type == HoverType.Border)
             {
-                if (Links.NewLink == null)
+                if (ActiveLink == null)
                 {
-                    Links.AddLink(node, e);
+                    Links.AddLink(node, e, (generated_link) =>
+                    {
+                        ActiveLink = generated_link;
+                        ActiveLink.Select();
+                    });
                 }
                 else
                 {
-                    Links.NewLink.FixTo(node, e);
-                    Links.ResetNewLink();
+                    ActiveLink.FixTo(node, e);
+                    ActiveLink = null;
                 }
             }
         }
@@ -181,9 +189,10 @@ namespace Excubo.Blazor.Diagrams
                     node.Deselect();
                 }
                 Group = new Group();
-                if (Links.NewLink != null)
+                if (ActiveLink != null)
                 {
-                    Links.CancelNewLink();
+                    Links.Remove(ActiveLink);
+                    ActiveLink = null;
                 }
                 ActiveNode = null;
             }

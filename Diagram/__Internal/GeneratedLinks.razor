@@ -1,0 +1,12 @@
+﻿
+<CascadingValue Name="IsInternallyGenerated" Value="true" IsFixed="true">
+    @foreach (var link in Links)
+    {
+        <Link @key="(link.Source, link.Target)" Source="link.Source" Target="link.Target" OnCreate="link.OnCreate" />
+    }
+</CascadingValue>
+
+@code{
+    [Parameter] public List<LinkBaseData> Links { get; set; }
+    internal void TriggerStateHasChanged() => StateHasChanged();
+}

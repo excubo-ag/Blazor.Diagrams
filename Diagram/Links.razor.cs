@@ -4,9 +4,16 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
+    public class LinkBaseData
+    {
+        public NodeAnchor Source { get; set; }
+        public NodeAnchor Target { get; set; }
+        public Action<LinkBase> OnCreate { get; internal set; }
+    }
     public partial class Links
     {
         /// <summary>
@@ -36,8 +43,9 @@ namespace Excubo.Blazor.Diagrams
             Diagram.Links = this;
             base.OnParametersSet();
         }
-        private Renderer Renderer { get; set; }
         private readonly List<LinkBase> all_links = new List<LinkBase>();
+        private readonly List<LinkBaseData> internally_generated_links = new List<LinkBaseData>();
+        private GeneratedLinks generated_links_ref;
         public void Add(LinkBase link)
         {
             if (!all_links.Contains(link))
@@ -46,9 +54,7 @@ namespace Excubo.Blazor.Diagrams
                 OnAddLink(link);
             }
         }
-        internal LinkBase NewLink { get; set; }
-        private RenderFragment NewLinkFragment { get; set; }
-        internal void AddLink(NodeBase node, MouseEventArgs e)
+        internal void AddLink(NodeBase node, MouseEventArgs e, Action<LinkBase> on_link_create)
         {
             var source_point = new NodeAnchor
             {
@@ -61,49 +67,23 @@ namespace Excubo.Blazor.Diagrams
                 RelativeX = e.RelativeXTo(Diagram),
                 RelativeY = e.RelativeYTo(Diagram)
             };
-            NewLinkFragment = GetTemplateLink(source_point, target_point, (generated_link) =>
-            {
-                NewLink = generated_link;
-                NewLink.Select();
-            });
-            Renderer.Add(NewLinkFragment);
+            internally_generated_links.Add(new LinkBaseData { Source = source_point, Target = target_point, OnCreate = on_link_create });
+            generated_links_ref.TriggerStateHasChanged();
         }
-        private RenderFragment GetTemplateLink(NodeAnchor source, NodeAnchor target, Action<LinkBase> register)
+        internal void OnMouseMove(LinkBase link, double x, double y)
         {
-            return (builder) =>
-            {
-                builder.OpenComponent<CascadingValue<Links>>(0);
-                builder.AddAttribute(1, nameof(CascadingValue<Links>.Value), this);
-                builder.AddAttribute(2, nameof(CascadingValue<Links>.IsFixed), true);
-                builder.AddAttribute(3, nameof(CascadingValue<Links>.ChildContent), (RenderFragment)((builder2) =>
-                {
-                    builder2.OpenComponent<Link>(0);
-                    builder2.AddAttribute(1, nameof(StraightLink.Source), source);
-                    builder2.AddAttribute(2, nameof(StraightLink.Target), target);
-                    builder2.AddAttribute(3, nameof(StraightLink.OnCreate), register);
-                    builder2.CloseComponent();
-                }));
-                builder.CloseComponent();
-            };
+            link.UpdateTarget(x, y);
         }
-        internal void OnMouseMove(double x, double y)
+        internal void Remove(LinkBase link)
         {
-            if (NewLink != null)
+            all_links.Remove(link);
+            var match = internally_generated_links.FirstOrDefault(l => l.Source == link.Source && l.Target == link.Target);
+            if (match != null)
             {
-                NewLink.UpdateTarget(x, y);
+                internally_generated_links.Remove(match);
+                generated_links_ref.TriggerStateHasChanged();
             }
-        }
-        internal void CancelNewLink()
-        {
-            Renderer.Remove(NewLinkFragment);
-            all_links.Remove(NewLink);
-            NewLink = null;
-            NewLinkFragment = null;
-        }
-        internal void ResetNewLink()
-        {
-            NewLinkFragment = null;
-            NewLink = null;
+            OnRemoveLink?.Invoke(link);
         }
         internal void Redraw()
         {

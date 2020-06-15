@@ -2,10 +2,9 @@
 
 <CascadingValue Value="@this" IsFixed="true">
     @ChildContent
-    <CascadingValue Name="IsInternallyGenerated" Value="true" IsFixed="true">
-        <Renderer @ref="Renderer" />
-    </CascadingValue>
+    <GeneratedLinks Links="@internally_generated_links" @ref="generated_links_ref" />
 </CascadingValue>
+
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
 }
