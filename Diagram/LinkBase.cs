@@ -49,13 +49,16 @@ namespace Excubo.Blazor.Diagrams
         }
         protected override void OnAfterRender(bool first_render)
         {
-            if (first_render)
+            if (GetType() != typeof(Link))
             {
-                if (IsInternallyGenerated)
+                if (first_render)
                 {
-                    Links.Add(this);
+                    if (IsInternallyGenerated)
+                    {
+                        Links.Add(this);
+                    }
+                    OnCreate?.Invoke(this);
                 }
-                OnCreate?.Invoke(this);
             }
             base.OnAfterRender(first_render);
         }
