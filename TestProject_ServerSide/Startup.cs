@@ -1,9 +1,12 @@
 using Excubo.Blazor.Diagrams;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http;
 
 namespace TestProject_ServerSide
 {
@@ -23,6 +26,14 @@ namespace TestProject_ServerSide
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddDiagramServices();
+            services.AddScoped<HttpClient>((s) =>
+            {
+                var uriHelper = s.GetRequiredService<NavigationManager>();
+                return new HttpClient
+                {
+                    BaseAddress = new Uri(uriHelper.BaseUri)
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
