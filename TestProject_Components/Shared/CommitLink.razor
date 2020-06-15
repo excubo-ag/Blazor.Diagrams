@@ -1,0 +1,23 @@
+﻿@inject System.Net.Http.HttpClient HttpClient
+
+@if (CommitHash != null)
+{
+    <a href="https://github.com/excubo-ag/Blazor.Diagrams/commit/@(CommitHash)">Built from @CommitHash</a>
+}
+
+@code {
+    public string CommitHash { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var file = await HttpClient.GetAsync("commit.txt");
+            if (file != null)
+            {
+                CommitHash = await file.Content.ReadAsStringAsync();
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

@@ -30,6 +30,8 @@ jobs:
         base_href: /Blazor.Diagrams/
     - name: add .nojekyll
       run: touch app/publish/wwwroot/.nojekyll
+    - name: write git commit id
+      run: echo -n "${GITHUB_SHA}" > app/publish/wwwroot/commit.txt
     - name: Deploy to Github Pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
