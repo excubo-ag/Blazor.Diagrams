@@ -35,12 +35,18 @@ dotnet add package Excubo.Blazor.Diagrams --version 0.1.1
 ```html
 <head>
     <!--your other code-->
-    <link href="_content/Excubo.Blazor.Diagrams/style.css" rel="stylesheet" />
     <script src="_content/Excubo.Blazor.Diagrams/script.js" type="text/javascript"></script>
 </head>
 ```
 
-### 3. Add the `Diagram` component to your component
+### 3. Add the diagram service to your service collection
+
+```cs
+//using Excubo.Blazor.Diagrams;
+services.AddDiagramServices();
+```
+
+### 4. Add the `Diagram` component to your component
 
 ```html
 @using Excubo.Blazor.Diagrams
