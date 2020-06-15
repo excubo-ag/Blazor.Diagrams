@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Threading;
 
 namespace Excubo.Blazor.Diagrams.Extensions
 {
@@ -21,8 +20,8 @@ namespace Excubo.Blazor.Diagrams.Extensions
         /// <param name="new_culture"></param>
         public CultureSwapper(CultureInfo new_culture = null)
         {
-            old_culture = Thread.CurrentThread.CurrentCulture;
-            Thread.CurrentThread.CurrentCulture = new_culture ?? CultureInfo.InvariantCulture;
+            old_culture = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = new_culture ?? CultureInfo.InvariantCulture;
         }
         public CultureSwapper Suspend()
         {
@@ -30,7 +29,7 @@ namespace Excubo.Blazor.Diagrams.Extensions
         }
         public void Dispose()
         {
-            Thread.CurrentThread.CurrentCulture = old_culture;
+            CultureInfo.CurrentCulture = old_culture;
         }
     }
 }
