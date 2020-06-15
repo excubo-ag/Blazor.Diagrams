@@ -57,17 +57,9 @@ namespace Excubo.Blazor.Diagrams
             CanvasTop = values[1];
         }
         #endregion
-        [Inject]
-        private IStyleSheetService StyleSheetService
-        {
-            set
-            {
-                if (value != null)
-                {
-                    value.Add("_content/Excubo.Blazor.Diagrams/style.css");
-                }
-            }
-        }
+#pragma warning disable S2376, IDE0051
+        [Inject] private IStyleSheetService StyleSheetService { set { if (value != null) { value.Add("_content/Excubo.Blazor.Diagrams/style.css"); } } }
+#pragma warning restore S2376, IDE0051
         protected override async Task OnAfterRenderAsync(bool first_render)
         {
             await GetPositionAsync();
