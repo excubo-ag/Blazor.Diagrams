@@ -8,12 +8,6 @@ using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public class LinkBaseData
-    {
-        public NodeAnchor Source { get; set; }
-        public NodeAnchor Target { get; set; }
-        public Action<LinkBase> OnCreate { get; internal set; }
-    }
     public partial class Links
     {
         /// <summary>
@@ -44,7 +38,7 @@ namespace Excubo.Blazor.Diagrams
             base.OnParametersSet();
         }
         private readonly List<LinkBase> all_links = new List<LinkBase>();
-        private readonly List<LinkBaseData> internally_generated_links = new List<LinkBaseData>();
+        private readonly List<LinkData> internally_generated_links = new List<LinkData>();
         private GeneratedLinks generated_links_ref;
         public void Add(LinkBase link)
         {
@@ -67,7 +61,7 @@ namespace Excubo.Blazor.Diagrams
                 RelativeX = e.RelativeXTo(Diagram),
                 RelativeY = e.RelativeYTo(Diagram)
             };
-            internally_generated_links.Add(new LinkBaseData { Source = source_point, Target = target_point, OnCreate = on_link_create });
+            internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, OnCreate = on_link_create });
             generated_links_ref.TriggerStateHasChanged();
         }
         internal void OnMouseMove(LinkBase link, double x, double y)

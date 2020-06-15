@@ -29,10 +29,6 @@ namespace Excubo.Blazor.Diagrams
         public bool Selected { get; private set; }
         protected override void OnParametersSet()
         {
-            if (IsInternallyGenerated)
-            {
-                Links.Add(this);
-            }
             if (Source?.Node != null)
             {
                 Source.Node.PropertyChanged += Node_PropertyChanged;
@@ -55,6 +51,10 @@ namespace Excubo.Blazor.Diagrams
         {
             if (first_render)
             {
+                if (IsInternallyGenerated)
+                {
+                    Links.Add(this);
+                }
                 OnCreate?.Invoke(this);
             }
             base.OnAfterRender(first_render);
