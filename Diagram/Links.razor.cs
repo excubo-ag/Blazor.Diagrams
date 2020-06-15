@@ -9,6 +9,27 @@ namespace Excubo.Blazor.Diagrams
 {
     public partial class Links
     {
+        /// <summary>
+        /// Default link type for links created as <Link />
+        /// </summary>
+        [Parameter] public LinkType DefaultType { get; set; }
+        /// <summary>
+        /// Callback for when a link is removed. The user can return false, if the action should be cancelled.
+        /// </summary>
+        [Parameter] public Func<LinkBase, bool> BeforeRemoveLink { get; set; }
+        /// <summary>
+        /// Callback for when a link is added.
+        /// </summary>
+        [Parameter] public Action<LinkBase> OnAddLink { get; set; }
+        /// <summary>
+        /// Callback that is executed if the remove action wasn't cancelled.
+        /// </summary>
+        [Parameter] public Action<LinkBase> OnRemoveLink { get; set; }
+        /// <summary>
+        /// Callback for when a link source or target is changed.
+        /// </summary>
+        [Parameter] public Action<LinkBase> OnLinkModified { get; set; }
+        [CascadingParameter] public Diagram Diagram { get; set; }
         protected override void OnParametersSet()
         {
             System.Diagnostics.Debug.Assert(Diagram != null);

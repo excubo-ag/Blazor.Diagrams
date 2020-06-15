@@ -7,11 +7,5 @@
     </CascadingValue>
 </CascadingValue>
 @code {
-    [Parameter] public LinkType DefaultType { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
-    [CascadingParameter] public Diagram Diagram { get; set; }
-    [Parameter] public Func<LinkBase, bool> BeforeRemoveLink { get; set; } // callback for when a link is removed. The user can return false, if the action should be cancelled.
-    [Parameter] public Action<LinkBase> OnAddLink { get; set; } // callback for when a link is added.
-    [Parameter] public Action<LinkBase> OnRemoveLink { get; set; } // callback that is executed if the remove action wasn't cancelled.
-    [Parameter] public Action<LinkBase> OnLinkModified { get; set; } // callback for when a link source or target is changed.
 }
