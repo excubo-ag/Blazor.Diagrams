@@ -12,7 +12,7 @@
         if (firstRender)
         {
             var file = await HttpClient.GetAsync("commit.txt");
-            if (file != null)
+            if (file.IsSuccessStatusCode)
             {
                 CommitHash = await file.Content.ReadAsStringAsync();
             }
