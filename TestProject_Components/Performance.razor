@@ -1,0 +1,39 @@
+﻿@page "/performance"
+@using Excubo.Blazor.Diagrams
+
+<Diagram @ref="Diagram">
+    <Nodes>
+        @foreach (var state in states)
+        {
+            <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
+            <Node @key="state.Id" Id="@state.Id" X="state.X" Y="state.Y" Type="NodeType.Rectangle">
+                State @state.Id
+            </Node>
+        }
+    </Nodes>
+    <Links>
+        @for (int i = 0; i < 100; ++i)
+        {
+            for (int j = i + 1; j < 100; j += 10)
+            {
+                <Link Source="@Diagram.GetAnchorTo($"state{i}")" Target="@Diagram.GetAnchorTo($"state{j}")" />
+            }
+        }
+    </Links>
+</Diagram>
+
+@code {
+    public class MyNodeDefinition
+    {
+        public string Id { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+    List<MyNodeDefinition> states = Enumerable.Range(0, 100).Select(i => new MyNodeDefinition
+    {
+        Id = $"state{i}",
+        X = 100 * (i % 10),
+        Y = 100 * (i / 10)
+    }).ToList();
+    private Diagram Diagram { get; set; }
+}
