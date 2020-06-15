@@ -2,32 +2,36 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <g transform="translate(@GetCoordinates()) scale(@Zoom) translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
-        <rect width="@DiamondWidth"
-              height="@DiamondHeight"
-              transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
-              @onmouseover="OnNodeOver"
-              @onmouseout="OnNodeOut"
-              stroke="@Stroke"
-              stroke-width="2px"
-              fill="@Fill"
-              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+    <g transform="@NodePositionAndScale">
+        <g transform="translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
+            <rect width="@DiamondWidth"
+                  height="@DiamondHeight"
+                  transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
+                  @onmouseover="OnNodeOver"
+                  @onmouseout="OnNodeOut"
+                  stroke="@Stroke"
+                  stroke-width="2px"
+                  fill="@Fill"
+                  style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+        </g>
     </g>
 }
 @code {
     public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
         @using (var temporary_culture = new CultureSwapper())
         {
-            <g transform="translate(@GetCoordinates()) scale(@Zoom) translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
-                <rect width="@DiamondWidth"
-                      height="@DiamondHeight"
-                      transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
-                      style="@(Hidden ? "display:none" : "")"
-                      stroke="@(Hovered ? "#EEEEEE" : "transparent")"
-                      stroke-width="@(1 / Zoom)rem"
-                      fill="none"
-                      @onmouseover="OnBorderOver"
-                      @onmouseout="OnBorderOut" />
+            <g transform="@NodePositionAndScale">
+                <g transform="translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
+                    <rect width="@DiamondWidth"
+                          height="@DiamondHeight"
+                          transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
+                          style="@(Hidden ? "display:none" : "")"
+                          stroke="@(Hovered ? "#EEEEEE" : "transparent")"
+                          stroke-width="@(1 / Zoom)rem"
+                          fill="none"
+                          @onmouseover="OnBorderOver"
+                          @onmouseout="OnBorderOut" />
+                </g>
             </g>
         }
     </NodeBorder>;

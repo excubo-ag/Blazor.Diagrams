@@ -2,35 +2,39 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <g transform="translate(@GetCoordinates()) scale(@Zoom) translate(@(-Width / 2) @(-Height / 2))">
-        <rect width="@Width"
-              height="@Height"
-              @onmouseover="OnNodeOver"
-              @onmouseout="OnNodeOut"
-              stroke="@Stroke"
-              stroke-width="2px"
-              fill="@Fill"
-              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+    <g transform="@NodePositionAndScale">
+        <g transform="translate(@(-Width / 2) @(-Height / 2))">
+            <rect width="@Width"
+                  height="@Height"
+                  @onmouseover="OnNodeOver"
+                  @onmouseout="OnNodeOut"
+                  stroke="@Stroke"
+                  stroke-width="2px"
+                  fill="@Fill"
+                  style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+        </g>
     </g>
 }
 @code {
     public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
         @using (var temporary_culture = new CultureSwapper())
         {
-            <g transform="translate(@GetCoordinates()) scale(@Zoom) translate(@(-Width / 2) @(-Height / 2))">
-                <rect width="@Width"
-                      height="@Height"
-                      style="@(Hidden? "display:none" : "")"
-                      stroke="@(Hovered ? "#EEEEEE" : "transparent")"
-                      stroke-width="@(1 / Zoom)rem"
-                      fill="none"
-                      @onmouseover="OnBorderOver"
-                      @onmouseout="OnBorderOut" />
+            <g transform="@NodePositionAndScale">
+                <g transform="translate(@(-Width / 2) @(-Height / 2))">
+                    <rect width="@Width"
+                        height="@Height"
+                        style="@(Hidden? "display:none" : "")"
+                        stroke="@(Hovered ? "#EEEEEE" : "transparent")"
+                        stroke-width="@(1 / Zoom)rem"
+                        fill="none"
+                        @onmouseover="OnBorderOver"
+                        @onmouseout="OnBorderOut" />
+                </g>
             </g>
         }
     </NodeBorder>;
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
-        return (Width / 2, 0);
+       return (Width / 2, 0);
     }
 }

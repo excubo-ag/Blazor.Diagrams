@@ -101,7 +101,7 @@ A sample custom node is:
 @using (var temporary_culture = new CultureSwapper())
 {
     <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-    <g transform="translate(@GetCoordinates()) scale(@Zoom)">
+    <g transform="@NodePositionAndScale">
         <!--Beginning of the customizable part-->
         <g transform="translate(@(-Width / 2) @(-Height / 2))">
             <!--This defines the area which can be interacted with to select/move the node. -->
@@ -124,7 +124,7 @@ A sample custom node is:
         @using (var temporary_culture = new CultureSwapper())
         {
             <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-            <g transform="translate(@GetCoordinates()) scale(@Zoom)">
+            <g transform="@NodePositionAndScale">
                 <!--Beginning of the customizable part-->
                 <g transform="translate(@(-Width / 2) @(-Height / 2))">
                     <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
@@ -139,14 +139,14 @@ A sample custom node is:
                           @onmouseout="OnBorderOut" />
                 </g>
             </g>
-        }</NodeBorder>;
+        }
+    </NodeBorder>;
     @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
         return (Width / 2, 0);
     }
 }
-
 ```
 
 The same shape is defined twice: The second definition is for the shape itself, the first definition is the invisible border where links can be connected to. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.

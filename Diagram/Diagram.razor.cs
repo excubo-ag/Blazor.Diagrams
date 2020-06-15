@@ -1,4 +1,5 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
+using Excubo.Blazor.LazyStyleSheet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -56,6 +57,17 @@ namespace Excubo.Blazor.Diagrams
             CanvasTop = values[1];
         }
         #endregion
+        [Inject]
+        private IStyleSheetService StyleSheetService
+        {
+            set
+            {
+                if (value != null)
+                {
+                    value.Add("_content/Excubo.Blazor.Diagrams/style.css");
+                }
+            }
+        }
         protected override async Task OnAfterRenderAsync(bool first_render)
         {
             await GetPositionAsync();

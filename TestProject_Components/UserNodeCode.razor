@@ -5,7 +5,7 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-    <g transform="translate(@GetCoordinates()) scale(@Zoom)">
+    <g transform="@NodePositionAndScale">
         <!--Beginning of the customizable part-->
         <g transform="translate(@(-Width / 2) @(-Height / 2))">
             <!--This defines the area which can be interacted with to select/move the node. -->
@@ -28,7 +28,7 @@
         @using (var temporary_culture = new CultureSwapper())
         {
             <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-            <g transform="translate(@GetCoordinates()) scale(@Zoom)">
+            <g transform="@NodePositionAndScale">
                 <!--Beginning of the customizable part-->
                 <g transform="translate(@(-Width / 2) @(-Height / 2))">
                     <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->

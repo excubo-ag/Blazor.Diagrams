@@ -53,10 +53,7 @@ namespace Excubo.Blazor.Diagrams
         protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown); StateHasChanged(); }
         protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Border); StateHasChanged(); }
         protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Unknown); StateHasChanged(); }
-        protected string GetCoordinates()
-        {
-            return $"{CanvasX} {CanvasY}";
-        }
+        protected string NodePositionAndScale => $"translate({CanvasX} {CanvasY}) scale({Zoom})";
         public void UpdatePosition(double x, double y)
         {
             X = x;
