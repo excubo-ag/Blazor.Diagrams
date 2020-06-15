@@ -26,7 +26,7 @@ jobs:
     - name: Rewrite base href
       uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
       with:
-        html_path: app/publish/index.html
+        html_path: app/publish/wwwroot/index.html
         base_href: /Blazor.Diagrams/
     - name: Deploy to Github Pages
       uses: JamesIves/github-pages-deploy-action@releases/v3
