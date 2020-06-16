@@ -3,18 +3,16 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="@NodePositionAndScale">
-        <g transform="translate(@(-Width / 2) @(-Height / 2))">
-            <ellipse rx="@(Width / 2 * 1.41)"
-                     ry="@(Height / 2 * 1.41)"
-                     cx="@(Width / 2)"
-                     cy="@(Height / 2)"
-                     @onmouseover="OnNodeOver"
-                     @onmouseout="OnNodeOut"
-                     stroke="@Stroke"
-                     stroke-width="2px"
-                     fill="@Fill"
-                     style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
-        </g>
+        <ellipse rx="@(Width / 2 * 1.41)"
+                    ry="@(Height / 2 * 1.41)"
+                    cx="@(Width / 2)"
+                    cy="@(Height / 2)"
+                    @onmouseover="OnNodeOver"
+                    @onmouseout="OnNodeOut"
+                    stroke="@Stroke"
+                    stroke-width="2px"
+                    fill="@Fill"
+                    style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
     </g>
 }
 @code {
@@ -22,23 +20,21 @@
         @using (var temporary_culture = new CultureSwapper())
         {
             <g transform="@NodePositionAndScale">
-                <g transform="translate(@(-Width / 2) @(-Height / 2))">
-                    <ellipse rx="@(Width / 2 * 1.41)"
-                             ry="@(Height / 2 * 1.41)"
-                             cx="@(Width / 2)"
-                             cy="@(Height / 2)"
-                             style="@(Hidden? "display:none" : "")"
-                             stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                             stroke-width="@(.5 / Zoom)rem"
-                             fill="none"
-                             @onmouseover="OnBorderOver"
-                             @onmouseout="OnBorderOut" />
-                </g>
+                <ellipse rx="@(Width / 2 * 1.41)"
+                            ry="@(Height / 2 * 1.41)"
+                            cx="@(Width / 2)"
+                            cy="@(Height / 2)"
+                            style="@(Hidden? "display:none" : "")"
+                            stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                            stroke-width="@(.5 / Zoom)rem"
+                            fill="none"
+                            @onmouseover="OnBorderOver"
+                            @onmouseout="OnBorderOut" />
             </g>
         }
     </NodeBorder>;
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
-        return (-Width * 1.41 / 2, 0);
+        return (0, 0);
     }
 }

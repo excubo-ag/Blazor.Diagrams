@@ -3,17 +3,21 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="@NodePositionAndScale">
-        <g transform="translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
-            <rect width="@DiamondWidth"
-                  height="@DiamondHeight"
-                  transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
-                  @onmouseover="OnNodeOver"
-                  @onmouseout="OnNodeOut"
-                  stroke="@Stroke"
-                  stroke-width="2px"
-                  fill="@Fill"
-                  style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
-        </g>
+        <polygon points="
+                    0,0
+                    @(Width / 2),@(-Height/2)
+                    @(Width),0
+                    @(Width*1.5),@(Height/2)
+                    @(Width),@(Height)
+                    @(Width / 2),@(Height*1.5)
+                    0,@(Height)
+                    @(-Width / 2),@(Height / 2)" 
+                    @onmouseover="OnNodeOver"
+                    @onmouseout="OnNodeOut"
+                    stroke="@Stroke"
+                    stroke-width="2px"
+                    fill="@Fill"
+                    style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")"/>
     </g>
 }
 @code {
@@ -21,24 +25,26 @@
         @using (var temporary_culture = new CultureSwapper())
         {
             <g transform="@NodePositionAndScale">
-                <g transform="translate(@(-DiamondWidth / 2) @(-DiamondHeight / 2))">
-                    <rect width="@DiamondWidth"
-                          height="@DiamondHeight"
-                          transform="rotate(45 @(DiamondWidth / 2) @(DiamondHeight / 2))"
-                          style="@(Hidden ? "display:none" : "")"
-                          stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                          stroke-width="@(.5 / Zoom)rem"
-                          fill="none"
-                          @onmouseover="OnBorderOver"
-                          @onmouseout="OnBorderOut" />
-                </g>
+                <polygon points="
+                            0,0
+                            @(Width / 2),@(-Height/2)
+                            @(Width),0
+                            @(Width*1.5),@(Height/2)
+                            @(Width),@(Height)
+                            @(Width / 2),@(Height*1.5)
+                            0,@(Height)
+                            @(-Width/2),@(Height / 2)" 
+                        style="@(Hidden ? "display:none" : "")"
+                        stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                        stroke-width="@(.5 / Zoom)rem"
+                        fill="none"
+                        @onmouseover="OnBorderOver"
+                        @onmouseout="OnBorderOut" />
             </g>
         }
     </NodeBorder>;
-    private double DiamondWidth => Width * Math.Sqrt(2);
-    private double DiamondHeight => Height * Math.Sqrt(2);
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
-        return (0, -Height);
+        return (Width / 2, -Height / 2);
     }
 }

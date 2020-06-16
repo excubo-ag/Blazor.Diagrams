@@ -17,8 +17,9 @@
                 @ChildContent
             </g>
         </svg>
-        <div style="position: absolute; left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
-                                         top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;">
+        <div style="position: absolute;
+                    left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
+                    top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;">
             <Renderer @ref="node_content_renderer" Region="div" />
         </div>
         <svg class="diagram-nodes" style="pointer-events: none">

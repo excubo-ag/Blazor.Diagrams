@@ -109,18 +109,16 @@ A sample custom node is:
     <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
     <g transform="@NodePositionAndScale">
         <!--Beginning of the customizable part-->
-        <g transform="translate(@(-Width / 2) @(-Height / 2))">
-            <!--This defines the area which can be interacted with to select/move the node. -->
-            <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
-            <rect width="@Width"
-                  height="@Height"
-                  @onmouseover="OnNodeOver"
-                  @onmouseout="OnNodeOut"
-                  stroke="@Stroke"
-                  stroke-width="2px"
-                  fill="@Fill"
-                  style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
-        </g>
+        <!--This defines the area which can be interacted with to select/move the node. -->
+        <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
+        <rect width="@Width"
+                height="@Height"
+                @onmouseover="OnNodeOver"
+                @onmouseout="OnNodeOut"
+                stroke="@Stroke"
+                stroke-width="2px"
+                fill="@Fill"
+                style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
         <!--End of the customizable part-->
     </g>
 }
@@ -132,25 +130,24 @@ A sample custom node is:
             <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
             <g transform="@NodePositionAndScale">
                 <!--Beginning of the customizable part-->
-                <g transform="translate(@(-Width / 2) @(-Height / 2))">
-                    <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
-                    <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
-                    <rect width="@Width"
-                          height="@Height"
-                          style="@(Hidden? "display:none" : "")"
-                          stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                          stroke-width="@(.5 / Zoom)rem"
-                          fill="none"
-                          @onmouseover="OnBorderOver"
-                          @onmouseout="OnBorderOut" />
-                </g>
+                <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
+                <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
+                <rect width="@Width"
+                        height="@Height"
+                        style="@(Hidden? "display:none" : "")"
+                        stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                        stroke-width="@(.5 / Zoom)rem"
+                        fill="none"
+                        @onmouseover="OnBorderOver"
+                        @onmouseout="OnBorderOut" />
+                <!--End of the customizable part-->
             </g>
         }
     </NodeBorder>;
     @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
-        return (Width / 2, 0);
+        return (0, 0);
     }
 }
 ```
