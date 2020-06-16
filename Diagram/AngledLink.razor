@@ -4,19 +4,19 @@
 {
     @if (Source != null && Target != null)
     {
-        var sx = Source.X;
-        var sy = Source.Y;
-        var tx = Target.X;
-        var ty = Target.Y;
+        var sx = SourceX;
+        var sy = SourceY;
+        var tx = TargetX;
+        var ty = TargetY;
         string curve_part;
         if (CurveTopBottom)
         {
-            var mid_y = (Source.Y + Target.Y) / 2;
+            var mid_y = (SourceY + TargetY) / 2;
             curve_part = $"L {sx} {mid_y} L {tx} {mid_y}";
         }
         else
         {
-            var mid_x = (Source.X + Target.X) / 2;
+            var mid_x = (SourceX + TargetX) / 2;
             curve_part = $"L {mid_x} {sy} L {mid_x} {ty}";
         }
     <path d="M @sx @sy @curve_part @tx @ty"

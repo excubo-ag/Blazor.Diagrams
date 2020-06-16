@@ -49,23 +49,10 @@ namespace Excubo.Blazor.Diagrams
             }
             base.OnAfterRender(first_render);
         }
-        internal void FixTo(NodeBase node, MouseEventArgs e)
-        {
-            Target.Node = node;
-            Target.RelativeX = e.RelativeXTo(node) / Links.Diagram.NavigationSettings.Zoom;
-            Target.RelativeY = e.RelativeYTo(node) / Links.Diagram.NavigationSettings.Zoom;
-            Selected = false;
-            StateHasChanged();
-        }
-        internal void UpdateTarget(double x, double y)
-        { 
-            // the shenanigans of placing the target slightly off from where the cursor actually is, are absolutely crucial:
-            // we want to identify whenever the cursor is over the border of a node, hence the cursor must be over the border, not over the currently drawn link!
-            // by placing the link slightly off, we make sure that what we see underneath the cursor is not the link, but the border.
-            Target.RelativeX = Source.X < x ? x - 1 : x + 1;
-            Target.RelativeY = Source.Y < y ? y - 1 : y + 1;
-            StateHasChanged();
-        }
         internal void TriggerStateHasChanged() => StateHasChanged();
+        protected double SourceX => Source.GetX(Links.Diagram);
+        protected double SourceY => Source.GetY(Links.Diagram);
+        protected double TargetX => Target.GetX(Links.Diagram);
+        protected double TargetY => Target.GetY(Links.Diagram);
     }
 }

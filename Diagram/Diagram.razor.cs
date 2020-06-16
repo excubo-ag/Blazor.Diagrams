@@ -66,7 +66,7 @@ namespace Excubo.Blazor.Diagrams
             await base.OnAfterRenderAsync(first_render);
         }
         #region interaction
-        internal ActiveNode ActiveNode { get; set; }
+        internal NodeBase ActiveNode { get; set; }
         internal LinkBase ActiveLink { get;set; }
         internal (NodeBase Node, HoverType Type) CurrentlyHoveredNode { get; set; }
         public NavigationSettings NavigationSettings { get; set; }
@@ -87,16 +87,38 @@ namespace Excubo.Blazor.Diagrams
             {
                 if (e.Buttons == 1)
                 {
-                    Nodes.OnMouseMove(ActiveNode, e.RelativeXTo(this), e.RelativeYTo(this));
+                    if (pan_point == null)
+                    {
+                        pan_point = new Point(e.ClientX, e.ClientY);
+                    }
+                    else
+                    {
+                        var delta_x = e.RelativeXTo(pan_point) / NavigationSettings.Zoom;
+                        var delta_y = e.RelativeYTo(pan_point) / NavigationSettings.Zoom;
+                        pan_point.X = e.ClientX;
+                        pan_point.Y = e.ClientY;
+                        foreach (var node in Group.Nodes)
+                        {
+                            node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
+                        }
+                    }
                 }
             }
             else if (ActiveLink != null)
             {
-                Links.OnMouseMove(ActiveLink, e.RelativeXTo(this), e.RelativeYTo(this));
+                // the shenanigans of placing the target slightly off from where the cursor actually is, are absolutely crucial:
+                // we want to identify whenever the cursor is over the border of a node, hence the cursor must be over the border, not over the currently drawn link!
+                // by placing the link slightly off, we make sure that what we see underneath the cursor is not the link, but the border.
+                var x = e.RelativeXToOrigin(this);
+                var y = e.RelativeYToOrigin(this);
+                var source_x = ActiveLink.Source.GetX(this);
+                var source_y = ActiveLink.Source.GetY(this);
+                ActiveLink.Target.RelativeX = source_x < x ? x - 1 : x + 1;
+                ActiveLink.Target.RelativeY = source_y < y ? y - 1 : y + 1;
             }
             else if (e.Buttons == 1)
             {
-                if (pan_point == null)
+                if (pan_point == null && original_origin == null)
                 {
                     pan_point = new Point(e.ClientX, e.ClientY);
                     original_origin = new Point(NavigationSettings.Origin.X, NavigationSettings.Origin.Y);
@@ -112,6 +134,7 @@ namespace Excubo.Blazor.Diagrams
                 if (pan_point != null)
                 {
                     pan_point = null;
+                    original_origin = null;
                 }
             }
         }
@@ -119,7 +142,6 @@ namespace Excubo.Blazor.Diagrams
         {
             NavigationSettings.OnMouseWheel(e);
             Nodes.Redraw();
-            Links.Redraw();
 
         }
         private void OnMouseDown(MouseEventArgs e)
@@ -146,7 +168,8 @@ namespace Excubo.Blazor.Diagrams
                 {
                     Group.Add(node);
                     node.Select();
-                    ActiveNode = new ActiveNode(node, e, CanvasLeft, CanvasTop);
+                    ActiveNode = node;
+                    pan_point = new Point(e.ClientX, e.ClientY);
                 }
             }
             if (CurrentlyHoveredNode.Type == HoverType.Border)
@@ -161,7 +184,10 @@ namespace Excubo.Blazor.Diagrams
                 }
                 else
                 {
-                    ActiveLink.FixTo(node, e);
+                    ActiveLink.Target.Node = node;
+                    ActiveLink.Target.RelativeX = e.RelativeXTo(node);
+                    ActiveLink.Target.RelativeY = e.RelativeYTo(node);
+                    ActiveLink.Deselect();
                     ActiveLink = null;
                 }
             }

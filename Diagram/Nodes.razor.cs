@@ -31,16 +31,6 @@ namespace Excubo.Blazor.Diagrams
             base.OnParametersSet();
         }
         protected override bool ShouldRender() => false;
-        internal void OnMouseMove(ActiveNode active_node, double x, double y)
-        {
-            var delta_x = x - active_node.RelativeX - active_node.Node.X;
-            var delta_y = y - active_node.RelativeY - active_node.Node.Y;
-            active_node.Node.UpdatePosition(x - active_node.RelativeX, y - active_node.RelativeY);
-            foreach (var node in Diagram.Group.Nodes.Except(Enumerable.Empty<NodeBase>().Append(active_node.Node)))
-            {
-                node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
-            }
-        }
         private readonly List<NodeBase> all_nodes = new List<NodeBase>();
         public void Add(NodeBase node)
         {

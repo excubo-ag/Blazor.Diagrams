@@ -27,14 +27,14 @@
         /// <summary>
         /// The absolute horizontal position of the anchor.
         /// </summary>
-        public double X => Node == null ? RelativeX : Node.CanvasX + Node.Nodes.Diagram.NavigationSettings.Zoom * RelativeX;
+        internal double GetX(Diagram diagram) => diagram.NavigationSettings.Zoom * RelativeX + (Node?.CanvasX ?? 0);
         /// <summary>
         /// The absolute vertical position of the anchor.
         /// </summary>
-        public double Y => Node == null ? RelativeY : Node.CanvasY + Node.Nodes.Diagram.NavigationSettings.Zoom * RelativeY;
+        internal double GetY(Diagram diagram) => diagram.NavigationSettings.Zoom * RelativeY + (Node?.CanvasY ?? 0);
         public override string ToString()
         {
-            return $"{(Node?.Id != null ? "#" + Node.Id : "")}({X},{Y})";
+            return $"{(Node?.Id != null ? "#" + Node.Id : "")}+({RelativeX},{RelativeY})";
         }
     }
 }

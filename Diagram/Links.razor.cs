@@ -52,20 +52,16 @@ namespace Excubo.Blazor.Diagrams
             var source_point = new NodeAnchor
             {
                 Node = node,
-                RelativeX = e.RelativeXTo(node) / Diagram.NavigationSettings.Zoom,
-                RelativeY = e.RelativeYTo(node) / Diagram.NavigationSettings.Zoom
+                RelativeX = e.RelativeXTo(node),
+                RelativeY = e.RelativeYTo(node)
             };
             var target_point = new NodeAnchor
             {
-                RelativeX = e.RelativeXTo(Diagram),
-                RelativeY = e.RelativeYTo(Diagram)
+                RelativeX = e.RelativeXToOrigin(Diagram),
+                RelativeY = e.RelativeYToOrigin(Diagram)
             };
             internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, OnCreate = on_link_create });
             generated_links_ref.TriggerStateHasChanged();
-        }
-        internal void OnMouseMove(LinkBase link, double x, double y)
-        {
-            link.UpdateTarget(x, y);
         }
         internal void Remove(LinkBase link)
         {

@@ -62,13 +62,9 @@ namespace Excubo.Blazor.Diagrams
 
         internal void OnMouseWheel(WheelEventArgs e)
         {
-            // cursor is at
-            var cursor_x = e.RelativeXTo(Diagram);
-            var cursor_y = e.RelativeYTo(Diagram);
-            // point in the diagram world
-            var canvas_x = Origin.X + cursor_x / Zoom;
-            var canvas_y = Origin.Y + cursor_y / Zoom;
             // this point should remain where it is right now (the cursor is the stable zoom point), hence if we adjust zoom, we need to adjust origin as well.
+            var canvas_x = Origin.X + e.RelativeXTo(Diagram);
+            var canvas_y = Origin.Y + e.RelativeYTo(Diagram);
             if (e.DeltaY > 0)
             {
                 Zoom *= 1.05;
@@ -85,8 +81,8 @@ namespace Excubo.Blazor.Diagrams
                     Zoom = MinZoom;
                 }
             }
-            Origin.X = canvas_x - cursor_x / Zoom;
-            Origin.Y = canvas_y - cursor_y / Zoom;
+            Origin.X = canvas_x - e.RelativeXTo(Diagram);
+            Origin.Y = canvas_y - e.RelativeYTo(Diagram);
         }
     }
 }
