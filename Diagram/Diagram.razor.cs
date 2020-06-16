@@ -105,8 +105,6 @@ namespace Excubo.Blazor.Diagrams
                 {
                     NavigationSettings.Origin.X = original_origin.X + (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - pan_point.X) / NavigationSettings.Zoom;
                     NavigationSettings.Origin.Y = original_origin.Y + (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - pan_point.Y) / NavigationSettings.Zoom;
-                    Nodes.Redraw();
-                    Links.Redraw();
                 }
             }
             else

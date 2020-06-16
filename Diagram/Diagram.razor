@@ -12,11 +12,20 @@
          @onmousewheel="OnMouseWheel"
          @onmousewheel:preventDefault>
         <svg class="diagram-nodes">
-            @ChildContent
+            <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+                                    @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
+                @ChildContent
+            </g>
         </svg>
-        <Renderer @ref="node_content_renderer" Region="div" />
+        <div style="position: absolute; left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
+                                         top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;">
+            <Renderer @ref="node_content_renderer" Region="div" />
+        </div>
         <svg class="diagram-nodes" style="pointer-events: none">
-            <Renderer @ref="node_border_renderer" Region="g" />
+            <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+                                    @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
+                <Renderer @ref="node_border_renderer" Region="g" />
+            </g>
         </svg>
     </div>
 </CascadingValue>

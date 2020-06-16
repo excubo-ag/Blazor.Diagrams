@@ -38,8 +38,8 @@ namespace Excubo.Blazor.Diagrams
         /// The stroke color of the node
         /// </summary>
         [Parameter] public string Stroke { get; set; } = "#e8e8e8";
-        internal double CanvasX => Nodes.Diagram.NavigationSettings.Zoom * (X - Nodes.Diagram.NavigationSettings.Origin.X);
-        internal double CanvasY => Nodes.Diagram.NavigationSettings.Zoom * (Y - Nodes.Diagram.NavigationSettings.Origin.Y);
+        internal double CanvasX => Nodes.Diagram.NavigationSettings.Zoom * X;
+        internal double CanvasY => Nodes.Diagram.NavigationSettings.Zoom * Y;
         /// <summary>
         /// The node's content.
         /// </summary>
