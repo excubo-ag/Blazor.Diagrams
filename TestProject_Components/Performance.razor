@@ -12,28 +12,26 @@
         }
     </Nodes>
     <Links>
-        @for (int i = 0; i < 100; ++i)
+        @for (int i = 0; i < n * n; i += 2)
         {
-            for (int j = i + 1; j < 100; j += 10)
-            {
-                <Link Source="@Diagram.GetAnchorTo($"state{i}")" Target="@Diagram.GetAnchorTo($"state{j}")" />
-            }
+            <Link Source="@Diagram.GetAnchorTo($"state{i}")" Target="@Diagram.GetAnchorTo($"state{i + 1}")" />
         }
     </Links>
 </Diagram>
 
 @code {
+    private const int n = 10;
     public class MyNodeDefinition
     {
         public string Id { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
     }
-    List<MyNodeDefinition> states = Enumerable.Range(0, 100).Select(i => new MyNodeDefinition
+    List<MyNodeDefinition> states = Enumerable.Range(0, n * n).Select(i => new MyNodeDefinition
     {
         Id = $"state{i}",
-        X = 100 * (i % 10),
-        Y = 100 * (i / 10)
+        X = 100 * (i % n),
+        Y = 100 * (i / n)
     }).ToList();
     private Diagram Diagram { get; set; }
 }
