@@ -4,8 +4,8 @@
 {
     <g transform="@NodePositionAndScale">
         <g transform="translate(@(-Width / 2) @(-Height / 2))">
-            <ellipse rx="calc(@(Width / 2) * 1.41)"
-                     ry="calc(@(Height / 2) * 1.41)"
+            <ellipse rx="@(Width / 2 * 1.41)"
+                     ry="@(Height / 2 * 1.41)"
                      cx="@(Width / 2)"
                      cy="@(Height / 2)"
                      @onmouseover="OnNodeOver"
@@ -23,8 +23,8 @@
         {
             <g transform="@NodePositionAndScale">
                 <g transform="translate(@(-Width / 2) @(-Height / 2))">
-                    <ellipse rx="calc(@(Width / 2) * 1.41)"
-                             ry="calc(@(Height / 2) * 1.41)"
+                    <ellipse rx="@(Width / 2 * 1.41)"
+                             ry="@(Height / 2 * 1.41)"
                              cx="@(Width / 2)"
                              cy="@(Height / 2)"
                              style="@(Hidden? "display:none" : "")"
