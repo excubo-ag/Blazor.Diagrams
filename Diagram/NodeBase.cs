@@ -1,5 +1,4 @@
 ﻿using Excubo.Blazor.Diagrams.__Internal;
-using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -7,17 +6,12 @@ using System.ComponentModel;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public abstract class NodeBase : ComponentBase, INotifyPropertyChanged
+    public abstract class NodeBase : ComponentBase
     {
         private double x;
         private double y;
         private double width = 100;
         private double height = 100;
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void TriggerPropertyChanged(string property_name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property_name));
-        }
         /// <summary>
         /// Unique Id of the node
         /// </summary>
@@ -25,11 +19,11 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Horizontal position of the node
         /// </summary>
-        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; TriggerPropertyChanged(nameof(X)); } }
+        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; } }
         /// <summary>
         /// Vertical position of the node
         /// </summary>
-        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; TriggerPropertyChanged(nameof(Y)); } }
+        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; } }
         /// <summary>
         /// The fill color of the node
         /// </summary>
@@ -45,8 +39,8 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public RenderFragment<NodeBase> ChildContent { get; set; }
         [CascadingParameter] public Nodes Nodes { get; set; }
-        public double Width { get => width; set { if (value == width) { return; } width = value; TriggerPropertyChanged(nameof(Width)); } }
-        public double Height { get => height; set { if (value == height) { return; } height = value; TriggerPropertyChanged(nameof(Height)); } }
+        public double Width { get => width; set { if (value == width) { return; } width = value; } }
+        public double Height { get => height; set { if (value == height) { return; } height = value; } }
         public bool Selected { get; private set; }
         public bool Hovered { get; private set; }
         protected void OnNodeOver(MouseEventArgs _) { Hovered = true;  Nodes.Diagram.CurrentlyHoveredNode = (this, HoverType.Node); StateHasChanged(); }

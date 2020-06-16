@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
-using System.ComponentModel;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -27,18 +26,6 @@ namespace Excubo.Blazor.Diagrams
         [CascadingParameter] public Links Links { get; set; }
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
         public bool Selected { get; private set; }
-        protected override void OnParametersSet()
-        {
-            if (Source?.Node != null)
-            {
-                Source.Node.PropertyChanged += Node_PropertyChanged;
-            }
-            if (Target?.Node != null)
-            {
-                Target.Node.PropertyChanged += Node_PropertyChanged;
-            }
-            base.OnParametersSet();
-        }
         internal void Select()
         {
             Selected = true;
@@ -62,14 +49,9 @@ namespace Excubo.Blazor.Diagrams
             }
             base.OnAfterRender(first_render);
         }
-        private void Node_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            StateHasChanged();
-        }
         internal void FixTo(NodeBase node, MouseEventArgs e)
         {
             Target.Node = node;
-            Target.Node.PropertyChanged += Node_PropertyChanged;
             Target.RelativeX = e.RelativeXTo(node) / Links.Diagram.NavigationSettings.Zoom;
             Target.RelativeY = e.RelativeYTo(node) / Links.Diagram.NavigationSettings.Zoom;
             Selected = false;
