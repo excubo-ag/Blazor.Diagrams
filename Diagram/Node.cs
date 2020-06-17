@@ -26,13 +26,25 @@ namespace Excubo.Blazor.Diagrams
                     break;
             }
             builder.AddAttribute(1, nameof(X), X);
-            builder.AddAttribute(2, nameof(Y), Y);
-            builder.AddAttribute(3, nameof(Id), Id);
-            builder.AddAttribute(4, nameof(Fill), Fill);
-            builder.AddAttribute(5, nameof(Stroke), Stroke);
-            builder.AddAttribute(6, nameof(ChildContent), ChildContent);
-            builder.AddComponentReferenceCapture(7, (r) => actual_node = (NodeBase)r);
+            builder.AddAttribute(2, nameof(XChanged), (Action<double>)((v) => X = v));
+            builder.AddAttribute(3, nameof(Y), Y);
+            builder.AddAttribute(4, nameof(YChanged), (Action<double>)((v) => Y = v));
+            builder.AddAttribute(5, nameof(Id), Id);
+            builder.AddAttribute(6, nameof(Fill), Fill);
+            builder.AddAttribute(7, nameof(Stroke), Stroke);
+            builder.AddAttribute(8, nameof(ChildContent), ChildContent);
+            builder.AddComponentReferenceCapture(9, (r) => actual_node = (NodeBase)r);
             builder.CloseComponent();
+        }
+        internal Type GetImplicitType()
+        {
+            return RenderType switch
+            {
+                NodeType.Diamond => typeof(DiamondNode),
+                NodeType.Ellipse => typeof(EllipseNode),
+                NodeType.Rectangle => typeof(RectangleNode),
+                _ => null,
+            };
         }
         [Parameter] public NodeType Type { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }

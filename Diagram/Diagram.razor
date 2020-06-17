@@ -1,16 +1,16 @@
-﻿@using Excubo.Blazor.Diagrams.__Internal 
+﻿@using Excubo.Blazor.Diagrams.__Internal
 
-<CascadingValue Value="@this" IsFixed="true">
-    <div class="diagram-canvas"
-         @ref="canvas"
-         tabindex="-1"
-         @onkeydown="OnKeyPress"
-         @onmousemove="OnMouseMove"
-         @onmousemove:preventDefault
-         @onmousedown="OnMouseDown"
-         @onmouseup="OnMouseUp"
-         @onmousewheel="OnMouseWheel"
-         @onmousewheel:preventDefault>
+<div class="diagram-canvas"
+     @ref="canvas"
+     tabindex="-1"
+     @onkeydown="OnKeyPress"
+     @onmousemove="OnMouseMove"
+     @onmousemove:preventDefault
+     @onmousedown="OnMouseDown"
+     @onmouseup="OnMouseUp"
+     @onmousewheel="OnMouseWheel"
+     @onmousewheel:preventDefault>
+    <CascadingValue Value="@this" IsFixed="true">
         <svg class="diagram-nodes">
             <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
@@ -28,11 +28,19 @@
                 <Renderer @ref="node_border_renderer" Region="g" />
             </g>
         </svg>
-    </div>
-</CascadingValue>
+        <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">
+            @NodeLibraryArea
+            <div style="position: absolute;">
+                <Renderer @ref="node_template_content_renderer" Region="div" />
+            </div>
+        </div>
+    </CascadingValue>
+</div>
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
+    internal RenderFragment NodeLibraryArea { get; set; }
     private ElementReference canvas;
+    private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;
     private Renderer node_border_renderer;
 }

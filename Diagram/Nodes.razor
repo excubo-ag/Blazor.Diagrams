@@ -1,6 +1,12 @@
-﻿<CascadingValue Value="@this" IsFixed="true">
+﻿@using Excubo.Blazor.Diagrams.__Internal
+
+<CascadingValue Value="@this" IsFixed="true">
+    <!--user provided nodes-->
     @ChildContent
+    <!--dynamically generated nodes-->
+    <GeneratedNodes Nodes="internally_generated_nodes" @ref="generated_nodes_ref" />
 </CascadingValue>
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
+    private GeneratedNodes generated_nodes_ref;
 }

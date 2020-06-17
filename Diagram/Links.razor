@@ -1,7 +1,9 @@
 ﻿@using Excubo.Blazor.Diagrams.__Internal 
 
 <CascadingValue Value="@this" IsFixed="true">
+    <!--user provided links-->
     @ChildContent
+    <!--dynamically generated links-->
     <GeneratedLinks Links="@internally_generated_links" @ref="generated_links_ref" />
 </CascadingValue>
 

@@ -39,7 +39,7 @@ namespace Excubo.Blazor.Diagrams
         }
         private readonly List<LinkBase> all_links = new List<LinkBase>();
         private readonly List<LinkData> internally_generated_links = new List<LinkData>();
-        public void Add(LinkBase link)
+        internal void Add(LinkBase link)
         {
             if (!all_links.Contains(link))
             {

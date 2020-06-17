@@ -4,6 +4,7 @@
     {
         Unknown,
         Node,
-        Border
+        Border,
+        NewNode
     }
 }

@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    //TODO#09 arrows
-    //TODO#08 symbol palette
+    //TODO#08 arrows
     //TODO#07 image node
     //TODO#06 auto-layout
     //TODO#05 undo/redo
@@ -37,6 +36,7 @@ namespace Excubo.Blazor.Diagrams
         public Links Links { get; set; }
         public Nodes Nodes { get; set; }
         public Group Group { get; private set; } = new Group();
+        private bool NewNodeAddingInProgress { get; set; }
         public Diagram()
         {
             Group.ContentChanged += Group_ContentChanged;
@@ -191,6 +191,19 @@ namespace Excubo.Blazor.Diagrams
                     ActiveLink = null;
                 }
             }
+            if (CurrentlyHoveredNode.Type == HoverType.NewNode)
+            {
+                NewNodeAddingInProgress = true;
+                Nodes.AddNewNode(node, (new_node) =>
+                {
+                    CurrentlyHoveredNode = (new_node, HoverType.NewNode);
+                    Group = new Group();
+                    Group.Add(new_node);
+                    new_node.Select();
+                    ActiveNode = new_node;
+                    pan_point = new Point(e.ClientX, e.ClientY);
+                });
+            }
         }
         private void OnMouseUp(MouseEventArgs e)
         {
@@ -201,6 +214,14 @@ namespace Excubo.Blazor.Diagrams
                     cnode.Deselect();
                 }
                 Group = new Group();
+                ActiveNode = null;
+            }
+            if (NewNodeAddingInProgress)
+            {
+                Group = new Group();
+                ActiveNode?.Deselect();
+                NewNodeAddingInProgress = false;
+                CurrentlyHoveredNode = default;
                 ActiveNode = null;
             }
         }
@@ -225,6 +246,10 @@ namespace Excubo.Blazor.Diagrams
         internal void AddNodeContentFragment(RenderFragment content)
         {
             node_content_renderer.Add(content);
+        }
+        internal void AddNodeTemplateContentFragment(RenderFragment content)
+        {
+            node_template_content_renderer.Add(content);
         }
         internal void AddNodeBorderFragment(RenderFragment content)
         {

@@ -10,13 +10,13 @@
         <!--This defines the area which can be interacted with to select/move the node. -->
         <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
         <rect width="@Width"
-                height="@Height"
-                @onmouseover="OnNodeOver"
-                @onmouseout="OnNodeOut"
-                stroke="@Stroke"
-                stroke-width="2px"
-                fill="@Fill"
-                style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+              height="@Height"
+              @onmouseover="OnNodeOver"
+              @onmouseout="OnNodeOut"
+              stroke="@Stroke"
+              stroke-width="2px"
+              fill="@Fill"
+              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
         <!--End of the customizable part-->
     </g>
 }

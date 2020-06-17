@@ -5,7 +5,13 @@
     overflow: hidden;
 }
 
-.diagram-links, .diagram-nodes {
+.diagram-node-library {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.diagram-nodes {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -13,17 +19,16 @@
     left: 0;
 }
 
-.diagram-links {
-    pointer-events: none
-}
+@keyframes diagram-link-unfinished {
+    0% {
+        stroke-dashoffset: 0
+    }
 
-.node {
-    position: absolute;
-    user-select: none;
-    cursor: move;
+    100% {
+        stroke-dashoffset: -10;
+    }
 }
-
-@keyframes diagram-link-unfinished diagram-node-selected {
+@keyframes diagram-node-selected {
     0% {
         stroke-dashoffset: 0
     }

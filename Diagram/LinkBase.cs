@@ -1,6 +1,4 @@
-﻿using Excubo.Blazor.Diagrams.Extensions;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+﻿using Microsoft.AspNetCore.Components;
 using System;
 
 namespace Excubo.Blazor.Diagrams
@@ -16,6 +14,7 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public NodeAnchor Target { get; set; }
         /// <summary>
+        /// NOT INTENDED FOR USE BY USERS.
         /// Callback for when the link has been created. This is only invoked for links that are created during interactive usage of the diagram, not for links that are provided declaratively.
         /// </summary>
         [Parameter] public Action<LinkBase> OnCreate { get; set; }

@@ -4,13 +4,14 @@
 {
     <g transform="@NodePositionAndScale">
         <rect width="@Width"
-                height="@Height"
-                @onmouseover="OnNodeOver"
-                @onmouseout="OnNodeOut"
-                stroke="@Stroke"
-                stroke-width="2px"
-                fill="@Fill"
-                style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+              height="@Height"
+              @onmouseover="OnNodeOver"
+              @onmouseout="OnNodeOut"
+              stroke="@Stroke"
+              stroke-width="2px"
+              fill="@Fill"
+              pointer-events="visiblepainted"
+              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
     </g>
 }
 @code {
@@ -19,13 +20,13 @@
         {
             <g transform="@NodePositionAndScale">
                 <rect width="@Width"
-                    height="@Height"
-                    style="@(Hidden? "display:none" : "")"
-                    stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                    stroke-width="@(.5 / Zoom)rem"
-                    fill="none"
-                    @onmouseover="OnBorderOver"
-                    @onmouseout="OnBorderOut" />
+                      height="@Height"
+                      style="@(Hidden? "display:none" : "")"
+                      stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                      stroke-width="@(.5 / Zoom)rem"
+                      fill="none"
+                      @onmouseover="OnBorderOver"
+                      @onmouseout="OnBorderOut" />
             </g>
         }
     </NodeBorder>;

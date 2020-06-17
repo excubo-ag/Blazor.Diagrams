@@ -1,0 +1,39 @@
+﻿@using Excubo.Blazor.Diagrams.__Internal
+
+@code {
+    [CascadingParameter] public Diagram Diagram { get; set; }
+    [Parameter] public Orientation Orientation { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; }
+    protected override void OnParametersSet()
+    {
+        Diagram.NodeLibraryArea = @<NodeLibraryArea Orientation="@Orientation" AdditionalAttributes="@AdditionalAttributes">
+            <CascadingValue Value="this" IsFixed="true">
+                @ChildContent
+            </CascadingValue>
+        </NodeLibraryArea>;
+        base.OnParametersSet();
+    }
+    internal (double X, double Y, double Width, double Height) GetPosition(NodeBase node)
+    {
+        if (!positions.ContainsKey(node))
+        {
+            if (!positions.Any())
+            {
+                positions.Add(node, (X: 10, Y: 10, Width: node.Width, Height: node.Height));
+            }
+            else
+            {
+                var outermost_value = positions.Values.Max(p => Orientation == Orientation.Horizontal ? p.X : p.Y);
+                var (pX, pY, pWidth, pHeight) = positions.Values.First(p => (Orientation == Orientation.Horizontal ? p.X : p.Y) == outermost_value);
+                var x = Orientation == Orientation.Horizontal ? (pX + pWidth + 100) : (10);
+                var y = Orientation == Orientation.Horizontal ? (10) : (pY + pHeight + 100);
+                positions.Add(node, (X: x, Y: y, Width: node.Width, Height: node.Height));
+            }
+        }
+        return positions[node];
+
+    }
+    private Dictionary<NodeBase, (double X, double Y, double Width, double Height)> positions = new Dictionary<NodeBase, (double X, double Y, double Width, double Height)>();
+}

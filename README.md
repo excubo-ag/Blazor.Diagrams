@@ -17,17 +17,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.1.1
+Install-Package Excubo.Blazor.Diagrams -Version 0.2.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.1.1
+dotnet add package Excubo.Blazor.Diagrams --version 0.2.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.1.1" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.2.0" />
 ```
 
 ### 2. Add the css and js to your `index.html` / `_Hosts.cshtml`
@@ -52,6 +52,14 @@ services.AddDiagramServices();
 @using Excubo.Blazor.Diagrams
 
 <Diagram @ref="Diagram">
+    <!--The node library is where you can drag new nodes from. The style is fully customizable-->
+    <NodeLibrary style="background-color: aliceblue; border: 1px solid blue;" Orientation="Orientation.Vertical">
+        <!--Put any node you want in the library-->
+        <RectangleNode>
+            <!--Careful with node contents! There must be an area of the node where the node is draggable, so only a bare minimum of node content should receive pointer events-->
+            <input style="margin:1em; pointer-events:visiblePainted" type="text" />
+        </RectangleNode>
+    </NodeLibrary>
     <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved">
         <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
         <Node Id="def" X="1000" Y="500">
@@ -160,7 +168,6 @@ This is an early alpha release of Excubo.Blazor.Diagrams.
 
 - Editability of links
 - Links with arrows
-- Symbol palette to drag&drop new nodes from a collection of templates
 - More node types
     - image node
     - common shapes (e.g. DB icon)
