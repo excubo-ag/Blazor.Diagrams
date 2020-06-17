@@ -50,4 +50,7 @@
     private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;
     private Renderer node_border_renderer;
+    internal void AddNodeContentFragment(RenderFragment content) => node_content_renderer.Add(content);
+    internal void AddNodeTemplateContentFragment(RenderFragment content) => node_template_content_renderer.Add(content);
+    internal void AddNodeBorderFragment(RenderFragment content) => node_border_renderer.Add(content);
 }

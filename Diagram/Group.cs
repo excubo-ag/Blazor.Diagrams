@@ -35,5 +35,18 @@ namespace Excubo.Blazor.Diagrams
         {
             Links.Remove(link);
         }
+        internal void Clear()
+        {
+            foreach (var node in Nodes)
+            {
+                node.Deselect();
+            }
+            Nodes.Clear();
+            foreach (var link in Links)
+            {
+                link.Deselect();
+            }
+            Links.Clear();
+        }
     }
 }

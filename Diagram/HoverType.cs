@@ -5,6 +5,8 @@
         Unknown,
         Node,
         Border,
-        NewNode
+        NewNode,
+        ControlPoint,
+        Link
     }
 }

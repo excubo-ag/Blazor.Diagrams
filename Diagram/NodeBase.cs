@@ -55,12 +55,14 @@ namespace Excubo.Blazor.Diagrams
             Hovered = hover_type == HoverType.Node || hover_type == HoverType.Border;
             if (Nodes != null)
             {
-                Diagram.CurrentlyHoveredNode = (this, hover_type);
+                Diagram.ActiveElement = this;
+                Diagram.ActiveElementType = hover_type;
                 StateHasChanged();
             }
             if (NodeLibrary != null)
             {
-                Diagram.CurrentlyHoveredNode = (this, HoverType.NewNode);
+                Diagram.ActiveElement = this;
+                Diagram.ActiveElementType = hover_type == HoverType.Node ? HoverType.NewNode : HoverType.Unknown;
             }
         }
         protected void OnNodeOver(MouseEventArgs _) => ChangeHover(HoverType.Node);
