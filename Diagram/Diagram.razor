@@ -1,41 +1,48 @@
 ﻿@using Excubo.Blazor.Diagrams.__Internal
+@using Excubo.Blazor.Diagrams.Extensions
 
-<div class="diagram-canvas"
-     @ref="canvas"
-     tabindex="-1"
-     @onkeydown="OnKeyPress"
-     @onmousemove="OnMouseMove"
-     @onmousemove:preventDefault
-     @onmousedown="OnMouseDown"
-     @onmouseup="OnMouseUp"
-     @onmousewheel="OnMouseWheel"
-     @onmousewheel:preventDefault>
-    <CascadingValue Value="@this" IsFixed="true">
-        <svg class="diagram-nodes">
-            <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+@using (var temporary_culture = new CultureSwapper())
+{
+    <div class="diagram-canvas"
+         @ref="canvas"
+         tabindex="-1"
+         @onkeydown="OnKeyPress"
+         @onmousemove="OnMouseMove"
+         @onmousemove:preventDefault
+         @onmousedown="OnMouseDown"
+         @onmouseup="OnMouseUp"
+         @onmousewheel="OnMouseWheel"
+         @onmousewheel:preventDefault>
+        <CascadingValue Value="@this" IsFixed="true">
+            <svg class="diagram-nodes">
+                <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
-                @ChildContent
-            </g>
-        </svg>
-        <div style="position: absolute;
+                    @using (var suspension = temporary_culture.Suspend())
+                    {
+                        @ChildContent
+                    }
+                </g>
+            </svg>
+            <div style="position: absolute;
                     left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
                     top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;">
-            <Renderer @ref="node_content_renderer" Region="div" />
-        </div>
-        <svg class="diagram-nodes" style="pointer-events: none">
-            <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
-                                    @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
-                <Renderer @ref="node_border_renderer" Region="g" />
-            </g>
-        </svg>
-        <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">
-            @NodeLibraryArea
-            <div style="position: absolute;">
-                <Renderer @ref="node_template_content_renderer" Region="div" />
+                <Renderer @ref="node_content_renderer" Region="div" />
             </div>
-        </div>
-    </CascadingValue>
-</div>
+            <svg class="diagram-nodes" style="pointer-events: none">
+                <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+                                    @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
+                    <Renderer @ref="node_border_renderer" Region="g" />
+                </g>
+            </svg>
+            <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">
+                @NodeLibraryArea
+                <div style="position: absolute;">
+                    <Renderer @ref="node_template_content_renderer" Region="div" />
+                </div>
+            </div>
+        </CascadingValue>
+    </div>
+}
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
     internal RenderFragment NodeLibraryArea { get; set; }
