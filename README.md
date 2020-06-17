@@ -99,7 +99,7 @@ The API should feel like you're using Blazor, not a javascript library.
 
 - Minimal js, minimal css
 
-The non-C# part of the code of the library should be as tiny as possible. We set ourselves a maximum amount of 10kB for combined js+css. The current payload is 823 bytes (unminified).
+The non-C# part of the code of the library should be as tiny as possible. We set ourselves a maximum amount of 10kB for combined js+css. The current payload is 833 bytes (unminified).
 
 ## How to design a custom node
 
