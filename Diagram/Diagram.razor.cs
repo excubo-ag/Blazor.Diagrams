@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
@@ -19,16 +20,9 @@ namespace Excubo.Blazor.Diagrams
     public partial class Diagram
     {
         /// <summary>
-        /// Callback for when a group of nodes and links is removed.
-        /// The user can return false, if the action should be cancelled.
-        /// If a BeforeRemoveGroup action is registered,
-        /// BeforeRemoveLink/Node are ignored on the group members, otherwise those callbacks are executed as well.
+        /// Callback that is executed if a group is removed. Beware of double processing when using OnRemove on nodes/links as well.
         /// </summary>
-        [Parameter] public Func<Group, bool> BeforeRemoveGroup { get; set; }
-        /// <summary>
-        /// Callback that is executed if the remove action wasn't cancelled.
-        /// </summary>
-        [Parameter] public Action<Group> OnRemoveGroup { get; set; }
+        [Parameter] public Action<Group> OnRemove { get; set; }
         /// <summary>
         /// Callback that is executed whenever the selection of nodes and/or links changes.
         /// </summary>
@@ -240,6 +234,22 @@ namespace Excubo.Blazor.Diagrams
                     ActiveLink = null;
                 }
                 ActiveNode = null;
+            }
+            else if (e.Key == "Delete" || e.Key == "Backspace")
+            {
+                if (Group.Nodes.Any() || Group.Links.Any())
+                {
+                    foreach (var node in Group.Nodes)
+                    {
+                        Nodes.Remove(node);
+                    }
+                    foreach (var link in Group.Links)
+                    {
+                        Links.Remove(link);
+                    }
+                    OnRemove?.Invoke(Group);
+                    Group = new Group();
+                }
             }
         }
         #endregion

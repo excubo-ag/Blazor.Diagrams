@@ -15,21 +15,17 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public LinkType DefaultType { get; set; }
         /// <summary>
-        /// Callback for when a link is removed. The user can return false, if the action should be cancelled.
-        /// </summary>
-        [Parameter] public Func<LinkBase, bool> BeforeRemoveLink { get; set; }
-        /// <summary>
         /// Callback for when a link is added.
         /// </summary>
-        [Parameter] public Action<LinkBase> OnAddLink { get; set; }
+        [Parameter] public Action<LinkBase> OnAdd { get; set; }
         /// <summary>
         /// Callback that is executed if the remove action wasn't cancelled.
         /// </summary>
-        [Parameter] public Action<LinkBase> OnRemoveLink { get; set; }
+        [Parameter] public Action<LinkBase> OnRemove { get; set; }
         /// <summary>
         /// Callback for when a link source or target is changed.
         /// </summary>
-        [Parameter] public Action<LinkBase> OnLinkModified { get; set; }
+        [Parameter] public Action<LinkBase> OnModified { get; set; } // TODO use
         [CascadingParameter] public Diagram Diagram { get; set; }
         protected override void OnParametersSet()
         {
@@ -44,7 +40,7 @@ namespace Excubo.Blazor.Diagrams
             if (!all_links.Contains(link))
             {
                 all_links.Add(link);
-                OnAddLink?.Invoke(link);
+                OnAdd?.Invoke(link);
             }
         }
         internal void AddLink(NodeBase node, MouseEventArgs e, Action<LinkBase> on_link_create)
@@ -72,7 +68,7 @@ namespace Excubo.Blazor.Diagrams
                 internally_generated_links.Remove(match);
                 generated_links_ref.TriggerStateHasChanged();
             }
-            OnRemoveLink?.Invoke(link);
+            OnRemove?.Invoke(link);
         }
         internal void Redraw()
         {

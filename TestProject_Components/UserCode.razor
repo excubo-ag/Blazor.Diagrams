@@ -22,7 +22,7 @@
             Hello user code
         </UserNodeCode>
     </NodeLibrary>
-    <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved">
+    <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved" OnAdd="NodeAdded">
         <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
         <Node Id="def" X="1000" Y="500">
             Hello node @context.Id
@@ -49,7 +49,7 @@
         </UserNodeCode>
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
-    <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Curved">
+    <Links OnModified="LinkModified" OnRemove="LinkRemoved" OnAdd="LinkAdded" DefaultType="LinkType.Curved">
         <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get Straight -->
         <Link Source="@(Diagram.GetAnchorTo("abc"))" Target="@(Diagram.GetAnchorTo("def"))" />
         <Link Source="@(Diagram.GetAnchorTo("state1"))" Target="@(Diagram.GetAnchorTo("decision1"))" />
@@ -134,14 +134,5 @@
     private void LinkAdded(LinkBase link)
     {
         Console.WriteLine($"A link was added: {link.Source} -> {link.Target}");
-    }
-    private bool BeforeLinkRemoved(LinkBase link)
-    {
-        // user code, e.g. display a dialog to let the user decide whether to actually delete
-        return true; // return false if the action should be cancelled.
-    }
-    public void Export()
-    {
-        // the export (serialization) of the diagrams state is user-code that
     }
 }

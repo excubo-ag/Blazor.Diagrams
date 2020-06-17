@@ -13,10 +13,6 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public NodeType DefaultType { get; set; }
         /// <summary>
-        /// Callback for when a node is removed. The user can return false, if the action should be cancelled.
-        /// </summary>
-        [Parameter] public Func<NodeBase, bool> BeforeRemove { get; set; }
-        /// <summary>
         /// Callback that is executed if the remove action wasn't cancelled.
         /// </summary>
         [Parameter] public Action<NodeBase> OnRemove { get; set; }
@@ -73,6 +69,17 @@ namespace Excubo.Blazor.Diagrams
                 .ToDictionary(p => p.Name, p => p.GetValue(node))
             });
             generated_nodes_ref.TriggerStateHasChanged();
+        }
+        internal void Remove(NodeBase node)
+        {
+            all_nodes.Remove(node);
+            var match = internally_generated_nodes.FirstOrDefault(n => n.Id == node.Id);
+            if (match != null)
+            {
+                internally_generated_nodes.Remove(match);
+                generated_nodes_ref.TriggerStateHasChanged();
+            }
+            OnRemove?.Invoke(node);
         }
     }
 }
