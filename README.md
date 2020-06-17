@@ -8,6 +8,8 @@ Excubo.Blazor.Diagrams is a native-Blazor diagram component library. The project
 
 ![Ready to install?](screenshot.png)
 
+[Demo on github.io using Blazor Webassembly](https://excubo-ag.github.io/Blazor.Diagrams/)
+
 ## How to use
 
 ### 1. Install the nuget package Excubo.Blazor.Diagrams
@@ -171,7 +173,6 @@ This is an early alpha release of Excubo.Blazor.Diagrams.
 - More node types
     - image node
     - common shapes (e.g. DB icon)
-- demo page
 
 Longer term goals include
 
