@@ -66,8 +66,8 @@ namespace Excubo.Blazor.Diagrams
         #region control points
         protected void OnLinkOver(MouseEventArgs _) => ChangeHover(HoverType.Link, this);
         protected void OnLinkOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown, this);
-        protected void OnControlPointOver(ControlPoint control_point) => ChangeHover(HoverType.ControlPoint, control_point);
-        protected void OnControlPointOut(ControlPoint control_point) => ChangeHover(HoverType.Unknown, control_point);
+        private void OnControlPointOver(ControlPoint control_point) => ChangeHover(HoverType.ControlPoint, control_point);
+        private void OnControlPointOut(ControlPoint control_point) => ChangeHover(HoverType.Unknown, control_point);
         protected List<ControlPoint> ControlPoints = new List<ControlPoint>();
         protected List<Func<(double X, double Y)>> ControlPointMethods;
         protected override void OnParametersSet()
@@ -76,58 +76,54 @@ namespace Excubo.Blazor.Diagrams
             {
                 if (!ControlPoints.Any())
                 {
-                    ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Source.X, Y = Source.Y });
-                    foreach (var (x, y) in ControlPointMethods.Select(m => m()))
-                    {
-                        ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = x, Y = y });
-                    }
-                    ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Target.X, Y = Target.Y });
+                    InitializeControlPoints();
                 }
                 else
                 {
-                    if (Source.X != ControlPoints.First().X || Source.Y != ControlPoints.First().Y
-                     || Target.X != ControlPoints.Last().X || Target.Y != ControlPoints.Last().Y)
-                    {
-                        var old_sx = ControlPoints.First().X;
-                        var old_sy = ControlPoints.First().Y;
-                        var old_tx = ControlPoints.Last().X;
-                        var old_ty = ControlPoints.Last().Y;
-                        (ControlPoints[0].X, ControlPoints[0].Y) = (Source.X, Source.Y);
-                        if (old_sx == old_tx)
-                        {
-                            // we can't infer the position as a ratio between old_sx and old_tx as there's no distance. We have to get the default value
-                            for (int i = 0; i < ControlPointMethods.Count; ++i)
-                            {
-                                ControlPoints[i + 1].X = ControlPointMethods[i]().X;
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < ControlPointMethods.Count; ++i)
-                            {
-                                ControlPoints[i + 1].X = Source.X + (ControlPoints[i + 1].X - old_sx) / (old_tx - old_sx) * (Target.X - Source.X);
-                            }
-                        }
-                        if (old_sy == old_ty)
-                        {
-                            // we can't infer the position as a ratio between old_sy and old_ty as there's no distance. We have to get the default value
-                            for (int i = 0; i < ControlPointMethods.Count; ++i)
-                            {
-                                ControlPoints[i + 1].Y = ControlPointMethods[i]().Y;
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < ControlPointMethods.Count; ++i)
-                            {
-                                ControlPoints[i + 1].Y = Source.Y + (ControlPoints[i + 1].Y - old_sy) / (old_ty - old_sy) * (Target.Y - Source.Y);
-                            }
-                        }
-                        (ControlPoints.Last().X, ControlPoints.Last().Y) = (Target.X, Target.Y);
-                    }
+                    UpdateControlPoints();
                 }
             }
             base.OnParametersSet();
+        }
+
+        private void UpdateControlPoints()
+        {
+            if (Source.X == ControlPoints.First().X && Source.Y == ControlPoints.First().Y
+             && Target.X == ControlPoints.Last().X && Target.Y == ControlPoints.Last().Y)
+            {
+                return;
+            }
+            var old_sx = ControlPoints.First().X;
+            var old_sy = ControlPoints.First().Y;
+            var old_tx = ControlPoints.Last().X;
+            var old_ty = ControlPoints.Last().Y;
+            (ControlPoints.First().X, ControlPoints.First().Y) = (Source.X, Source.Y);
+            for (var i = 0; i < ControlPointMethods.Count; ++i)
+            {
+                var method = ControlPointMethods[i];
+                var cp = ControlPoints[i + 1];
+                // If old_sx == old_tx or old_sy == old_ty, we can't infer the position as a ratio the two points, as there is no distance (division by 0).
+                // In that case we default back to the default point returned by the appropriate method.
+                var new_x = old_sx == old_tx
+                    ? method().X
+                    : Source.X + (ControlPoints[i + 1].X - old_sx) / (old_tx - old_sx) * (Target.X - Source.X);
+                var new_y = old_sy == old_ty 
+                    ? method().Y
+                    : Source.Y + (ControlPoints[i + 1].Y - old_sy) / (old_ty - old_sy) * (Target.Y - Source.Y);
+                cp.X = new_x;
+                cp.Y = new_y;
+            }
+            (ControlPoints.Last().X, ControlPoints.Last().Y) = (Target.X, Target.Y);
+        }
+
+        private void InitializeControlPoints()
+        {
+            ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Source.X, Y = Source.Y });
+            foreach (var (x, y) in ControlPointMethods.Select(m => m()))
+            {
+                ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = x, Y = y });
+            }
+            ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Target.X, Y = Target.Y });
         }
         #endregion
     }

@@ -23,10 +23,8 @@
                   @onmouseout="OnLinkOut" />
             @if (Selected)
             {
-                foreach (var cp in ControlPoints.Skip(1).Take(1))
-                {
-                    <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
-                }
+                var cp = ControlPoints[1];
+                <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
             }
         }
     </g>
