@@ -16,21 +16,9 @@ namespace Excubo.Blazor.Diagrams
     public partial class Diagram
     {
         internal object ActiveElement { private get; set; } // TODO improve type
-        private HoverType ht;
-        internal HoverType ActiveElementType { private get => ht;
-            set {
-                ht = value;
-            } }
+        internal HoverType ActiveElementType { private get; set; }
         private object ActionObject { get; set; } // TODO improve type
-        private ActionType a;
-        private ActionType Action
-        {
-            get => a;
-            set
-            {
-                a = value;
-            }
-        }
+        private ActionType Action { get; set; }
         private bool NewNodeAddingInProgress { get; set; }
         private Point original_cursor_position;
         private void OnMouseMove(MouseEventArgs e)
