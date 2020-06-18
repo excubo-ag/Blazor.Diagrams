@@ -19,17 +19,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.2.0
+Install-Package Excubo.Blazor.Diagrams -Version 0.3.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.2.0
+dotnet add package Excubo.Blazor.Diagrams --version 0.3.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.2.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.3.0" />
 ```
 
 ### 2. Add the css and js to your `index.html` / `_Hosts.cshtml`
@@ -174,7 +174,7 @@ The same shape is defined twice: The second definition is for the shape itself, 
 
 This is an early alpha release of Excubo.Blazor.Diagrams.
 
-- Editability of links
+- Full editability of links
 - Links with arrows
 - More node types
     - image node
