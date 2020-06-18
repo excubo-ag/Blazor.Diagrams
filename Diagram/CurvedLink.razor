@@ -13,7 +13,7 @@
                      C @(ControlPoints[1].X) @(ControlPoints[1].Y)
                        @(ControlPoints[2].X) @(ControlPoints[2].Y),
                        @(ControlPoints[3].X) @(ControlPoints[3].Y)"
-                  stroke-width="@(3 * Zoom)"
+                  stroke-width="3"
                   fill="none"
                   stroke="black"
                   @onmouseover="OnLinkOver"
@@ -24,8 +24,26 @@
                 <line x1="@ControlPoints[2].X" x2="@ControlPoints[3].X" y1="@ControlPoints[2].Y" y2="@ControlPoints[3].Y" stroke="gray" style="stroke-dasharray: 4 4;" />
                 foreach (var cp in ControlPoints.Skip(1).Take(2))
                 {
-                    <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
                 }
+            }
+            if (Arrow == Arrow.Both || Arrow == Arrow.Target)
+            {
+                var cp = ControlPoints.Last();
+                var other = ControlPoints[2];
+                var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
+            }
+            if (Arrow == Arrow.Both)
+            {
+                var cp = ControlPoints.First();
+                var other = ControlPoints[1];
+                var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
             }
         }
     </g>

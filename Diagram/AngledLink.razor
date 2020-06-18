@@ -20,7 +20,7 @@
                      L @(first_point_x) @(first_point_y)
                      L @(second_point_x) @(second_point_y)
                      L @(ControlPoints[2].X) @(ControlPoints[2].Y)"
-                  stroke-width="@(3 * Zoom)"
+                  stroke-width="3"
                   fill="none"
                   stroke="black"
                   @onmouseover="OnLinkOver"
@@ -29,6 +29,23 @@
             {
                 var cp = ControlPoints[1];
                 <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+            }
+            var arrow_width = 4;
+            if (Arrow == Arrow.Both || Arrow == Arrow.Target)
+            {
+                var cp = ControlPoints.Last();
+                var angle = Math.Atan2(second_point_y - cp.Y, second_point_x - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
+            }
+            if (Arrow == Arrow.Both)
+            {
+                var cp = ControlPoints.First();
+                var angle = Math.Atan2(first_point_y - cp.Y, first_point_x - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
             }
         }
     </g>

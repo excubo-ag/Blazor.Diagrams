@@ -27,7 +27,7 @@ namespace Excubo.Blazor.Diagrams
             }
             builder.AddAttribute(1, nameof(Source), Source);
             builder.AddAttribute(2, nameof(Target), Target);
-            builder.AddAttribute(3, nameof(Arrow), Arrow);
+            builder.AddAttribute(3, nameof(Arrow), RenderArrow);
             builder.AddAttribute(4, nameof(OnCreate), OnCreate);
             builder.CloseComponent();
         }
@@ -45,6 +45,21 @@ namespace Excubo.Blazor.Diagrams
                     return Links.DefaultType;
                 }
                 return LinkType.Straight;
+            }
+        }
+        private Arrow RenderArrow
+        {
+            get
+            {
+                if (Arrow != Arrow.Default)
+                {
+                    return Arrow;
+                }
+                if (Links.DefaultArrow != Arrow.Default)
+                {
+                    return Links.DefaultArrow;
+                }
+                return Arrow.None;
             }
         }
     }

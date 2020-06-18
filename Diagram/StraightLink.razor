@@ -7,16 +7,44 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="scale(@Zoom)">
-        @if (Source != null && Target != null)
+        @if (ControlPoints.Count == 2)
         {
-            <line x1="@Source.X"
-                  y1="@Source.Y"
-                  x2="@Target.X"
-                  y2="@Target.Y"
+            <line x1="@ControlPoints[0].X"
+                  y1="@ControlPoints[0].Y"
+                  x2="@ControlPoints[1].X"
+                  y2="@ControlPoints[1].Y"
                   stroke="black"
-                  stroke-width="@(3 * Zoom)"
+                  stroke-width="3"
                   @onmouseover="OnLinkOver"
                   @onmouseout="OnLinkOut" />
+            if (Arrow == Arrow.Both || Arrow == Arrow.Target)
+            {
+                var cp = ControlPoints.Last();
+                var other = ControlPoints.First();
+                var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
+            }
+            if (Arrow == Arrow.Both)
+            {
+                var cp = ControlPoints.First();
+                var other = ControlPoints.Last();
+                var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI - 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                </g>
+            }
         }
     </g>
+}
+@code {
+    protected override void OnParametersSet()
+    {
+        if (ControlPointMethods == null)
+        {
+            ControlPointMethods = new List<Func<(double X, double Y)>>();
+        }
+        base.OnParametersSet();
+    }
 }

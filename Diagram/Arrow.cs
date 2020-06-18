@@ -2,6 +2,7 @@
 {
     public enum Arrow
     {
+        Default,
         None,
         Target,
         Both
