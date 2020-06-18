@@ -23,10 +23,10 @@ namespace TestProject_ServerSide
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
-            services.AddDiagramServices();
-            services.AddScoped<HttpClient>((s) =>
+            _ = services.AddRazorPages();
+            _ = services.AddServerSideBlazor();
+            _ = services.AddDiagramServices();
+            _ = services.AddScoped((s) =>
             {
                 var uriHelper = s.GetRequiredService<NavigationManager>();
                 return new HttpClient
@@ -41,24 +41,24 @@ namespace TestProject_ServerSide
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                _ = app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                _ = app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                _ = app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            _ = app.UseHttpsRedirection();
+            _ = app.UseStaticFiles();
 
-            app.UseRouting();
+            _ = app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
+            _ = app.UseEndpoints(endpoints =>
             {
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                _ = endpoints.MapBlazorHub();
+                _ = endpoints.MapFallbackToPage("/_Host");
             });
         }
     }

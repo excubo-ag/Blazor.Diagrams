@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Excubo.Blazor.Diagrams
+﻿namespace Excubo.Blazor.Diagrams
 {
     public partial class Diagram
     {

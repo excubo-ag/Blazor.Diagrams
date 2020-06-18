@@ -61,11 +61,11 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void Remove(LinkBase link)
         {
-            all_links.Remove(link);
+            _ = all_links.Remove(link);
             var match = internally_generated_links.FirstOrDefault(l => l.Source == link.Source && l.Target == link.Target);
             if (match != null)
             {
-                internally_generated_links.Remove(match);
+                _ = internally_generated_links.Remove(match);
                 generated_links_ref.TriggerStateHasChanged();
             }
             OnRemove?.Invoke(link);

@@ -9,9 +9,6 @@ namespace Excubo.Blazor.Diagrams
         {
             Group.ContentChanged += Group_ContentChanged;
         }
-        private void Group_ContentChanged(object _, EventArgs __)
-        {
-            SelectionChanged?.Invoke(Group);
-        }
+        private void Group_ContentChanged(object _, EventArgs __) => SelectionChanged?.Invoke(Group);
     }
 }

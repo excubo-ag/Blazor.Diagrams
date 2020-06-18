@@ -12,9 +12,9 @@ namespace TestProject_ServerSide
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+                .ConfigureWebHostDefaults(web_builder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    _ = web_builder.UseStartup<Startup>();
                 });
     }
 }

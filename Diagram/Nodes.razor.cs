@@ -72,11 +72,11 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void Remove(NodeBase node)
         {
-            all_nodes.Remove(node);
+            _ = all_nodes.Remove(node);
             var match = internally_generated_nodes.FirstOrDefault(n => n.Id == node.Id);
             if (match != null)
             {
-                internally_generated_nodes.Remove(match);
+                _ = internally_generated_nodes.Remove(match);
                 generated_nodes_ref.TriggerStateHasChanged();
             }
             OnRemove?.Invoke(node);

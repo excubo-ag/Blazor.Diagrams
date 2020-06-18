@@ -29,11 +29,11 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void Remove(NodeBase node)
         {
-            Nodes.Remove(node);
+            _ = Nodes.Remove(node);
         }
         internal void Remove(LinkBase link)
         {
-            Links.Remove(link);
+            _ = Links.Remove(link);
         }
         internal void Clear()
         {

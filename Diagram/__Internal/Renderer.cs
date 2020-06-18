@@ -33,7 +33,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             {
                 return;
             }
-            fragments.Remove(fragments.First(f => f.Value == render_fragment).Key);
+            _ = fragments.Remove(fragments.First(f => f.Value == render_fragment).Key);
             StateHasChanged();
         }
     }

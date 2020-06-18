@@ -46,14 +46,14 @@ namespace Excubo.Blazor.Diagrams.__Internal
             Zoom = zoom;
             StateHasChanged();
         }
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        protected override async Task OnAfterRenderAsync(bool first_render)
         {
-            if (firstRender)
+            if (first_render)
             {
                 var result = await js.GetDimensionsAsync(element); // TODO: handle content size changes.
                 SizeCallback?.Invoke(result);
             }
-            await base.OnAfterRenderAsync(firstRender);
+            await base.OnAfterRenderAsync(first_render);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace Excubo.Blazor.Diagrams.__Internal
             {
                 foreach (var node in Nodes)
                 {
-                    if (References.ContainsKey(node))
+                    if (references.ContainsKey(node))
                     {
-                        var actual_node = References[node];
+                        var actual_node = references[node];
                         node.ChildContent = actual_node.ChildContent;
                         node.X = actual_node.X;
                         node.Y = actual_node.Y;
@@ -45,11 +45,11 @@ namespace Excubo.Blazor.Diagrams.__Internal
                     builder.SetKey(node.Id);
                     builder.AddComponentReferenceCapture(7, (reference) =>
                     {
-                        if (References.ContainsKey(node))
+                        if (references.ContainsKey(node))
                         {
                             return;
                         }
-                        References.Add(node, (NodeBase)reference);
+                        references.Add(node, (NodeBase)reference);
                     });
                     builder.CloseComponent();
                 }
@@ -65,7 +65,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             builder.CloseComponent();
         }
         [Parameter] public List<NodeData> Nodes { get; set; }
-        private readonly Dictionary<NodeData, NodeBase> References = new Dictionary<NodeData, NodeBase>();
+        private readonly Dictionary<NodeData, NodeBase> references = new Dictionary<NodeData, NodeBase>();
         internal void TriggerStateHasChanged() => StateHasChanged();
     }
 }
