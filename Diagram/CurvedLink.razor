@@ -16,6 +16,7 @@
                   stroke-width="3"
                   fill="none"
                   stroke="black"
+                  cursor="pointer"
                   @onmouseover="OnLinkOver"
                   @onmouseout="OnLinkOut" />
             if (Arrow == Arrow.Both || Arrow == Arrow.Target)
@@ -42,7 +43,7 @@
                 <line x1="@ControlPoints[2].X" x2="@ControlPoints[3].X" y1="@ControlPoints[2].Y" y2="@ControlPoints[3].Y" stroke="gray" style="stroke-dasharray: 4 4;" />
                 foreach (var cp in ControlPoints)
                 {
-                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" cursor="move" />
                 }
             }
         }

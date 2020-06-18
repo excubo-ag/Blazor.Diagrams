@@ -20,6 +20,7 @@
                     @onmouseout="OnNodeOut"
                  stroke="@Stroke"
                  stroke-width="2px"
+                 cursor="move"
                  fill="@Fill"
                  style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")"/>
     </g>
@@ -42,6 +43,7 @@
                          stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
                          stroke-width="@(.5 / Zoom)rem"
                          fill="none"
+                         cursor="pointer"
                          @onmouseover="OnBorderOver"
                          @onmouseout="OnBorderOut" />
             </g>

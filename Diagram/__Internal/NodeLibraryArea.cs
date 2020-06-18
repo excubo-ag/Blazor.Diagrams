@@ -9,26 +9,20 @@ namespace Excubo.Blazor.Diagrams.__Internal
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             builder.OpenElement(0, "svg");
-            if (AdditionalAttributes != null && AdditionalAttributes.ContainsKey("class"))
-            {
-                builder.AddAttribute(2, "class", $"diagram-node-library {AdditionalAttributes["class"]}");
-            }
-            else
-            {
-                builder.AddAttribute(2, "class", "diagram-node-library");
-            }
-            var default_style = Orientation == Orientation.Horizontal ? "width: 100%" : "height: 100%";
+            var default_style = Orientation == Orientation.Horizontal 
+                ? "position: absolute; top: 0; left: 0; width: 100%" 
+                : "position: absolute; top: 0; left: 0; height: 100%";
             if (AdditionalAttributes != null && AdditionalAttributes.ContainsKey("style"))
             {
-                builder.AddAttribute(3, "style", $"{default_style}; {AdditionalAttributes["style"]}");
+                builder.AddAttribute(2, "style", $"{default_style}; {AdditionalAttributes["style"]}");
             }
             else
             {
-                builder.AddAttribute(3, "style", default_style);
+                builder.AddAttribute(2, "style", default_style);
             }
             if (AdditionalAttributes != null)
             {
-                var i = 4;
+                var i = 3;
                 foreach (var (key, value) in AdditionalAttributes)
                 {
                     if (key == "class"

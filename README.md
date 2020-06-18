@@ -138,6 +138,7 @@ A sample custom node is:
               stroke="@Stroke"
               stroke-width="2px"
               fill="@Fill"
+              cursor="move"
               style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
         <!--End of the customizable part-->
     </g>
@@ -158,6 +159,7 @@ A sample custom node is:
                       stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
                       stroke-width="@(.5 / Zoom)rem"
                       fill="none"
+                      cursor="pointer"
                       @onmouseover="OnBorderOver"
                       @onmouseout="OnBorderOut" />
                 <!--End of the customizable part-->
@@ -170,7 +172,6 @@ A sample custom node is:
         return (0, 0);
     }
 }
-
 ```
 
 The same shape is defined twice: The second definition is for the shape itself, the first definition is the invisible border where links can be connected to. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.

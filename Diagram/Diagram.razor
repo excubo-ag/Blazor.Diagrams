@@ -3,7 +3,7 @@
 
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div class="diagram-canvas"
+    <div style="width: 100%; height: 100%; position: relative; overflow: hidden; cursor: grab;"
          @ref="canvas"
          tabindex="-1"
          @onkeydown="OnKeyPress"
@@ -15,7 +15,7 @@
          @onmousewheel:preventDefault>
         <CascadingValue Value="@this" IsFixed="true">
             <!-- area for nodes and links -->
-            <svg class="diagram-nodes">
+            <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
                 <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
                     @using (var suspension = temporary_culture.Suspend())
@@ -31,7 +31,7 @@
                 <Renderer @ref="node_content_renderer" Region="div" />
             </div>
             <!-- area for node borders -->
-            <svg class="diagram-nodes" style="pointer-events: none">
+            <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none">
                 <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
                     <Renderer @ref="node_border_renderer" Region="g" />
