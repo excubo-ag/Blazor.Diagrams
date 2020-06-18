@@ -174,7 +174,6 @@ The same shape is defined twice: The second definition is for the shape itself, 
 
 This is an early alpha release of Excubo.Blazor.Diagrams.
 
-- Full editability of links
 - Add new link according to the type of link that's selected.
 - More node types
     - image node
@@ -191,4 +190,5 @@ Longer term goals include
 ## Known issues
 
 - Not all events are implemented
+- Links that are created declaratively cannot be modified
 

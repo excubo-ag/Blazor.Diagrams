@@ -35,7 +35,10 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.Move when ActionObject is ControlPoint && e.Buttons == 1:
                     MoveControlPoint(e);
                     break;
-                case ActionType.Move when !(ActionObject is ControlPoint) && e.Buttons == 1:
+                case ActionType.Move when ActionObject is AssociatedAnchor && e.Buttons == 1:
+                    MoveNodeAnchor(e);
+                    break;
+                case ActionType.Move when !(ActionObject is ControlPoint || ActionObject is AssociatedAnchor) && e.Buttons == 1:
                     MoveGroup(e);
                     break;
                 case ActionType.UpdateLinkTarget:
@@ -88,14 +91,19 @@ namespace Excubo.Blazor.Diagrams
             {
                 case ActionType.Move:
                 case ActionType.Pan:
-                    // active stop the action
-                    if (ActionObject is ControlPoint point)
+                    if (ActionObject is AssociatedAnchor)
                     {
+                        FixNodeAnchor(e);
+                    }
+                    else if (ActionObject is ControlPoint point)
+                    {
+                        // go back to edit mode of the link
                         ActionObject = point.Link;
                         Action = ActionType.ModifyLink;
                     }
                     else
                     {
+                        // active stop the action
                         ActionObject = null;
                         Action = ActionType.None;
                         if (Group.Nodes.Count == 1)
@@ -121,15 +129,8 @@ namespace Excubo.Blazor.Diagrams
         private void FollowCursorForLinkTarget(MouseEventArgs e)
         {
             var link = ActionObject as LinkBase;
-            // the shenanigans of placing the target slightly off from where the cursor actually is, are absolutely crucial:
-            // we want to identify whenever the cursor is over the border of a node, hence the cursor must be over the border, not over the currently drawn link!
-            // by placing the link slightly off, we make sure that what we see underneath the cursor is not the link, but the border.
-            var x = e.RelativeXToOrigin(this);
-            var y = e.RelativeYToOrigin(this);
-            var source_x = link.Source.X;
-            var source_y = link.Source.Y;
-            link.Target.RelativeX = source_x < x ? x - 1 : x + 1;
-            link.Target.RelativeY = source_y < y ? y - 1 : y + 1;
+            link.Target.RelativeX = e.RelativeXToOrigin(this);
+            link.Target.RelativeY = e.RelativeYToOrigin(this);
         }
         private void Pan(MouseEventArgs e)
         {
@@ -159,6 +160,23 @@ namespace Excubo.Blazor.Diagrams
                 original_cursor_position = new Point(e.ClientX, e.ClientY);
             }
         }
+        private void MoveNodeAnchor(MouseEventArgs e)
+        {
+            if (original_cursor_position != null)
+            {
+                var (_, anchor) = ActionObject as AssociatedAnchor;
+                anchor.RelativeX = e.RelativeXToOrigin(this);
+                anchor.RelativeY = e.RelativeYToOrigin(this);
+            }
+            else
+            {
+                original_cursor_position = new Point(e.ClientX, e.ClientY);
+                var (_, anchor) = ActionObject as AssociatedAnchor;
+                anchor.Node = null;
+                anchor.RelativeX = e.RelativeXToOrigin(this);
+                anchor.RelativeY = e.RelativeYToOrigin(this);
+            }
+        }
         private void MoveGroup(MouseEventArgs e)
         {
             if (original_cursor_position != null)
@@ -175,6 +193,23 @@ namespace Excubo.Blazor.Diagrams
             {
                 original_cursor_position = new Point(e.ClientX, e.ClientY);
             }
+        }
+        private void FixNodeAnchor(MouseEventArgs e)
+        {
+            var (link, anchor) = ActionObject as AssociatedAnchor;
+            if (ActiveElement is NodeBase node)
+            {
+                anchor.Node = node;
+                anchor.RelativeX = e.RelativeXTo(node);
+                anchor.RelativeY = e.RelativeYTo(node);
+            }
+            else
+            {
+                anchor.RelativeX = e.RelativeXToOrigin(this);
+                anchor.RelativeY = e.RelativeYToOrigin(this);
+            }
+            ActionObject = link;
+            Action = ActionType.ModifyLink;
         }
         private void EndLink(MouseEventArgs e)
         {

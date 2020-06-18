@@ -8,14 +8,16 @@ namespace Excubo.Blazor.Diagrams
 {
     public class LinkBase : ComponentBase
     {
+        private AssociatedAnchor source;
+        private AssociatedAnchor target;
         /// <summary>
         /// The source anchor for the link.
         /// </summary>
-        [Parameter] public NodeAnchor Source { get; set; }
+        [Parameter] public NodeAnchor Source { get => source?.Anchor; set { source = new AssociatedAnchor(this, value); } }
         /// <summary>
         /// The target anchor for the link.
         /// </summary>
-        [Parameter] public NodeAnchor Target { get; set; }
+        [Parameter] public NodeAnchor Target { get => target?.Anchor; set { target = new AssociatedAnchor(this, value); } }
         /// <summary>
         /// NOT INTENDED FOR USE BY USERS.
         /// Callback for when the link has been created. This is only invoked for links that are created during interactive usage of the diagram, not for links that are provided declaratively.
@@ -67,9 +69,15 @@ namespace Excubo.Blazor.Diagrams
         }
         #region control points
         protected void OnLinkOver(MouseEventArgs _) => ChangeHover(HoverType.Link, this);
-        protected void OnLinkOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown, this);
+        protected void OnLinkOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown, null);
         private void OnControlPointOver(ControlPoint control_point) => ChangeHover(HoverType.ControlPoint, control_point);
-        private void OnControlPointOut(ControlPoint control_point) => ChangeHover(HoverType.Unknown, control_point);
+        private void OnControlPointOut() => ChangeHover(HoverType.Unknown, null);
+        private void OnAnchorOver(AssociatedAnchor anchor) => ChangeHover(HoverType.ControlPoint, anchor);
+        private void OnAnchorOut() => ChangeHover(HoverType.Unknown, null);
+        private void OnSourceOver(ControlPoint _) => OnAnchorOver(source);
+        private void OnTargetOver(ControlPoint _) => OnAnchorOver(target);
+        private void OnSourceOut() => OnAnchorOut();
+        private void OnTargetOut() => OnAnchorOut();
         protected List<ControlPoint> ControlPoints = new List<ControlPoint>();
         protected List<Func<(double X, double Y)>> ControlPointMethods;
         protected override void OnParametersSet()
@@ -120,12 +128,12 @@ namespace Excubo.Blazor.Diagrams
 
         private void InitializeControlPoints()
         {
-            ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Source.X, Y = Source.Y });
+            ControlPoints.Add(new ControlPoint(this, OnSourceOver, OnSourceOut) { X = Source.X, Y = Source.Y });
             foreach (var (x, y) in ControlPointMethods.Select(m => m()))
             {
                 ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = x, Y = y });
             }
-            ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = Target.X, Y = Target.Y });
+            ControlPoints.Add(new ControlPoint(this, OnTargetOver, OnTargetOut) { X = Target.X, Y = Target.Y });
         }
         #endregion
     }

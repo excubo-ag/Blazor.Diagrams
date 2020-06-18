@@ -25,12 +25,6 @@
                   stroke="black"
                   @onmouseover="OnLinkOver"
                   @onmouseout="OnLinkOut" />
-            @if (Selected)
-            {
-                var cp = ControlPoints[1];
-                <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
-            }
-            var arrow_width = 4;
             if (Arrow == Arrow.Both || Arrow == Arrow.Target)
             {
                 var cp = ControlPoints.Last();
@@ -46,6 +40,13 @@
                 <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
                     <polygon points="0,-6 4,0 -4,0" fill="black" />
                 </g>
+            }
+            if (Selected)
+            {
+                foreach (var cp in ControlPoints)
+                {
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+                }
             }
         }
     </g>

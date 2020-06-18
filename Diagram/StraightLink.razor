@@ -35,6 +35,13 @@
                     <polygon points="0,-6 4,0 -4,0" fill="black" />
                 </g>
             }
+            if (Selected)
+            {
+                foreach (var cp in ControlPoints)
+                {
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+                }
+            }
         }
     </g>
 }
