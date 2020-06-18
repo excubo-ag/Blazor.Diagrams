@@ -9,22 +9,26 @@ namespace Excubo.Blazor.Diagrams
     {
         private double x;
         private double y;
+        /// <summary>
+        /// Horizontal position of the node
+        /// </summary>
+        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; XChanged?.Invoke(x); } }
+        [Parameter] public Action<double> XChanged { get; set; }
+        /// <summary>
+        /// Vertical position of the node
+        /// </summary>
+        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; YChanged?.Invoke(y); } }
+        [Parameter] public Action<double> YChanged { get; set; }
+        protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
+        [CascadingParameter] public Diagram Diagram { get; set; }
+        [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
+        protected double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
         private double width = 100;
         private double height = 100;
         /// <summary>
         /// Unique Id of the node
         /// </summary>
         [Parameter] public string Id { get; set; }
-        /// <summary>
-        /// Horizontal position of the node
-        /// </summary>
-        [Parameter] public double X { get => x; set { x = value; XChanged?.Invoke(x); } }
-        [Parameter] public Action<double> XChanged { get; set; }
-        /// <summary>
-        /// Vertical position of the node
-        /// </summary>
-        [Parameter] public double Y { get => y; set { y = value; YChanged?.Invoke(y); } }
-        [Parameter] public Action<double> YChanged { get; set; }
         /// <summary>
         /// The fill color of the node
         /// </summary>
@@ -43,8 +47,6 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public Action<NodeBase> OnCreate { get; set; }
         [CascadingParameter] public Nodes Nodes { get; set; }
-        [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
-        private Diagram Diagram => Nodes?.Diagram ?? NodeLibrary?.Diagram;
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
         public double Width { get => width; set { if (value == width) { return; } width = value; } }
         public double Height { get => height; set { if (value == height) { return; } height = value; } }
@@ -69,7 +71,6 @@ namespace Excubo.Blazor.Diagrams
         protected void OnNodeOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
         protected void OnBorderOver(MouseEventArgs _) => ChangeHover(HoverType.Border);
         protected void OnBorderOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
-        protected string NodePositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         public void UpdatePosition(double x, double y)
         {
             X = x;
@@ -181,7 +182,6 @@ namespace Excubo.Blazor.Diagrams
             }
             base.OnAfterRender(first_render);
         }
-        protected double Zoom => Nodes?.Diagram.NavigationSettings.Zoom ?? 1;
         #endregion
         public virtual (double RelativeX, double RelativeY) GetDefaultPort()
         {

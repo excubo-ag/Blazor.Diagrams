@@ -2,7 +2,7 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <g transform="@NodePositionAndScale">
+    <g transform="@PositionAndScale">
         <ellipse rx="@(Width / 2 * 1.41)"
                  ry="@(Height / 2 * 1.41)"
                  cx="@(Width / 2)"
@@ -20,7 +20,7 @@
     public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
         @using (var temporary_culture = new CultureSwapper())
         {
-            <g transform="@NodePositionAndScale">
+            <g transform="@PositionAndScale">
                 <ellipse rx="@(Width / 2 * 1.41)"
                          ry="@(Height / 2 * 1.41)"
                          cx="@(Width / 2)"

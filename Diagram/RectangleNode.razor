@@ -2,7 +2,7 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <g transform="@NodePositionAndScale">
+    <g transform="@PositionAndScale">
         <rect width="@Width"
               height="@Height"
               @onmouseover="OnNodeOver"
@@ -18,7 +18,7 @@
     public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
         @using (var temporary_culture = new CultureSwapper())
         {
-            <g transform="@NodePositionAndScale">
+            <g transform="@PositionAndScale">
                 <rect width="@Width"
                       height="@Height"
                       style="@(Hidden? "display:none" : "")"

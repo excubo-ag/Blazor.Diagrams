@@ -47,7 +47,6 @@ namespace Excubo.Blazor.Diagrams
             };
         }
         [Parameter] public NodeType Type { get; set; }
-        [CascadingParameter] public Diagram Diagram { get; set; }
         // the default type is configurable in the diagram's node collection. If the diagram doesn't specify a default type, it's defaulting to rectangle
         private NodeType RenderType
         {
