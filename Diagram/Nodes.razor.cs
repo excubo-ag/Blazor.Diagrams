@@ -54,7 +54,7 @@ namespace Excubo.Blazor.Diagrams
         {
             internally_generated_nodes.Add(new NodeData
             {
-                Type = (node.GetType() == typeof(Node)) ? ((node as Node).GetImplicitType()) : node.GetType(),
+                Type = node.GetType(),
                 ChildContent = node.ChildContent,
                 OnCreate = on_create,
                 X = Diagram.NavigationSettings.Origin.X + node.X / Diagram.NavigationSettings.Zoom,
@@ -72,6 +72,7 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void Remove(NodeBase node)
         {
+            node.MarkDeleted();
             _ = all_nodes.Remove(node);
             var match = internally_generated_nodes.FirstOrDefault(n => n.Id == node.Id);
             if (match != null)

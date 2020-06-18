@@ -1,5 +1,9 @@
 ﻿@inherits NodeBase
 @using Excubo.Blazor.Diagrams.Extensions
+@if (Deleted)
+{
+    return;
+}
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="@PositionAndScale">
@@ -21,7 +25,7 @@
     </g>
 }
 @code {
-    public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
+    public override RenderFragment border =>@<text>
         @using (var temporary_culture = new CultureSwapper())
         {
             <g transform="@PositionAndScale">
@@ -42,7 +46,7 @@
                          @onmouseout="OnBorderOut" />
             </g>
         }
-    </NodeBorder>;
+    </text>;
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
         return (Width / 2, -Height / 2);

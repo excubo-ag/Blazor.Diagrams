@@ -112,54 +112,60 @@ A sample custom node is:
 ```html
 @using Excubo.Blazor.Diagrams
 @inherits NodeBase
+<!--This is important to prohibit rendering of deleted, user-provided nodes.-->
+@if (Deleted)
+{
+    return;
+}
 @using Excubo.Blazor.Diagrams.Extensions
 <!--This using statement helps with locales that do not have the period as decimal separator: The DOM expects the period as decimal separator.-->
 @using (var temporary_culture = new CultureSwapper())
 {
     <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-    <g transform="@NodePositionAndScale">
+    <g transform="@PositionAndScale">
         <!--Beginning of the customizable part-->
         <!--This defines the area which can be interacted with to select/move the node. -->
         <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
         <rect width="@Width"
-                height="@Height"
-                @onmouseover="OnNodeOver"
-                @onmouseout="OnNodeOut"
-                stroke="@Stroke"
-                stroke-width="2px"
-                fill="@Fill"
-                style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+              height="@Height"
+              @onmouseover="OnNodeOver"
+              @onmouseout="OnNodeOut"
+              stroke="@Stroke"
+              stroke-width="2px"
+              fill="@Fill"
+              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
         <!--End of the customizable part-->
     </g>
 }
 @code {
     @*This part is essentially the same as the node above, except it's just the border. This is where links can be connected to. This does not need to be equivalent to the border, but can be any shape.*@
-    public override RenderFragment node_border =>@<NodeBorder @ref="node_border_reference">
+    public override RenderFragment border =>@<text>
         @using (var temporary_culture = new CultureSwapper())
         {
             <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-            <g transform="@NodePositionAndScale">
+            <g transform="@PositionAndScale">
                 <!--Beginning of the customizable part-->
                 <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
                 <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
                 <rect width="@Width"
-                        height="@Height"
-                        style="@(Hidden? "display:none" : "")"
-                        stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                        stroke-width="@(.5 / Zoom)rem"
-                        fill="none"
-                        @onmouseover="OnBorderOver"
-                        @onmouseout="OnBorderOut" />
+                      height="@Height"
+                      style="@(Hidden? "display:none" : "")"
+                      stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                      stroke-width="@(.5 / Zoom)rem"
+                      fill="none"
+                      @onmouseover="OnBorderOver"
+                      @onmouseout="OnBorderOut" />
                 <!--End of the customizable part-->
             </g>
         }
-    </NodeBorder>;
+    </text>;
     @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
     public override (double RelativeX, double RelativeY) GetDefaultPort()
     {
         return (0, 0);
     }
 }
+
 ```
 
 The same shape is defined twice: The second definition is for the shape itself, the first definition is the invisible border where links can be connected to. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.

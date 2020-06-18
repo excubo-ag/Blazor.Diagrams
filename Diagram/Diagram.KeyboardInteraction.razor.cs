@@ -17,7 +17,11 @@ namespace Excubo.Blazor.Diagrams
             }
             else if (e.Key == "Delete" || e.Key == "Backspace")
             {
-                if (Group.Nodes.Any())
+                if (ActionObject is LinkBase link)
+                {
+                    Links.Remove(link);
+                }
+                else if (Group.Nodes.Any())
                 {
                     foreach (var node in Group.Nodes)
                     {
@@ -25,10 +29,6 @@ namespace Excubo.Blazor.Diagrams
                     }
                     OnRemove?.Invoke(Group);
                     Group = new Group();
-                }
-                if (ActionObject is LinkBase link)
-                {
-                    Links.Remove(link);
                 }
             }
         }

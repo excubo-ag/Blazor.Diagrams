@@ -7,6 +7,7 @@ namespace Excubo.Blazor.Diagrams
 {
     public abstract class NodeBase : ComponentBase
     {
+        #region properties
         private double x;
         private double y;
         /// <summary>
@@ -50,8 +51,12 @@ namespace Excubo.Blazor.Diagrams
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
         public double Width { get => width; set { if (value == width) { return; } width = value; } }
         public double Height { get => height; set { if (value == height) { return; } height = value; } }
-        public bool Selected { get; private set; }
-        public bool Hovered { get; private set; }
+        protected bool Selected { get; private set; }
+        protected bool Hovered { get; private set; }
+        protected bool Deleted { get; set; }
+        #endregion
+        #region hover
+        internal void MarkDeleted() { Deleted = true; StateHasChanged(); }
         private void ChangeHover(HoverType hover_type)
         {
             Hovered = hover_type == HoverType.Node || hover_type == HoverType.Border;
@@ -71,6 +76,7 @@ namespace Excubo.Blazor.Diagrams
         protected void OnNodeOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
         protected void OnBorderOver(MouseEventArgs _) => ChangeHover(HoverType.Border);
         protected void OnBorderOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
+        #endregion
         public void UpdatePosition(double x, double y)
         {
             X = x;
@@ -78,18 +84,20 @@ namespace Excubo.Blazor.Diagrams
             StateHasChanged();
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
-
         protected override void OnParametersSet()
         {
             if (GetType() != typeof(Node)) // Node type is just a wrapper for the actual node, so adding this would prevent the actual node from being recognised.
             {
-                AddNodeContent();
+                if (!Deleted)
+                {
+                    AddNodeContent();
+                }
                 if (Nodes != null)
                 {
                     Nodes.Add(this);
                 }
+                base.OnParametersSet();
             }
-            base.OnParametersSet();
         }
         #region node content
 
@@ -101,17 +109,33 @@ namespace Excubo.Blazor.Diagrams
                 return;
             }
             content_added = true;
+            if (GetType() == typeof(Node))
+            {
+                return;
+            }
+            content = GetChildContentWrapper();
+            actual_border = GetBorderWrapper();
             if (NodeLibrary == null)
             {
-                Diagram.AddNodeContentFragment(GetChildContentWrapper());
-                Diagram.AddNodeBorderFragment(node_border);
+                Diagram.AddNodeContentFragment(content);
+                Diagram.AddNodeBorderFragment(actual_border);
             }
             else
             {
-                Diagram.AddNodeTemplateContentFragment(GetChildContentWrapper());
+                Diagram.AddNodeTemplateContentFragment(content);
             }
         }
-        protected RenderFragment GetChildContentWrapper()
+        private RenderFragment GetBorderWrapper()
+        {
+            return (builder) =>
+            {
+                builder.OpenComponent<NodeBorder>(0);
+                builder.AddAttribute(1, nameof(NodeBorder.ChildContent), border);
+                builder.AddComponentReferenceCapture(2, (reference) => node_border_reference = (NodeBorder)reference);
+                builder.CloseComponent();
+            };
+        }
+        private RenderFragment GetChildContentWrapper()
         {
             return (builder) =>
             {
@@ -154,12 +178,21 @@ namespace Excubo.Blazor.Diagrams
         }
         protected override void OnAfterRender(bool first_render)
         {
+            if (GetType() == typeof(Node))
+            {
+                return;
+            }
             if (first_render)
             {
                 if (GetType() != typeof(Node))
                 {
                     OnCreate?.Invoke(this);
                 }
+            }
+            if (Deleted)
+            {
+                Diagram.RemoveNodeBorderFragment(actual_border);
+                Diagram.RemoveNodeContentFragment(content);
             }
             if (NodeLibrary != null)
             {
@@ -187,8 +220,9 @@ namespace Excubo.Blazor.Diagrams
         {
             return (0, 0);
         }
-        public abstract RenderFragment node_border { get; }
-
+        public abstract RenderFragment border { get; }
+        private RenderFragment actual_border;
+        private RenderFragment content;
         protected NodeContent content_reference;
         protected NodeBorder node_border_reference;
     }

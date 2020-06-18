@@ -137,8 +137,12 @@ namespace Excubo.Blazor.Diagrams
             {
                 NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - original_cursor_position.X) / NavigationSettings.Zoom;
                 NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - original_cursor_position.Y) / NavigationSettings.Zoom;
+                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
             }
-            original_cursor_position = new Point(e.ClientX, e.ClientY);
+            else
+            {
+                original_cursor_position = new Point(e.ClientX, e.ClientY);
+            }
         }
         private void MoveControlPoint(MouseEventArgs e)
         {
@@ -148,8 +152,12 @@ namespace Excubo.Blazor.Diagrams
                 var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
                 (ActionObject as ControlPoint).X += delta_x;
                 (ActionObject as ControlPoint).Y += delta_y;
+                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
             }
-            original_cursor_position = new Point(e.ClientX, e.ClientY);
+            else
+            {
+                original_cursor_position = new Point(e.ClientX, e.ClientY);
+            }
         }
         private void MoveGroup(MouseEventArgs e)
         {
@@ -161,8 +169,12 @@ namespace Excubo.Blazor.Diagrams
                 {
                     node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
                 }
+                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
             }
-            original_cursor_position = new Point(e.ClientX, e.ClientY);
+            else
+            {
+                original_cursor_position = new Point(e.ClientX, e.ClientY);
+            }
         }
         private void EndLink(MouseEventArgs e)
         {

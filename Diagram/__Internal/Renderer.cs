@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.Rendering;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Excubo.Blazor.Diagrams.__Internal
 {
@@ -10,30 +9,25 @@ namespace Excubo.Blazor.Diagrams.__Internal
     {
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
-            builder.OpenElement(0, Region);
-            foreach (var (key, fragment) in fragments)
+            foreach (var (fragment, key) in fragments)
             {
+                builder.OpenElement(0, Region);
                 builder.SetKey(key);
                 builder.AddContent(1, fragment);
+                builder.CloseElement();
             }
-            builder.CloseElement();
-            base.BuildRenderTree(builder);
         }
-        private readonly Dictionary<string, RenderFragment> fragments = new Dictionary<string, RenderFragment>();
+        private readonly Dictionary<RenderFragment, string> fragments = new Dictionary<RenderFragment, string>();
         public void Add(RenderFragment render_fragment)
         {
-            fragments.Add("_" + Guid.NewGuid().ToString(), render_fragment);
+            fragments.Add(render_fragment, Guid.NewGuid().ToString());
             StateHasChanged();
         }
         [Parameter] public string Region { get; set; } = "g";
 
         internal void Remove(RenderFragment render_fragment)
         {
-            if (render_fragment == null)
-            {
-                return;
-            }
-            _ = fragments.Remove(fragments.First(f => f.Value == render_fragment).Key);
+            _ = fragments.Remove(render_fragment);
             StateHasChanged();
         }
     }

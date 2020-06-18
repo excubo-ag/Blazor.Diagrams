@@ -29,5 +29,16 @@ namespace Excubo.Blazor.Diagrams
             var node = Nodes.Find(node_id);
             return node == null ? null : NodeAnchor.WithDefaultNodePort(node);
         }
+        private bool done_rendering;
+        protected override void OnParametersSet()
+        {
+            NavigationSettings ??= new NavigationSettings { Diagram = this };
+            if (Links != null && Nodes != null)
+            {
+                done_rendering = true;
+            }
+            base.OnParametersSet();
+        }
+        protected override bool ShouldRender() => !done_rendering;
     }
 }

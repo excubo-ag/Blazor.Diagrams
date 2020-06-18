@@ -37,6 +37,8 @@ namespace Excubo.Blazor.Diagrams
         {
             Selected = false;
         }
+        protected bool Deleted { get; private set; }
+        internal void MarkDeleted() => Deleted = true;
         protected override void OnAfterRender(bool first_render)
         {
             if (GetType() != typeof(Link))

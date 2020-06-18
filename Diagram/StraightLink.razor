@@ -1,5 +1,9 @@
 ﻿@inherits LinkBase
 @using Excubo.Blazor.Diagrams.Extensions
+@if (Deleted)
+{
+    return;
+}
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="scale(@Zoom)">
