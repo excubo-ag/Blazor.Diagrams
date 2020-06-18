@@ -2,32 +2,49 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    if (Source != null && Target != null)
-    {
-        var sx = SourceX;
-        var sy = SourceY;
-        var tx = TargetX;
-        var ty = TargetY;
-        string curve_part;
-        if (CurveTopBottom)
+    <g transform="scale(@Zoom)">
+        @if (ControlPoints.Count == 4)
         {
-            var mid_y = (SourceY + TargetY) / 2;
-            curve_part = $"{sx} {mid_y}, {tx} {mid_y}";
+            <path d="M @(ControlPoints[0].X) @(ControlPoints[0].Y)
+                     C @(ControlPoints[1].X) @(ControlPoints[1].Y)
+                       @(ControlPoints[2].X) @(ControlPoints[2].Y),
+                       @(ControlPoints[3].X) @(ControlPoints[3].Y)"
+                  stroke-width="3"
+                  fill="none"
+                  stroke="black"
+                  @onmouseover="OnLinkOver"
+                  @onmouseout="OnLinkOut" />
+            @if (Selected)
+            {
+                <line x1="@ControlPoints[0].X" x2="@ControlPoints[1].X" y1="@ControlPoints[0].Y" y2="@ControlPoints[1].Y" stroke="gray" style="stroke-dasharray: 4 4;" />
+                <line x1="@ControlPoints[2].X" x2="@ControlPoints[3].X" y1="@ControlPoints[2].Y" y2="@ControlPoints[3].Y" stroke="gray" style="stroke-dasharray: 4 4;" />
+                foreach (var cp in ControlPoints.Skip(1).Take(2))
+                {
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="8" ry="8" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" />
+                }
+            }
         }
-        else
-        {
-            var mid_x = (SourceX + TargetX) / 2;
-            curve_part = $"{mid_x} {sy}, {mid_x} {ty}";
-        }
-        <path d="M @sx @sy
-                 C @curve_part,
-                   @tx @ty"
-          stroke-width="3"
-          fill="none"
-          stroke="black" />
-    }
+    </g>
 }
 @code {
     [Parameter]
     public bool CurveTopBottom { get; set; }
+    private (double X, double Y) GetFirstCurvePoint()
+    {
+        return CurveTopBottom ? (Source.X, (Source.Y + Target.Y) / 2) : ((Source.X + Target.X) / 2, Source.Y);
+    }
+    private (double X, double Y) GetSecondCurvePoint()
+    {
+        return CurveTopBottom ? (Target.X, (Source.Y + Target.Y) / 2) : ((Source.X + Target.X) / 2, Target.Y);
+    }
+    protected override void OnParametersSet()
+    {
+        if (ControlPointMethods == null)
+        {
+            ControlPointMethods = new List<Func<(double X, double Y)>>();
+            ControlPointMethods.Add(GetFirstCurvePoint);
+            ControlPointMethods.Add(GetSecondCurvePoint);
+        }
+        base.OnParametersSet();
+    }
 }

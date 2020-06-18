@@ -10,7 +10,8 @@ namespace Excubo.Blazor.Diagrams
         Pan,
         SelectRegion,
         Move,
-        UpdateLinkTarget
+        UpdateLinkTarget,
+        ModifyLink
     }
     public partial class Diagram
     {
@@ -43,13 +44,12 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
                     break;
-                case ActionType.Move when e.Buttons == 1:
+                case ActionType.Move when ActionObject is ControlPoint && e.Buttons == 1:
+                    MoveControlPoint(e);
+                    break;
+                case ActionType.Move when !(ActionObject is ControlPoint) && e.Buttons == 1:
                     MoveGroup(e);
                     break;
-                // TODO handle this:
-                //case ActionType.Move when ActiveElementType == HoverType.ControlPoint && e.Buttons == 1:
-                    // TODO move control point
-                //    break;
                 case ActionType.UpdateLinkTarget:
                     FollowCursorForLinkTarget(e);
                     break;
@@ -59,46 +59,10 @@ namespace Excubo.Blazor.Diagrams
                     break;
             }
         }
-        private void FollowCursorForLinkTarget(MouseEventArgs e)
-        {
-            var link = ActionObject as LinkBase;
-            // the shenanigans of placing the target slightly off from where the cursor actually is, are absolutely crucial:
-            // we want to identify whenever the cursor is over the border of a node, hence the cursor must be over the border, not over the currently drawn link!
-            // by placing the link slightly off, we make sure that what we see underneath the cursor is not the link, but the border.
-            var x = e.RelativeXToOrigin(this);
-            var y = e.RelativeYToOrigin(this);
-            var source_x = link.Source.GetX(this);
-            var source_y = link.Source.GetY(this);
-            link.Target.RelativeX = source_x < x ? x - 1 : x + 1;
-            link.Target.RelativeY = source_y < y ? y - 1 : y + 1;
-        }
-        private void Pan(MouseEventArgs e)
-        {
-            if (original_cursor_position != null)
-            {
-                NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - original_cursor_position.X) / NavigationSettings.Zoom;
-                NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - original_cursor_position.Y) / NavigationSettings.Zoom;
-            }
-            original_cursor_position = new Point(e.ClientX, e.ClientY);
-        }
-        private void MoveGroup(MouseEventArgs e)
-        {
-            if (original_cursor_position != null)
-            {
-                var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
-                var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
-                foreach (var node in Group.Nodes)
-                {
-                    node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
-                }
-            }
-            original_cursor_position = new Point(e.ClientX, e.ClientY);
-        }
         private void OnMouseWheel(WheelEventArgs e)
         {
             NavigationSettings.OnMouseWheel(e);
             Nodes.Redraw();
-
         }
         private void OnMouseDown(MouseEventArgs e)
         {
@@ -114,30 +78,103 @@ namespace Excubo.Blazor.Diagrams
                     // nothing to be done here
                     break;
                 case ActionType.UpdateLinkTarget:
-                    // TODO end the action of updating the link target. fix to wherever we are.
                     EndLink(e);
                     break;
+                case ActionType.ModifyLink when ActiveElementType == HoverType.ControlPoint:
+                    ActionObject = ActiveElement;
+                    Action = ActionType.Move;
+                    break;
+                case ActionType.ModifyLink when ActionObject is LinkBase link:
+                    // another click means ending the current action and starting a new one
+                    link.Deselect();
+                    ActionObject = null;
+                    Action = ActionType.None;
+                    StartAction(e);
+                    break;
+
             }
-            if (ActiveElement == null)
+        }
+        private void OnMouseUp(MouseEventArgs e)
+        {
+            switch (Action)
             {
-                //probably deselect everything unless ctrl is held?
-                return;
+                case ActionType.Move:
+                case ActionType.Pan:
+                    // active stop the action
+                    if (ActionObject is ControlPoint point)
+                    {
+                        ActionObject = point.Link;
+                        Action = ActionType.ModifyLink;
+                    }
+                    else
+                    {
+                        ActionObject = null;
+                        Action = ActionType.None;
+                        if (Group.Nodes.Count == 1)
+                        {
+                            Group.Nodes[0].Deselect();
+                        }
+                        NewNodeAddingInProgress = false;
+                    }
+                    break;
+                case ActionType.None:
+                    // nothing to do here
+                    break;
+                case ActionType.SelectRegion:
+                    // TODO finish selection
+                    Action = ActionType.None;
+                    break;
+                case ActionType.UpdateLinkTarget:
+                    // this shouldn't do anything as link creation is simply clicking twice.
+                    // therefore, the mouse up movement shouldn't change the process.
+                    break;
             }
-            //switch (ActiveElementType)
-            //{
-            //    case HoverType.Border:
-            //        TryHandleBorder(e);
-            //        break;
-            //    case HoverType.NewNode:
-            //        TryHandleNewNode(e);
-            //        break;
-            //    case HoverType.Node:
-            //        TryHandleNode(e);
-            //        break;
-            //    case HoverType.ControlPoint:
-            //        TryHandleControlPoint(e);
-            //        break;
-            //}
+        }
+        private void FollowCursorForLinkTarget(MouseEventArgs e)
+        {
+            var link = ActionObject as LinkBase;
+            // the shenanigans of placing the target slightly off from where the cursor actually is, are absolutely crucial:
+            // we want to identify whenever the cursor is over the border of a node, hence the cursor must be over the border, not over the currently drawn link!
+            // by placing the link slightly off, we make sure that what we see underneath the cursor is not the link, but the border.
+            var x = e.RelativeXToOrigin(this);
+            var y = e.RelativeYToOrigin(this);
+            var source_x = link.Source.X;
+            var source_y = link.Source.Y;
+            link.Target.RelativeX = source_x < x ? x - 1 : x + 1;
+            link.Target.RelativeY = source_y < y ? y - 1 : y + 1;
+        }
+        private void Pan(MouseEventArgs e)
+        {
+            if (original_cursor_position != null)
+            {
+                NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - original_cursor_position.X) / NavigationSettings.Zoom;
+                NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - original_cursor_position.Y) / NavigationSettings.Zoom;
+            }
+            original_cursor_position = new Point(e.ClientX, e.ClientY);
+        }
+        private void MoveControlPoint(MouseEventArgs e)
+        {
+            if (original_cursor_position != null)
+            {
+                var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
+                var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
+                (ActionObject as ControlPoint).X += delta_x;
+                (ActionObject as ControlPoint).Y += delta_y;
+            }
+            original_cursor_position = new Point(e.ClientX, e.ClientY);
+        }
+        private void MoveGroup(MouseEventArgs e)
+        {
+            if (original_cursor_position != null)
+            {
+                var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
+                var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
+                foreach (var node in Group.Nodes)
+                {
+                    node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
+                }
+            }
+            original_cursor_position = new Point(e.ClientX, e.ClientY);
         }
         private void EndLink(MouseEventArgs e)
         {
@@ -187,15 +224,18 @@ namespace Excubo.Blazor.Diagrams
                     TriggerSelectionOfNode();
                     break;
                 case HoverType.ControlPoint:
-                    // TODO select control point
+                    ActionObject = ActiveElement;
+                    Action = ActionType.Move;
                     break;
                 case HoverType.Link:
-                    // TODO select link
+                    ActionObject = ActiveElement;
+                    (ActiveElement as LinkBase).Select();
+                    Action = ActionType.ModifyLink;
                     break;
                 case HoverType.NewNode:
                     CreateNewNode();
                     break;
-            }     
+            }
         }
         private void TriggerSelectionOfNode()
         {
@@ -216,6 +256,7 @@ namespace Excubo.Blazor.Diagrams
             var node = ActiveElement as NodeBase;
             Nodes.AddNewNode(node, (new_node) =>
             {
+                Group.Clear();
                 Group = new Group();
                 Group.Add(new_node);
                 new_node.Select();
@@ -233,34 +274,6 @@ namespace Excubo.Blazor.Diagrams
                 Action = ActionType.UpdateLinkTarget;
                 generated_link.Select();
             });
-        }
-        [Obsolete("Needs to be rethought")]
-        private void OnMouseUp(MouseEventArgs e)
-        {
-            switch (Action)
-            {
-                case ActionType.Move:
-                case ActionType.Pan:
-                    // active stop the action
-                    Action = ActionType.None;
-                    if (Group.Nodes.Count == 1)
-                    {
-                        Group.Nodes[0].Deselect();
-                    }
-                    NewNodeAddingInProgress = false;
-                    break;
-                case ActionType.None:
-                    // nothing to do here
-                    break;
-                case ActionType.SelectRegion:
-                    // TODO finish selection
-                    Action = ActionType.None;
-                    break;
-                case ActionType.UpdateLinkTarget:
-                    // this shouldn't do anything as link creation is simply clicking twice.
-                    // therefore, the mouse up movement shouldn't change the process.
-                    break;
-            }
         }
     }
 }
