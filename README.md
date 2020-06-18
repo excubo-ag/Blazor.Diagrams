@@ -83,11 +83,16 @@ services.AddDiagramServices();
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
     <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Curved">
         <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get a curved link -->
-        <Link Source="@(Diagram.GetAnchorTo("abc"))" Target="@(Diagram.GetAnchorTo("def"))" />
+        @foreach (var link in links)
+        {
+            <Link Source="link.Source" Target="link.Target" Arrow="Arrow.Target" />
+        }
     </Links>
     <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
 </Diagram>
 ```
+
+Have a look at the fully working examples provided in [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/master/TestProject_Components).
 
 ## Design principles
 
@@ -190,5 +195,4 @@ Longer term goals include
 ## Known issues
 
 - Not all events are implemented
-- Links that are created declaratively cannot be modified
 

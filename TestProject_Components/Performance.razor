@@ -12,9 +12,9 @@
         }
     </Nodes>
     <Links>
-        @for (int i = 0; i < n * n; i += 2)
+        @foreach (var link in links)
         {
-            <Link @key="i" Source="@Diagram.GetAnchorTo($"state{i}")" Target="@Diagram.GetAnchorTo($"state{i + 1}")" />
+            <Link @key="link.Source.NodeId" Source="@link.Source" Target="@link.Target" />
         }
     </Links>
 </Diagram>
@@ -27,11 +27,22 @@
         public double X { get; set; }
         public double Y { get; set; }
     }
+    public class MyLinkDefinition
+    {
+        public NodeAnchor Source { get; set; }
+        public NodeAnchor Target { get; set; }
+        public LinkType Type { get; set; }
+    }
     List<MyNodeDefinition> states = Enumerable.Range(0, n * n).Select(i => new MyNodeDefinition
     {
         Id = $"state{i}",
         X = 100 * (i % n),
         Y = 100 * (i / n)
+    }).ToList();
+    List<MyLinkDefinition> links = Enumerable.Range(0, n * n / 2).Select(i => new MyLinkDefinition
+    {
+        Source = new NodeAnchor { NodeId = $"state{2 * i}" },
+        Target = new NodeAnchor { NodeId = $"state{2 * i + 1}" }
     }).ToList();
     private Diagram Diagram { get; set; }
 }

@@ -84,6 +84,14 @@ namespace Excubo.Blazor.Diagrams
         {
             if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
             {
+                if (Source.NodeId != null)
+                {
+                    Source.Node ??= Diagram.Nodes.Find(Source.NodeId);
+                }
+                if (Target.NodeId != null)
+                {
+                    Target.Node ??= Diagram.Nodes.Find(Target.NodeId);
+                }
                 if (!ControlPoints.Any())
                 {
                     InitializeControlPoints();

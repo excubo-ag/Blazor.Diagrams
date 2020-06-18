@@ -26,8 +26,7 @@ namespace Excubo.Blazor.Diagrams
             switch (Action)
             {
                 case ActionType.SelectRegion:
-                    // select by region
-                    // TODO
+                    // TODO select by region
                     break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
@@ -173,6 +172,7 @@ namespace Excubo.Blazor.Diagrams
                 original_cursor_position = new Point(e.ClientX, e.ClientY);
                 var (_, anchor) = ActionObject as AssociatedAnchor;
                 anchor.Node = null;
+                anchor.NodeId = null;
                 anchor.RelativeX = e.RelativeXToOrigin(this);
                 anchor.RelativeY = e.RelativeYToOrigin(this);
             }

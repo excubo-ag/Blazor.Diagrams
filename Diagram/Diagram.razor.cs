@@ -23,11 +23,6 @@ namespace Excubo.Blazor.Diagrams
             await GetPositionAsync();
             await base.OnAfterRenderAsync(first_render);
         }
-        public NodeAnchor GetAnchorTo(string node_id)
-        {
-            var node = Nodes.Find(node_id);
-            return node == null ? null : NodeAnchor.WithDefaultNodePort(node);
-        }
         private bool done_rendering;
         protected override void OnParametersSet()
         {
