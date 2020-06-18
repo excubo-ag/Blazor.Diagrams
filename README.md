@@ -19,17 +19,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.3.1
+Install-Package Excubo.Blazor.Diagrams -Version 0.4.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.3.1
+dotnet add package Excubo.Blazor.Diagrams --version 0.4.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.3.1" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.4.0" />
 ```
 
 ### 2. Add the css and js to your `index.html` / `_Hosts.cshtml`
@@ -37,7 +37,7 @@ dotnet add package Excubo.Blazor.Diagrams --version 0.3.1
 ```html
 <head>
     <!--your other code-->
-    <script src="_content/Excubo.Blazor.Diagrams/script.js" type="text/javascript"></script>
+    <script src="_content/Excubo.Blazor.Diagrams/script.min.js" type="text/javascript"></script>
 </head>
 ```
 
