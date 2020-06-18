@@ -16,7 +16,7 @@
                      L @(first_point_x) @(first_point_y)
                      L @(second_point_x) @(second_point_y)
                      L @(ControlPoints[2].X) @(ControlPoints[2].Y)"
-                  stroke-width="3"
+                  stroke-width="@(3 * Zoom)"
                   fill="none"
                   stroke="black"
                   @onmouseover="OnLinkOver"
@@ -29,9 +29,7 @@
         }
     </g>
 }
-@code {
-    [Parameter]
-    public bool CurveTopBottom { get; set; }
+@code { 
     private (double X, double Y) GetMiddlePoint()
     {
         return ((Source.X + Target.X) / 2, (Source.Y + Target.Y) / 2);
@@ -40,8 +38,10 @@
     {
         if (ControlPointMethods == null)
         {
-            ControlPointMethods = new List<Func<(double X, double Y)>>();
-            ControlPointMethods.Add(GetMiddlePoint);
+            ControlPointMethods = new List<Func<(double X, double Y)>>
+            {
+                GetMiddlePoint
+            };
         }
         base.OnParametersSet();
     }

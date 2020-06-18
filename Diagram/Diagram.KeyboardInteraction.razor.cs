@@ -17,18 +17,18 @@ namespace Excubo.Blazor.Diagrams
             }
             else if (e.Key == "Delete" || e.Key == "Backspace")
             {
-                if (Group.Nodes.Any() || Group.Links.Any())
+                if (Group.Nodes.Any())
                 {
                     foreach (var node in Group.Nodes)
                     {
                         Nodes.Remove(node);
                     }
-                    foreach (var link in Group.Links)
-                    {
-                        Links.Remove(link);
-                    }
                     OnRemove?.Invoke(Group);
                     Group = new Group();
+                }
+                if (ActionObject is LinkBase link)
+                {
+                    Links.Remove(link);
                 }
             }
         }

@@ -10,8 +10,9 @@
                   x2="@Target.X"
                   y2="@Target.Y"
                   stroke="black"
-                  stroke-width="@(Source.Node != null && Target.Node != null ? "4px" : "2px")"
-                  style="@(Selected ? "stroke-dasharray: 8 2; animation: diagram-link-unfinished 0.4s ease infinite;" : "")" />
+                  stroke-width="@(3 * Zoom)"
+                  @onmouseover="OnLinkOver"
+                  @onmouseout="OnLinkOut" />
         }
     </g>
 }

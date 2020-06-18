@@ -9,7 +9,7 @@
                      C @(ControlPoints[1].X) @(ControlPoints[1].Y)
                        @(ControlPoints[2].X) @(ControlPoints[2].Y),
                        @(ControlPoints[3].X) @(ControlPoints[3].Y)"
-                  stroke-width="3"
+                  stroke-width="@(3 * Zoom)"
                   fill="none"
                   stroke="black"
                   @onmouseover="OnLinkOver"
@@ -41,9 +41,11 @@
     {
         if (ControlPointMethods == null)
         {
-            ControlPointMethods = new List<Func<(double X, double Y)>>();
-            ControlPointMethods.Add(GetFirstCurvePoint);
-            ControlPointMethods.Add(GetSecondCurvePoint);
+            ControlPointMethods = new List<Func<(double X, double Y)>>
+            {
+                GetFirstCurvePoint,
+                GetSecondCurvePoint
+            };
         }
         base.OnParametersSet();
     }
