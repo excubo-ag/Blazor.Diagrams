@@ -207,4 +207,3 @@ Longer term goals include
 ## Known issues
 
 - Not all events are implemented
-- links & node library only appear after moving the cursor

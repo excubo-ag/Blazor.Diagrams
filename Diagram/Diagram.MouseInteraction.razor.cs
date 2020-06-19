@@ -1,8 +1,6 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components.Web;
-using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Excubo.Blazor.Diagrams
 {

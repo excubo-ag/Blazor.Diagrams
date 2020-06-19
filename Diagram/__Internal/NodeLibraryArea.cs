@@ -38,6 +38,9 @@ namespace Excubo.Blazor.Diagrams.__Internal
             builder.CloseElement();
         }
         [Parameter] public RenderFragment ChildContent { get; set; }
+        /// <summary>
+        /// Orientation of the node library (defaults to Horizontal).
+        /// </summary>
         [Parameter] public Orientation Orientation { get; set; }
         [Parameter] public Dictionary<string, object> AdditionalAttributes { get; set; }
     }

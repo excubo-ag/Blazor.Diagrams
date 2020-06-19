@@ -179,10 +179,7 @@ namespace Excubo.Blazor.Diagrams
             }
             if (first_render)
             {
-                if (GetType() != typeof(Node))
-                {
-                    OnCreate?.Invoke(this);
-                }
+                OnCreate?.Invoke(this);
             }
             if (Deleted)
             {

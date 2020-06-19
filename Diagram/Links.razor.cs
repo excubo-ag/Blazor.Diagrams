@@ -1,5 +1,4 @@
-﻿using Excubo.Blazor.Diagrams.__Internal;
-using Excubo.Blazor.Diagrams.Extensions;
+﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -92,6 +91,7 @@ namespace Excubo.Blazor.Diagrams
             internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, OnCreate = on_link_create });
             generated_links_ref.TriggerStateHasChanged();
         }
+        internal void TriggerStateHasChanged() => StateHasChanged();
         internal void Redraw()
         {
             foreach (var link in all_links)

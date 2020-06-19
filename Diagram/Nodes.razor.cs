@@ -72,7 +72,7 @@ namespace Excubo.Blazor.Diagrams
         {
             return all_nodes.FirstOrDefault(n => n.Id == id);
         }
-
+        internal void TriggerStateHasChanged() => StateHasChanged();
         internal void Redraw()
         {
             foreach (var node in all_nodes)
