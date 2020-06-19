@@ -216,7 +216,7 @@ namespace Excubo.Blazor.Diagrams
             base.OnAfterRender(first_render);
         }
         #endregion
-        public virtual (double RelativeX, double RelativeY) GetDefaultPort()
+        public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
         {
             return (0, 0);
         }

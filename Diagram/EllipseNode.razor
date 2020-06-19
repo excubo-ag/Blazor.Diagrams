@@ -40,8 +40,19 @@
             </g>
         }
     </text>;
-    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
     {
-        return (0, 0);
+        return position switch
+        {
+            Position.North => ((Width / 2), (Height / 2 - (Height / 2 * 1.41))),
+            Position.South => ((Width / 2), (Height / 2 + (Height / 2 * 1.41))),
+            Position.East => ((Width / 2 + Width / 2 * 1.41), (Height / 2)),
+            Position.West => ((Width / 2 - Width / 2 * 1.41), (Height / 2)),
+            Position.NorthWest => (0, 0),
+            Position.SouthWest => (0, Height),
+            Position.NorthEast => (Width, 0),
+            Position.SouthEast => (Width, Height),
+            _ => (0, 0)
+        };
     }
 }

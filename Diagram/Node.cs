@@ -64,13 +64,13 @@ namespace Excubo.Blazor.Diagrams
             }
         }
         private NodeBase actual_node;
-        public override (double RelativeX, double RelativeY) GetDefaultPort()
+        public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
         {
             if (actual_node == null)
             {
-                return base.GetDefaultPort();
+                return base.GetDefaultPort(position);
             }
-            return actual_node.GetDefaultPort();
+            return actual_node.GetDefaultPort(position);
         }
         public override RenderFragment border => actual_node?.border;
     }

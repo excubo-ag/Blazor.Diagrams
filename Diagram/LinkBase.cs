@@ -41,6 +41,37 @@ namespace Excubo.Blazor.Diagrams
         }
         protected bool Deleted { get; private set; }
         internal void MarkDeleted() => Deleted = true;
+        protected override void OnParametersSet()
+        {
+            if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
+            {
+                if (Source.NodeId != null)
+                {
+                    Source.Node ??= Diagram.Nodes.Find(Source.NodeId);
+                    if (Source.Port != Position.Any && Source.Node != null)
+                    {
+                        (Source.RelativeX, Source.RelativeY) = Source.Node.GetDefaultPort(Source.Port);
+                    }
+                }
+                if (Target.NodeId != null)
+                {
+                    Target.Node ??= Diagram.Nodes.Find(Target.NodeId);
+                    if (Target.Port != Position.Any && Target.Node != null)
+                    {
+                        (Target.RelativeX, Target.RelativeY) = Target.Node.GetDefaultPort(Target.Port);
+                    }
+                }
+                if (!ControlPoints.Any())
+                {
+                    InitializeControlPoints();
+                }
+                else
+                {
+                    UpdateControlPoints();
+                }
+            }
+            base.OnParametersSet();
+        }
         protected override void OnAfterRender(bool first_render)
         {
             if (GetType() != typeof(Link))
@@ -80,30 +111,6 @@ namespace Excubo.Blazor.Diagrams
         private void OnTargetOut() => OnAnchorOut();
         protected List<ControlPoint> ControlPoints = new List<ControlPoint>();
         protected List<Func<(double X, double Y)>> ControlPointMethods;
-        protected override void OnParametersSet()
-        {
-            if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
-            {
-                if (Source.NodeId != null)
-                {
-                    Source.Node ??= Diagram.Nodes.Find(Source.NodeId);
-                }
-                if (Target.NodeId != null)
-                {
-                    Target.Node ??= Diagram.Nodes.Find(Target.NodeId);
-                }
-                if (!ControlPoints.Any())
-                {
-                    InitializeControlPoints();
-                }
-                else
-                {
-                    UpdateControlPoints();
-                }
-            }
-            base.OnParametersSet();
-        }
-
         private void UpdateControlPoints()
         {
             if (Source.X == ControlPoints.First().X && Source.Y == ControlPoints.First().Y

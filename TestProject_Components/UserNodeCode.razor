@@ -50,8 +50,18 @@
         }
     </text>;
     @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
-    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
     {
-        return (0, 0);
+        return position switch
+        {
+            Position.North => (Width / 2, 0),
+            Position.NorthEast => (Width, 0),
+            Position.East => (Width, Height / 2),
+            Position.SouthEast => (Width, Height),
+            Position.South => (Width / 2, Height),
+            Position.SouthWest => (0, Height),
+            Position.NorthWest => (0, Height / 2),
+            _ => (0, 0)
+        };
     }
 }
