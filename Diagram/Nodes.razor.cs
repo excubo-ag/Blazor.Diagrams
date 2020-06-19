@@ -30,13 +30,43 @@ namespace Excubo.Blazor.Diagrams
         protected override bool ShouldRender() => false;
         private readonly List<NodeBase> all_nodes = new List<NodeBase>();
         private readonly List<NodeData> internally_generated_nodes = new List<NodeData>();
-        public void Add(NodeBase node)
+        public void Register(NodeBase node)
         {
             if (!all_nodes.Contains(node))
             {
                 all_nodes.Add(node);
                 OnAdd?.Invoke(node);
             }
+        }
+        internal void Add(NodeBase node)
+        {
+            all_nodes.Add(node);
+            if (node.Deleted)
+            {
+                node.MarkUndeleted();
+            }
+            else
+            {
+                internally_generated_nodes.Add(new NodeData { Id = node.Id, X = node.X, Y = node.Y, ChildContent = node.ChildContent, Type = node.GetType(), OnCreate = (_) => { } });
+                generated_nodes_ref.TriggerStateHasChanged();
+            }
+            OnAdd?.Invoke(node);
+        }
+        internal void Remove(NodeBase node)
+        {
+            _ = all_nodes.Remove(node);
+            var match = internally_generated_nodes.FirstOrDefault(n => n.Id == node.Id);
+            if (match != null)
+            {
+                _ = internally_generated_nodes.Remove(match);
+                generated_nodes_ref.TriggerStateHasChanged();
+            }
+            else
+            {
+                node.MarkDeleted();
+            }
+            node.RemoveBorderAndContent();
+            OnRemove?.Invoke(node);
         }
         public NodeBase Find(string id)
         {
@@ -69,18 +99,6 @@ namespace Excubo.Blazor.Diagrams
                 .ToDictionary(p => p.Name, p => p.GetValue(node))
             });
             generated_nodes_ref.TriggerStateHasChanged();
-        }
-        internal void Remove(NodeBase node)
-        {
-            node.MarkDeleted();
-            _ = all_nodes.Remove(node);
-            var match = internally_generated_nodes.FirstOrDefault(n => n.Id == node.Id);
-            if (match != null)
-            {
-                _ = internally_generated_nodes.Remove(match);
-                generated_nodes_ref.TriggerStateHasChanged();
-            }
-            OnRemove?.Invoke(node);
         }
     }
 }

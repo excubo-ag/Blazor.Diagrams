@@ -6,7 +6,7 @@ namespace Excubo.Blazor.Diagrams
 {
     public class NodeData
     {
-        public string Id { get; } = Guid.NewGuid().ToString();
+        public string Id { get; internal set; } = Guid.NewGuid().ToString();
         public Type Type { get; set; }
         public RenderFragment<NodeBase> ChildContent { get; set; }
         public Dictionary<string, object> Attributes { get; set; }

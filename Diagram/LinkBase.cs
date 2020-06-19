@@ -39,8 +39,9 @@ namespace Excubo.Blazor.Diagrams
         {
             Selected = false;
         }
-        protected bool Deleted { get; private set; }
+        internal bool Deleted { get; private set; }
         internal void MarkDeleted() => Deleted = true;
+        internal void MarkUndeleted() => Deleted = false;
         protected override void OnParametersSet()
         {
             if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
@@ -80,7 +81,7 @@ namespace Excubo.Blazor.Diagrams
                 {
                     if (IsInternallyGenerated)
                     {
-                        Links.Add(this);
+                        Links.Register(this);
                     }
                     OnCreate?.Invoke(this);
                 }

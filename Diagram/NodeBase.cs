@@ -53,10 +53,11 @@ namespace Excubo.Blazor.Diagrams
         public double Height { get => height; set { if (value == height) { return; } height = value; } }
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
-        protected bool Deleted { get; set; }
+        public bool Deleted { get; private set; }
         #endregion
         #region hover
         internal void MarkDeleted() { Deleted = true; StateHasChanged(); }
+        internal void MarkUndeleted() { Deleted = false; StateHasChanged(); }
         private void ChangeHover(HoverType hover_type)
         {
             Hovered = hover_type == HoverType.Node || hover_type == HoverType.Border;
@@ -94,13 +95,22 @@ namespace Excubo.Blazor.Diagrams
                 }
                 if (Nodes != null)
                 {
-                    Nodes.Add(this);
+                    Nodes.Register(this);
                 }
                 base.OnParametersSet();
             }
         }
         #region node content
-
+        internal void RemoveBorderAndContent()
+        {
+            Diagram.RemoveNodeBorderFragment(actual_border);
+            Diagram.RemoveNodeContentFragment(content);
+        }
+        internal void AddBorderAndContent()
+        {
+            Diagram.AddNodeContentFragment(content);
+            Diagram.AddNodeBorderFragment(actual_border);
+        }
         private bool content_added;
         private void AddNodeContent()
         {

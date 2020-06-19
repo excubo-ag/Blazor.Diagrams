@@ -27,20 +27,23 @@ namespace Excubo.Blazor.Diagrams.__Internal
                     builder.AddAttribute(5, nameof(NodeBase.X), node.X);
                     builder.AddAttribute(6, nameof(NodeBase.Y), node.Y);
                     var i = 8;
-                    foreach (var (key, value) in node.Attributes)
+                    if (node.Attributes != null)
                     {
-                        if (key == nameof(NodeBase.Id)
-                        || key == nameof(NodeBase.ChildContent)
-                        || key == nameof(NodeBase.OnCreate)
-                        || key == nameof(NodeBase.X)
-                        || key == nameof(NodeBase.XChanged)
-                        || key == nameof(NodeBase.Y)
-                        || key == nameof(NodeBase.YChanged))
+                        foreach (var (key, value) in node.Attributes)
                         {
-                            continue;
+                            if (key == nameof(NodeBase.Id)
+                            || key == nameof(NodeBase.ChildContent)
+                            || key == nameof(NodeBase.OnCreate)
+                            || key == nameof(NodeBase.X)
+                            || key == nameof(NodeBase.XChanged)
+                            || key == nameof(NodeBase.Y)
+                            || key == nameof(NodeBase.YChanged))
+                            {
+                                continue;
+                            }
+                            builder.AddAttribute(i, key, value);
+                            ++i;
                         }
-                        builder.AddAttribute(i, key, value);
-                        ++i;
                     }
                     builder.SetKey(node.Id);
                     builder.AddComponentReferenceCapture(7, (reference) =>

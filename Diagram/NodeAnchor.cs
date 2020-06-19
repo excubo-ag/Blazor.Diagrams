@@ -18,12 +18,12 @@
         /// The relative horizontal position of the anchor in reference to the node. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// Only used if Port is not used.
         /// </summary>
-        public double RelativeX { private get; set; }
+        public double RelativeX { internal get; set; }
         /// <summary>
         /// The relative vertical position of the anchor in reference to the node. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// Only used if Port is not used.
         /// </summary>
-        public double RelativeY { private get; set; }
+        public double RelativeY { internal get; set; }
         /// <summary>
         /// The absolute horizontal position of the anchor.
         /// </summary>

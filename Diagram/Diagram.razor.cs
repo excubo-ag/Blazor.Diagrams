@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    //TODO#07 image node
-    //TODO#06 auto-layout
-    //TODO#05 undo/redo
-    //TODO#04 background
+    //TODO#06 undo/redo
+    //TODO#05 background
+    //TODO#04 auto-layout
     //TODO#03 virtualization
     //TODO#02 overview screen
     //TODO#01 common shape nodes (e.g. db, ...)
+    //TODO#00 image node
     public partial class Diagram
     {
         #region diagram position

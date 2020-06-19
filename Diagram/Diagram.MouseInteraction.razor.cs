@@ -1,6 +1,5 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components.Web;
-using System;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -71,46 +70,26 @@ namespace Excubo.Blazor.Diagrams
                     EndLink(e);
                     break;
                 case ActionType.ModifyLink when ActiveElementType == HoverType.ControlPoint:
-                    ActionObject = ActiveElement;
-                    Action = ActionType.Move;
+                    StartControlPointMove();
                     break;
-                case ActionType.ModifyLink when ActionObject is LinkBase link:
-                    // another click means ending the current action and starting a new one
-                    link.Deselect();
-                    ActionObject = null;
-                    Action = ActionType.None;
-                    StartAction(e);
+                case ActionType.ModifyLink when ActionObject is LinkBase:
+                    StopModifyingLink(e);
                     break;
-
             }
         }
         private void OnMouseUp(MouseEventArgs e)
         {
             switch (Action)
             {
+                case ActionType.Move when ActionObject is AssociatedAnchor:
+                    FixNodeAnchor(e);
+                    break;
+                case ActionType.Move when ActionObject is ControlPoint point:
+                    GoBackToEditingLink(point);
+                    break;
                 case ActionType.Move:
                 case ActionType.Pan:
-                    if (ActionObject is AssociatedAnchor)
-                    {
-                        FixNodeAnchor(e);
-                    }
-                    else if (ActionObject is ControlPoint point)
-                    {
-                        // go back to edit mode of the link
-                        ActionObject = point.Link;
-                        Action = ActionType.ModifyLink;
-                    }
-                    else
-                    {
-                        // active stop the action
-                        ActionObject = null;
-                        Action = ActionType.None;
-                        if (Group.Nodes.Count == 1)
-                        {
-                            Group.Nodes[0].Deselect();
-                        }
-                        NewNodeAddingInProgress = false;
-                    }
+                    StopAction();
                     break;
                 case ActionType.None:
                     // nothing to do here
@@ -124,6 +103,35 @@ namespace Excubo.Blazor.Diagrams
                     // therefore, the mouse up movement shouldn't change the process.
                     break;
             }
+        }
+        private void GoBackToEditingLink(ControlPoint point)
+        {
+            ActionObject = point.Link;
+            Action = ActionType.ModifyLink;
+        }
+        private void StopAction()
+        {
+            ActionObject = null;
+            Action = ActionType.None;
+            if (Group.Nodes.Count == 1)
+            {
+                Group.Nodes[0].Deselect();
+            }
+            NewNodeAddingInProgress = false;
+        }
+        private void StopModifyingLink(MouseEventArgs e)
+        {
+            // another click means ending the current action and starting a new one
+            var link = ActionObject as LinkBase;
+            link.Deselect();
+            ActionObject = null;
+            Action = ActionType.None;
+            StartAction(e);
+        }
+        private void StartControlPointMove()
+        {
+            ActionObject = ActiveElement;
+            Action = ActionType.Move;
         }
         private void FollowCursorForLinkTarget(MouseEventArgs e)
         {
@@ -146,6 +154,7 @@ namespace Excubo.Blazor.Diagrams
         }
         private void MoveControlPoint(MouseEventArgs e)
         {
+            // TODO make undoable
             if (original_cursor_position != null)
             {
                 var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
@@ -170,7 +179,11 @@ namespace Excubo.Blazor.Diagrams
             else
             {
                 original_cursor_position = new Point(e.ClientX, e.ClientY);
-                var (_, anchor) = ActionObject as AssociatedAnchor;
+                var associated_anchor = ActionObject as AssociatedAnchor;
+                var (_, anchor) = associated_anchor;
+                associated_anchor.OldNode = anchor.Node;
+                associated_anchor.OldRelativeX = anchor.RelativeX;
+                associated_anchor.OldRelativeY = anchor.RelativeY;
                 anchor.Node = null;
                 anchor.NodeId = null;
                 anchor.RelativeX = e.RelativeXToOrigin(this);
@@ -179,6 +192,7 @@ namespace Excubo.Blazor.Diagrams
         }
         private void MoveGroup(MouseEventArgs e)
         {
+            // TODO make undoable
             if (original_cursor_position != null)
             {
                 var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
@@ -196,18 +210,21 @@ namespace Excubo.Blazor.Diagrams
         }
         private void FixNodeAnchor(MouseEventArgs e)
         {
-            var (link, anchor) = ActionObject as AssociatedAnchor;
-            if (ActiveElement is NodeBase node)
+            var associated_anchor = ActionObject as AssociatedAnchor;
+            var (link, anchor) = associated_anchor;
+            var node = ActiveElement as NodeBase;
+            var (x, y) = (node != null) ? e.RelativeTo(node) : e.RelativeToOrigin(this);
+            Changes.NewAndDo(new ChangeAction(() =>
             {
                 anchor.Node = node;
-                anchor.RelativeX = e.RelativeXTo(node);
-                anchor.RelativeY = e.RelativeYTo(node);
-            }
-            else
+                anchor.RelativeX = x;
+                anchor.RelativeY = y;
+            }, () =>
             {
-                anchor.RelativeX = e.RelativeXToOrigin(this);
-                anchor.RelativeY = e.RelativeYToOrigin(this);
-            }
+                anchor.Node = associated_anchor.OldNode;
+                anchor.RelativeX = associated_anchor.OldRelativeX;
+                anchor.RelativeY = associated_anchor.OldRelativeY;
+            }));
             ActionObject = link;
             Action = ActionType.ModifyLink;
         }
@@ -226,6 +243,7 @@ namespace Excubo.Blazor.Diagrams
                 link.Target.RelativeX = e.RelativeXToOrigin(this);
                 link.Target.RelativeY = e.RelativeYToOrigin(this);
             }
+            Changes.New(new ChangeAction(() => { Links.Add(link); }, () => { Links.Remove(link); }));
             Action = ActionType.None;
         }
         private void StartAction(MouseEventArgs e)
@@ -244,15 +262,7 @@ namespace Excubo.Blazor.Diagrams
                     CreateNewLink(e);
                     break;
                 case HoverType.Node when !e.CtrlKey:
-                    var active_node = ActiveElement as NodeBase;
-                    if (!Group.Contains(active_node))
-                    {
-                        Group.Clear();
-                        Group.Add(active_node);
-                        active_node.Select();
-                    }
-                    // we want to move now
-                    Action = ActionType.Move;
+                    StartMove();
                     break;
                 case HoverType.Node when e.CtrlKey:
                     // this is a selection/deselection, but the action type is not yet known.
@@ -271,6 +281,18 @@ namespace Excubo.Blazor.Diagrams
                     CreateNewNode();
                     break;
             }
+        }
+        private void StartMove()
+        {
+            var active_node = ActiveElement as NodeBase;
+            if (!Group.Contains(active_node))
+            {
+                Group.Clear();
+                Group.Add(active_node);
+                active_node.Select();
+            }
+            // we want to move now
+            Action = ActionType.Move;
         }
         private void TriggerSelectionOfNode()
         {
@@ -291,6 +313,14 @@ namespace Excubo.Blazor.Diagrams
             var node = ActiveElement as NodeBase;
             Nodes.AddNewNode(node, (new_node) =>
             {
+                Changes.New(new ChangeAction(() =>
+                {
+                    Nodes.Add(new_node);
+                },
+                () =>
+                {
+                    Nodes.Remove(new_node);
+                }));
                 Group.Clear();
                 Group = new Group();
                 Group.Add(new_node);
@@ -303,7 +333,7 @@ namespace Excubo.Blazor.Diagrams
         private void CreateNewLink(MouseEventArgs e)
         {
             var node = ActiveElement as NodeBase;
-            Links.AddLink(node, e, (generated_link) =>
+            Links.AddNewLink(node, e, (generated_link) =>
             {
                 ActionObject = generated_link;
                 Action = ActionType.UpdateLinkTarget;
