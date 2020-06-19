@@ -4,28 +4,30 @@
 <Diagram @ref="Diagram">
     <NodeLibrary style="background-color: aliceblue; border: 1px solid blue;" Orientation="Orientation.Vertical">
         <RectangleNode>
-            Hello template
+            Template rectangle
         </RectangleNode>
         <RectangleNode>
-            <input style="margin:1em; pointer-events:visiblePainted" type="text" />
+            <input style="margin:1em; pointer-events:visiblePainted" type="text" placeholder="editable!" />
         </RectangleNode>
         <DiamondNode>
-            Hello template
+            Template diamond
         </DiamondNode>
         <EllipseNode>
-            Hello template
+            Template Ellipse
         </EllipseNode>
         <Node Type="NodeType.Ellipse">
-            Hello template
+            Template Node
         </Node>
         <UserNodeCode>
-            Hello user code
+            Template User-defined!
         </UserNodeCode>
     </NodeLibrary>
     <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved" OnAdd="NodeAdded">
         <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
-        <Node Id="def" X="1000" Y="500">
-            Hello node @context.Id
+        <Node Id="123" X="800" Y="200">
+            <div style="width:5em">
+                Hello node with id @context.Id
+            </div>
         </Node>
 
         <!---->
@@ -44,8 +46,8 @@
             </DiamondNode>
         }
         <!-- Custom node, inherits from NodeBase. -->
-        <UserNodeCode Id="abc" X="10" Y="20">
-            Hello custom node
+        <UserNodeCode Id="abc" X="800" Y="600">
+            Hello custom node.
         </UserNodeCode>
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
@@ -77,14 +79,14 @@
         new MyNodeDefinition
         {
             Id = "state1",
-            X = 100,
-            Y = 0
+            X = 300,
+            Y = 200
         },
         new MyNodeDefinition
         {
             Id = "state2",
-            X = 400,
-            Y = 20
+            X = 700,
+            Y = 400
         }
     };
     List<MyNodeDefinition> decisions = new List<MyNodeDefinition>
@@ -92,15 +94,15 @@
         new MyNodeDefinition
         {
             Id = "decision1",
-            X = 100,
-            Y = 100
+            X = 500,
+            Y = 300
         }
     };
     List<MyLinkDefinition> links = new List<MyLinkDefinition>
     {
-        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "abc" }, Target = new NodeAnchor { NodeId = "def" }, Type = LinkType.Angled },
-        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "state1" }, Target = new NodeAnchor { NodeId = "decision1" }, Type = LinkType.Curved },
-        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "decision1" }, Target = new NodeAnchor { NodeId = "state2" }, Type = LinkType.Straight }
+        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "abc", Port = Position.North }, Target = new NodeAnchor { NodeId = "123", Port = Position.South }, Type = LinkType.Angled },
+        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "state1", Port = Position.SouthEast }, Target = new NodeAnchor { NodeId = "decision1", Port = Position.NorthWest }, Type = LinkType.Curved },
+        new MyLinkDefinition { Source = new NodeAnchor { NodeId = "decision1", Port = Position.SouthEast }, Target = new NodeAnchor { NodeId = "state2", Port = Position.NorthWest }, Type = LinkType.Straight }
     };
     List<MyNodeDefinition> created_nodes = new List<MyNodeDefinition>
     {
