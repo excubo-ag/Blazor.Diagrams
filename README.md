@@ -32,7 +32,9 @@ dotnet add package Excubo.Blazor.Diagrams --version 0.5.0
 <PackageReference Include="Excubo.Blazor.Diagrams" Version="0.5.0" />
 ```
 
-### 2. Add the css and js to your `index.html` / `_Hosts.cshtml`
+### 2. Add the js to your `index.html` / `_Hosts.cshtml`
+
+Don't worry, it's a tiny payload: the JS only weighs around 200 bytes. CSS is only downloaded on demand, so your page load isn't affected by that (and it's tiny too).
 
 ```html
 <head>
