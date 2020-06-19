@@ -8,16 +8,14 @@ namespace Excubo.Blazor.Diagrams
 {
     public class LinkBase : ComponentBase
     {
-        private AssociatedAnchor source;
-        private AssociatedAnchor target;
         /// <summary>
         /// The source anchor for the link.
         /// </summary>
-        [Parameter] public NodeAnchor Source { get => source?.Anchor; set { source = new AssociatedAnchor(this, value); } }
+        [Parameter] public NodeAnchor Source { get; set; }
         /// <summary>
         /// The target anchor for the link.
         /// </summary>
-        [Parameter] public NodeAnchor Target { get => target?.Anchor; set { target = new AssociatedAnchor(this, value); } }
+        [Parameter] public NodeAnchor Target { get; set; }
         /// <summary>
         /// NOT INTENDED FOR USE BY USERS.
         /// Callback for when the link has been created. This is only invoked for links that are created during interactive usage of the diagram, not for links that are provided declaratively.
@@ -90,26 +88,16 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected double Zoom => Diagram.NavigationSettings.Zoom;
-        private void ChangeHover(HoverType hover_type, object @object)
-        {
-            if (Links != null)
-            {
-                Diagram.ActiveElement = @object;
-                Diagram.ActiveElementType = hover_type;
-                StateHasChanged();
-            }
-        }
         #region control points
-        protected void OnLinkOver(MouseEventArgs _) => ChangeHover(HoverType.Link, this);
-        protected void OnLinkOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown, null);
-        private void OnControlPointOver(ControlPoint control_point) => ChangeHover(HoverType.ControlPoint, control_point);
-        private void OnControlPointOut() => ChangeHover(HoverType.Unknown, null);
-        private void OnAnchorOver(AssociatedAnchor anchor) => ChangeHover(HoverType.ControlPoint, anchor);
-        private void OnAnchorOut() => ChangeHover(HoverType.Unknown, null);
-        private void OnSourceOver(ControlPoint _) => OnAnchorOver(source);
-        private void OnTargetOver(ControlPoint _) => OnAnchorOver(target);
-        private void OnSourceOut() => OnAnchorOut();
-        private void OnTargetOut() => OnAnchorOut();
+        protected void OnLinkOver(MouseEventArgs _) => Diagram.SetActiveElement(this, HoverType.Link);
+        protected void OnLinkOut(MouseEventArgs _) => Diagram.DeactivateElement();
+        private void OnControlPointOver(ControlPoint control_point) => Diagram.SetActiveElement(control_point, HoverType.ControlPoint);
+        private void OnControlPointOut() => Diagram.DeactivateElement();
+        private void OnAnchorOver(NodeAnchor anchor) => Diagram.SetActiveElement(this, anchor, HoverType.Anchor);
+        private void OnSourceOver(ControlPoint _) => OnAnchorOver(Source);
+        private void OnTargetOver(ControlPoint _) => OnAnchorOver(Target);
+        private void OnSourceOut() => Diagram.DeactivateElement();
+        private void OnTargetOut() => Diagram.DeactivateElement();
         protected List<ControlPoint> ControlPoints = new List<ControlPoint>();
         protected List<Func<(double X, double Y)>> ControlPointMethods;
         private void UpdateControlPoints()

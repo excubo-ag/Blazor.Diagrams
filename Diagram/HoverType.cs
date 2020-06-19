@@ -7,6 +7,7 @@
         Border,
         NewNode,
         ControlPoint,
-        Link
+        Link,
+        Anchor
     }
 }

@@ -58,25 +58,10 @@ namespace Excubo.Blazor.Diagrams
         #region hover
         internal void MarkDeleted() { Deleted = true; StateHasChanged(); }
         internal void MarkUndeleted() { Deleted = false; StateHasChanged(); }
-        private void ChangeHover(HoverType hover_type)
-        {
-            Hovered = hover_type == HoverType.Node || hover_type == HoverType.Border;
-            if (Nodes != null)
-            {
-                Diagram.ActiveElement = this;
-                Diagram.ActiveElementType = hover_type;
-                StateHasChanged();
-            }
-            if (NodeLibrary != null)
-            {
-                Diagram.ActiveElement = this;
-                Diagram.ActiveElementType = hover_type == HoverType.Node ? HoverType.NewNode : HoverType.Unknown;
-            }
-        }
-        protected void OnNodeOver(MouseEventArgs _) => ChangeHover(HoverType.Node);
-        protected void OnNodeOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
-        protected void OnBorderOver(MouseEventArgs _) => ChangeHover(HoverType.Border);
-        protected void OnBorderOut(MouseEventArgs _) => ChangeHover(HoverType.Unknown);
+        protected void OnNodeOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, (NodeLibrary == null) ? HoverType.Node : HoverType.NewNode); }
+        protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
+        protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, HoverType.Border); }
+        protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
         #endregion
         public void UpdatePosition(double x, double y)
         {

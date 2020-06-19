@@ -3,19 +3,35 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace Excubo.Blazor.Diagrams
 {
-    internal enum ActionType
-    {
-        None,
-        Pan,
-        SelectRegion,
-        Move,
-        UpdateLinkTarget,
-        ModifyLink
-    }
     public partial class Diagram
     {
-        internal object ActiveElement { private get; set; } // TODO improve type
-        internal HoverType ActiveElementType { private get; set; }
+        internal void SetActiveElement(NodeBase node, HoverType hover_type)
+        {
+            ActiveElement = node;
+            ActiveElementType = hover_type;
+        }
+        internal void SetActiveElement(LinkBase link, HoverType hover_type)
+        {
+            ActiveElement = link;
+            ActiveElementType = hover_type;
+        }
+        internal void SetActiveElement(ControlPoint control_point, HoverType hover_type)
+        {
+            ActiveElement = control_point;
+            ActiveElementType = hover_type;
+        }
+        internal void SetActiveElement(LinkBase link, NodeAnchor anchor, HoverType hover_type)
+        {
+            ActiveElement = new AssociatedAnchor(link, anchor);
+            ActiveElementType = hover_type;
+        }
+        internal void DeactivateElement()
+        {
+            ActiveElement = null;
+            ActiveElementType = HoverType.Unknown;
+        }
+        private object ActiveElement { get; set; } // TODO improve type
+        private HoverType ActiveElementType { get; set; }
         private object ActionObject { get; set; } // TODO improve type
         private ActionType Action { get; set; }
         private bool NewNodeAddingInProgress { get; set; }
@@ -30,13 +46,13 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
                     break;
-                case ActionType.Move when ActionObject is ControlPoint && e.Buttons == 1:
+                case ActionType.MoveControlPoint when e.Buttons == 1:
                     MoveControlPoint(e);
                     break;
-                case ActionType.Move when ActionObject is AssociatedAnchor && e.Buttons == 1:
+                case ActionType.MoveAnchor when e.Buttons == 1:
                     MoveNodeAnchor(e);
                     break;
-                case ActionType.Move when !(ActionObject is ControlPoint || ActionObject is AssociatedAnchor) && e.Buttons == 1:
+                case ActionType.Move when e.Buttons == 1:
                     MoveGroup(e);
                     break;
                 case ActionType.UpdateLinkTarget:
@@ -58,6 +74,8 @@ namespace Excubo.Blazor.Diagrams
             switch (Action)
             {
                 case ActionType.Move:
+                case ActionType.MoveAnchor:
+                case ActionType.MoveControlPoint:
                     // nothing to be done here
                     break;
                 case ActionType.None:
@@ -69,8 +87,11 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.UpdateLinkTarget:
                     EndLink(e);
                     break;
+                case ActionType.ModifyLink when ActiveElementType == HoverType.Anchor:
+                    StartMoveAnchor();
+                    break;
                 case ActionType.ModifyLink when ActiveElementType == HoverType.ControlPoint:
-                    StartControlPointMove();
+                    StartMoveControlPoint();
                     break;
                 case ActionType.ModifyLink when ActionObject is LinkBase:
                     StopModifyingLink(e);
@@ -81,11 +102,11 @@ namespace Excubo.Blazor.Diagrams
         {
             switch (Action)
             {
-                case ActionType.Move when ActionObject is AssociatedAnchor:
+                case ActionType.MoveAnchor:
                     FixNodeAnchor(e);
                     break;
-                case ActionType.Move when ActionObject is ControlPoint point:
-                    GoBackToEditingLink(point);
+                case ActionType.MoveControlPoint:
+                    GoBackToEditingLink();
                     break;
                 case ActionType.Move:
                 case ActionType.Pan:
@@ -104,8 +125,9 @@ namespace Excubo.Blazor.Diagrams
                     break;
             }
         }
-        private void GoBackToEditingLink(ControlPoint point)
+        private void GoBackToEditingLink()
         {
+            var point = ActionObject as ControlPoint;
             ActionObject = point.Link;
             Action = ActionType.ModifyLink;
         }
@@ -128,10 +150,15 @@ namespace Excubo.Blazor.Diagrams
             Action = ActionType.None;
             StartAction(e);
         }
-        private void StartControlPointMove()
+        private void StartMoveAnchor()
         {
             ActionObject = ActiveElement;
-            Action = ActionType.Move;
+            Action = ActionType.MoveAnchor;
+        }
+        private void StartMoveControlPoint()
+        {
+            ActionObject = ActiveElement;
+            Action = ActionType.MoveControlPoint;
         }
         private void FollowCursorForLinkTarget(MouseEventArgs e)
         {
@@ -268,9 +295,13 @@ namespace Excubo.Blazor.Diagrams
                     // this is a selection/deselection, but the action type is not yet known.
                     TriggerSelectionOfNode();
                     break;
+                case HoverType.Anchor:
+                    ActionObject = ActiveElement;
+                    Action = ActionType.MoveAnchor;
+                    break;
                 case HoverType.ControlPoint:
                     ActionObject = ActiveElement;
-                    Action = ActionType.Move;
+                    Action = ActionType.MoveControlPoint;
                     break;
                 case HoverType.Link:
                     ActionObject = ActiveElement;
