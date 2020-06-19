@@ -1,41 +1,112 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components.Web;
+using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Excubo.Blazor.Diagrams
 {
     public partial class Diagram
     {
+        private class ActiveElementContainer
+        {
+            internal NodeBase Node { get; private set; }
+            internal LinkBase Link { get; private set; }
+            internal ControlPoint ControlPoint { get; private set; }
+            internal NodeAnchor Anchor { get; private set; }
+            internal double X { get; private set; }
+            internal double Y { get; private set; }
+            internal Point Point { get; private set; }
+            internal Point Origin { get; private set; }
+            internal void Set(NodeBase node)
+            {
+                Node = node;
+                Link = null;
+                ControlPoint = null;
+                Anchor = null;
+                Point = null;
+            }
+            internal void Set(LinkBase link)
+            {
+                Node = null;
+                Link = link;
+                ControlPoint = null;
+                Anchor = null;
+                Point = null;
+            }
+            internal void Set(LinkBase link, ControlPoint control_point)
+            {
+                Node = null;
+                Link = link;
+                ControlPoint = control_point;
+                Anchor = null;
+                Point = null;
+            }
+            internal void Set(LinkBase link, NodeAnchor anchor)
+            {
+                Node = null;
+                Link = link;
+                ControlPoint = null;
+                Anchor = anchor;
+                Point = null;
+            }
+            internal void Clear()
+            {
+                Node = null;
+                Link = null;
+                ControlPoint = null;
+                Anchor = null;
+                Point = null;
+            }
+            internal void Remember(NodeBase node, double x, double y)
+            {
+                Node = node;
+                X = x;
+                Y = y;
+            }
+            internal void RememberOrigin(Point point)
+            {
+                Origin = point;
+            }
+            internal void SetPoint(Point point)
+            {
+                Point = point;
+            }
+            internal void ResetPoint()
+            {
+                Point = null;
+            }
+        }
+        private readonly ActiveElementContainer ActiveElement = new ActiveElementContainer();
         internal void SetActiveElement(NodeBase node, HoverType hover_type)
         {
-            ActiveElement = node;
+            ActiveElement.Set(node);
             ActiveElementType = hover_type;
         }
         internal void SetActiveElement(LinkBase link, HoverType hover_type)
         {
-            ActiveElement = link;
+            ActiveElement.Set(link);
             ActiveElementType = hover_type;
         }
-        internal void SetActiveElement(ControlPoint control_point, HoverType hover_type)
+        internal void SetActiveElement(LinkBase link, ControlPoint control_point, HoverType hover_type)
         {
-            ActiveElement = control_point;
+            ActiveElement.Set(link, control_point);
             ActiveElementType = hover_type;
         }
         internal void SetActiveElement(LinkBase link, NodeAnchor anchor, HoverType hover_type)
         {
-            ActiveElement = new AssociatedAnchor(link, anchor);
+            ActiveElement.Set(link, anchor);
             ActiveElementType = hover_type;
         }
         internal void DeactivateElement()
         {
-            ActiveElement = null;
+            ActiveElement.Clear();
             ActiveElementType = HoverType.Unknown;
         }
-        private object ActiveElement { get; set; } // TODO improve type
         private HoverType ActiveElementType { get; set; }
-        private object ActionObject { get; set; } // TODO improve type
+        private readonly ActiveElementContainer ActionObject = new ActiveElementContainer();
         private ActionType Action { get; set; }
         private bool NewNodeAddingInProgress { get; set; }
-        private Point original_cursor_position;
         private void OnMouseMove(MouseEventArgs e)
         {
             switch (Action)
@@ -60,7 +131,7 @@ namespace Excubo.Blazor.Diagrams
                     break;
                 default:
                     // no action, reset original_cursor_position
-                    original_cursor_position = null;
+                    ActionObject.ResetPoint();
                     break;
             }
         }
@@ -93,7 +164,7 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.ModifyLink when ActiveElementType == HoverType.ControlPoint:
                     StartMoveControlPoint();
                     break;
-                case ActionType.ModifyLink when ActionObject is LinkBase:
+                case ActionType.ModifyLink when ActionObject.Link != null:
                     StopModifyingLink(e);
                     break;
             }
@@ -109,8 +180,10 @@ namespace Excubo.Blazor.Diagrams
                     GoBackToEditingLink();
                     break;
                 case ActionType.Move:
+                    StopMove();
+                    break;
                 case ActionType.Pan:
-                    StopAction();
+                    Action = ActionType.None;
                     break;
                 case ActionType.None:
                     // nothing to do here
@@ -127,13 +200,36 @@ namespace Excubo.Blazor.Diagrams
         }
         private void GoBackToEditingLink()
         {
-            var point = ActionObject as ControlPoint;
-            ActionObject = point.Link;
+            var cp = ActionObject.ControlPoint;
+            var (new_x, new_y) = (ActionObject.ControlPoint.X, ActionObject.ControlPoint.Y);
+            var (old_x, old_y) = (ActionObject.Origin.X, ActionObject.ControlPoint.Y);
+            Changes.New(new ChangeAction(() => { (cp.X, cp.Y) = (new_x, new_y); }, () => { (cp.X, cp.Y) = (old_x, old_y); }));
+            var link = ActionObject.Link;
+            ActionObject.Set(link);
             Action = ActionType.ModifyLink;
         }
-        private void StopAction()
+        private void StopMove()
         {
-            ActionObject = null;
+            var nodes = Group.Nodes.ToList();
+            var positions = nodes.Select(n => (X: n.X, Y: n.Y)).ToList();
+            var (delta_x, delta_y) = (ActionObject.Node.X - ActionObject.Origin.X, ActionObject.Node.Y - ActionObject.Origin.Y);
+            var old_positions = nodes.Select(n => (X: n.X - delta_x, Y: n.Y - delta_y)).ToList();
+            Changes.New(new ChangeAction(() => 
+            {
+                foreach (var (node, position) in nodes.Zip(positions, (n, p) => (n, p)))
+                {
+                    (node.X, node.Y) = (position.X, position.Y);
+                    node.TriggerStateHasChanged();
+                }
+            }, () =>
+            {
+                foreach (var (node, position) in nodes.Zip(old_positions, (n, p) => (n, p)))
+                {
+                    (node.X, node.Y) = (position.X, position.Y);
+                    node.TriggerStateHasChanged();
+                }
+            }));
+            ActionObject.Clear();
             Action = ActionType.None;
             if (Group.Nodes.Count == 1)
             {
@@ -144,73 +240,71 @@ namespace Excubo.Blazor.Diagrams
         private void StopModifyingLink(MouseEventArgs e)
         {
             // another click means ending the current action and starting a new one
-            var link = ActionObject as LinkBase;
+            var link = ActionObject.Link;
             link.Deselect();
-            ActionObject = null;
+            ActionObject.Clear();
             Action = ActionType.None;
             StartAction(e);
         }
         private void StartMoveAnchor()
         {
-            ActionObject = ActiveElement;
+            ActionObject.Set(ActiveElement.Link, ActiveElement.Anchor);
             Action = ActionType.MoveAnchor;
         }
         private void StartMoveControlPoint()
         {
-            ActionObject = ActiveElement;
+            ActionObject.Set(ActiveElement.Link, ActiveElement.ControlPoint);
             Action = ActionType.MoveControlPoint;
         }
         private void FollowCursorForLinkTarget(MouseEventArgs e)
         {
-            var link = ActionObject as LinkBase;
+            var link = ActionObject.Link;
             link.Target.RelativeX = e.RelativeXToOrigin(this);
             link.Target.RelativeY = e.RelativeYToOrigin(this);
         }
         private void Pan(MouseEventArgs e)
         {
-            if (original_cursor_position != null)
+            if (ActionObject.Point != null)
             {
-                NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - original_cursor_position.X) / NavigationSettings.Zoom;
-                NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - original_cursor_position.Y) / NavigationSettings.Zoom;
-                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
+                NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - ActionObject.Point.X) / NavigationSettings.Zoom;
+                NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - ActionObject.Point.Y) / NavigationSettings.Zoom;
+                (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
             }
             else
             {
-                original_cursor_position = new Point(e.ClientX, e.ClientY);
+                ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
             }
         }
         private void MoveControlPoint(MouseEventArgs e)
         {
-            // TODO make undoable
-            if (original_cursor_position != null)
+            if (ActionObject.Point != null)
             {
-                var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
-                var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
-                (ActionObject as ControlPoint).X += delta_x;
-                (ActionObject as ControlPoint).Y += delta_y;
-                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
+                var point = ActionObject.ControlPoint;
+                var delta_x = e.RelativeXTo(ActionObject.Point) / NavigationSettings.Zoom;
+                var delta_y = e.RelativeYTo(ActionObject.Point) / NavigationSettings.Zoom;
+                point.X += delta_x;
+                point.Y += delta_y;
+                (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
             }
             else
             {
-                original_cursor_position = new Point(e.ClientX, e.ClientY);
+                ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
+                ActionObject.RememberOrigin(new Point(ActionObject.ControlPoint.X, ActionObject.ControlPoint.Y));
             }
         }
         private void MoveNodeAnchor(MouseEventArgs e)
         {
-            if (original_cursor_position != null)
+            if (ActionObject.Point != null)
             {
-                var (_, anchor) = ActionObject as AssociatedAnchor;
+                var anchor = ActionObject.Anchor;
                 anchor.RelativeX = e.RelativeXToOrigin(this);
                 anchor.RelativeY = e.RelativeYToOrigin(this);
             }
             else
             {
-                original_cursor_position = new Point(e.ClientX, e.ClientY);
-                var associated_anchor = ActionObject as AssociatedAnchor;
-                var (_, anchor) = associated_anchor;
-                associated_anchor.OldNode = anchor.Node;
-                associated_anchor.OldRelativeX = anchor.RelativeX;
-                associated_anchor.OldRelativeY = anchor.RelativeY;
+                ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
+                var anchor = ActionObject.Anchor;
+                ActionObject.Remember(anchor.Node, anchor.RelativeX, anchor.RelativeY);
                 anchor.Node = null;
                 anchor.NodeId = null;
                 anchor.RelativeX = e.RelativeXToOrigin(this);
@@ -219,27 +313,26 @@ namespace Excubo.Blazor.Diagrams
         }
         private void MoveGroup(MouseEventArgs e)
         {
-            // TODO make undoable
-            if (original_cursor_position != null)
+            if (ActionObject.Point != null)
             {
-                var delta_x = e.RelativeXTo(original_cursor_position) / NavigationSettings.Zoom;
-                var delta_y = e.RelativeYTo(original_cursor_position) / NavigationSettings.Zoom;
+                var delta_x = e.RelativeXTo(ActionObject.Point) / NavigationSettings.Zoom;
+                var delta_y = e.RelativeYTo(ActionObject.Point) / NavigationSettings.Zoom;
                 foreach (var node in Group.Nodes)
                 {
                     node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
                 }
-                (original_cursor_position.X, original_cursor_position.Y) = (e.ClientX, e.ClientY);
+                (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
             }
             else
             {
-                original_cursor_position = new Point(e.ClientX, e.ClientY);
+                ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
+                ActionObject.RememberOrigin(new Point(ActionObject.Node.X, ActionObject.Node.Y));
             }
         }
         private void FixNodeAnchor(MouseEventArgs e)
         {
-            var associated_anchor = ActionObject as AssociatedAnchor;
-            var (link, anchor) = associated_anchor;
-            var node = ActiveElement as NodeBase;
+            var (anchor, old_node, old_x, old_y) = (ActionObject.Anchor, ActionObject.Node, ActionObject.X, ActionObject.Y);
+            var node = ActiveElement.Node;
             var (x, y) = (node != null) ? e.RelativeTo(node) : e.RelativeToOrigin(this);
             Changes.NewAndDo(new ChangeAction(() =>
             {
@@ -248,17 +341,18 @@ namespace Excubo.Blazor.Diagrams
                 anchor.RelativeY = y;
             }, () =>
             {
-                anchor.Node = associated_anchor.OldNode;
-                anchor.RelativeX = associated_anchor.OldRelativeX;
-                anchor.RelativeY = associated_anchor.OldRelativeY;
+                anchor.Node = old_node;
+                anchor.RelativeX = old_x;
+                anchor.RelativeY = old_y;
             }));
-            ActionObject = link;
+            ActionObject.Set(ActionObject.Link);
             Action = ActionType.ModifyLink;
         }
         private void EndLink(MouseEventArgs e)
         {
-            var link = ActionObject as LinkBase;
-            if (ActiveElement is NodeBase node)
+            var link = ActionObject.Link;
+            var node = ActiveElement.Node;
+            if (node != null)
             {
                 link.Target.Node = node;
                 link.Target.RelativeX = e.RelativeXTo(node);
@@ -296,16 +390,16 @@ namespace Excubo.Blazor.Diagrams
                     TriggerSelectionOfNode();
                     break;
                 case HoverType.Anchor:
-                    ActionObject = ActiveElement;
+                    ActionObject.Set(ActiveElement.Link, ActiveElement.Anchor);
                     Action = ActionType.MoveAnchor;
                     break;
                 case HoverType.ControlPoint:
-                    ActionObject = ActiveElement;
+                    ActionObject.Set(ActiveElement.Link, ActiveElement.ControlPoint);
                     Action = ActionType.MoveControlPoint;
                     break;
                 case HoverType.Link:
-                    ActionObject = ActiveElement;
-                    (ActiveElement as LinkBase).Select();
+                    ActionObject.Set(ActiveElement.Link);
+                    ActiveElement.Link.Select();
                     Action = ActionType.ModifyLink;
                     break;
                 case HoverType.NewNode:
@@ -315,19 +409,19 @@ namespace Excubo.Blazor.Diagrams
         }
         private void StartMove()
         {
-            var active_node = ActiveElement as NodeBase;
+            ActionObject.Set(ActiveElement.Node);
+            var active_node = ActiveElement.Node;
             if (!Group.Contains(active_node))
             {
                 Group.Clear();
                 Group.Add(active_node);
                 active_node.Select();
             }
-            // we want to move now
             Action = ActionType.Move;
         }
         private void TriggerSelectionOfNode()
         {
-            var node = ActiveElement as NodeBase;
+            var node = ActiveElement.Node;
             if (Group.Contains(node))
             {
                 Group.Remove(node);
@@ -341,32 +435,25 @@ namespace Excubo.Blazor.Diagrams
         }
         private void CreateNewNode()
         {
-            var node = ActiveElement as NodeBase;
+            var node = ActiveElement.Node;
             Nodes.AddNewNode(node, (new_node) =>
             {
-                Changes.New(new ChangeAction(() =>
-                {
-                    Nodes.Add(new_node);
-                },
-                () =>
-                {
-                    Nodes.Remove(new_node);
-                }));
+                Changes.New(new ChangeAction(() => Nodes.Add(new_node), () => Nodes.Remove(new_node)));
                 Group.Clear();
                 Group = new Group();
                 Group.Add(new_node);
                 new_node.Select();
-                ActionObject = new_node;
+                ActionObject.Set(new_node);
                 Action = ActionType.Move;
                 NewNodeAddingInProgress = true;
             });
         }
         private void CreateNewLink(MouseEventArgs e)
         {
-            var node = ActiveElement as NodeBase;
+            var node = ActiveElement.Node;
             Links.AddNewLink(node, e, (generated_link) =>
             {
-                ActionObject = generated_link;
+                ActionObject.Set(generated_link);
                 Action = ActionType.UpdateLinkTarget;
                 generated_link.Select();
             });

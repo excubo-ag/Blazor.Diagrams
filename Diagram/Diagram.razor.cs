@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    //TODO#06 undo/redo
     //TODO#05 background
     //TODO#04 auto-layout
     //TODO#03 virtualization

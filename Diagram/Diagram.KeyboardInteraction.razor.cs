@@ -23,14 +23,16 @@ namespace Excubo.Blazor.Diagrams
             {
                 Changes.Undo();
             }
-            else if (e.Key == "Z" && e.CtrlKey && e.ShiftKey)
+            else if ((e.Key == "Z" && e.CtrlKey && e.ShiftKey)
+                  || (e.Key == "y" && e.CtrlKey && !e.ShiftKey))
             {
                 Changes.Redo();
             }
             else if (e.Key == "Delete" || e.Key == "Backspace")
             {
-                if (ActionObject is LinkBase link)
+                if (ActionObject.Link != null)
                 {
+                    var link = ActionObject.Link;
                     Changes.NewAndDo(new ChangeAction(() => Links.Remove(link), () => Links.Add(link)));
                 }
                 else if (Group.Nodes.Any())

@@ -19,17 +19,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.4.0
+Install-Package Excubo.Blazor.Diagrams -Version 0.5.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.4.0
+dotnet add package Excubo.Blazor.Diagrams --version 0.5.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.4.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.5.0" />
 ```
 
 ### 2. Add the css and js to your `index.html` / `_Hosts.cshtml`
@@ -167,9 +167,19 @@ A sample custom node is:
         }
     </text>;
     @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
-    public override (double RelativeX, double RelativeY) GetDefaultPort()
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
     {
-        return (0, 0);
+        return position switch
+        {
+            Position.North => (Width / 2, 0),
+            Position.NorthEast => (Width, 0),
+            Position.East => (Width, Height / 2),
+            Position.SouthEast => (Width, Height),
+            Position.South => (Width / 2, Height),
+            Position.SouthWest => (0, Height),
+            Position.NorthWest => (0, Height / 2),
+            _ => (0, 0)
+        };
     }
 }
 ```
@@ -178,7 +188,7 @@ The same shape is defined twice: The second definition is for the shape itself, 
 
 ## Roadmap
 
-This is an early alpha release of Excubo.Blazor.Diagrams.
+This is an alpha release of Excubo.Blazor.Diagrams. There are a few things left to do:
 
 - Add new link according to the type of link that's selected.
 - More node types
@@ -188,7 +198,6 @@ This is an early alpha release of Excubo.Blazor.Diagrams.
 Longer term goals include
 
 - auto-layout
-- undo/redo for modifications
 - customizable background with gridlines
 - virtualization
 - overview screen

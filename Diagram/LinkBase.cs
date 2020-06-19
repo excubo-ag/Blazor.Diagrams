@@ -91,7 +91,7 @@ namespace Excubo.Blazor.Diagrams
         #region control points
         protected void OnLinkOver(MouseEventArgs _) => Diagram.SetActiveElement(this, HoverType.Link);
         protected void OnLinkOut(MouseEventArgs _) => Diagram.DeactivateElement();
-        private void OnControlPointOver(ControlPoint control_point) => Diagram.SetActiveElement(control_point, HoverType.ControlPoint);
+        private void OnControlPointOver(ControlPoint control_point) => Diagram.SetActiveElement(this, control_point, HoverType.ControlPoint);
         private void OnControlPointOut() => Diagram.DeactivateElement();
         private void OnAnchorOver(NodeAnchor anchor) => Diagram.SetActiveElement(this, anchor, HoverType.Anchor);
         private void OnSourceOver(ControlPoint _) => OnAnchorOver(Source);
@@ -132,12 +132,12 @@ namespace Excubo.Blazor.Diagrams
 
         private void InitializeControlPoints()
         {
-            ControlPoints.Add(new ControlPoint(this, OnSourceOver, OnSourceOut) { X = Source.X, Y = Source.Y });
+            ControlPoints.Add(new ControlPoint(OnSourceOver, OnSourceOut) { X = Source.X, Y = Source.Y });
             foreach (var (x, y) in ControlPointMethods.Select(m => m()))
             {
-                ControlPoints.Add(new ControlPoint(this, OnControlPointOver, OnControlPointOut) { X = x, Y = y });
+                ControlPoints.Add(new ControlPoint(OnControlPointOver, OnControlPointOut) { X = x, Y = y });
             }
-            ControlPoints.Add(new ControlPoint(this, OnTargetOver, OnTargetOut) { X = Target.X, Y = Target.Y });
+            ControlPoints.Add(new ControlPoint(OnTargetOver, OnTargetOut) { X = Target.X, Y = Target.Y });
         }
         #endregion
     }
