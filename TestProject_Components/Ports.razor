@@ -9,21 +9,21 @@
             foreach (var node in nodes)
             {
                 <RectangleNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="node.X" Y="node.Y">
-                    @node.Text
+                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
                 </RectangleNode>
             }
             prefix = "d";
             foreach (var node in nodes)
             {
-                <DiamondNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="300 + node.X" Y="node.Y">
-                    @node.Text
+                <DiamondNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="500 + node.X" Y="node.Y">
+                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
                 </DiamondNode>
             }
             prefix = "e";
             foreach (var node in nodes)
             {
-                <EllipseNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="node.X" Y="300 + node.Y">
-                    @node.Text
+                <EllipseNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="node.X" Y="500 + node.Y">
+                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
                 </EllipseNode>
             }
         }
@@ -38,7 +38,7 @@
 </Diagram>
 
 @code {
-    private Point origin { get; set; } = new Point(-100, -100);
+    private Point origin { get; set; } = new Point(-200, -200);
     public class MyNodeDefinition
     {
         public string Id { get; set; }
@@ -49,14 +49,14 @@
     List<MyNodeDefinition> nodes = new List<MyNodeDefinition>
     {
         new MyNodeDefinition { Id = "c", X = 0, Y = 0, Text = "Center" },
-        new MyNodeDefinition { Id = "n", X = 0, Y = -100, Text = "North" },
-        new MyNodeDefinition { Id = "s", X = 0, Y = 100, Text = "South" },
-        new MyNodeDefinition { Id = "e", X = 100, Y = 0, Text = "East" },
-        new MyNodeDefinition { Id = "w", X = -100, Y = 0, Text = "West" },
-        new MyNodeDefinition { Id = "ne", X = 100, Y = -100, Text = "North East" },
-        new MyNodeDefinition { Id = "se", X = 100, Y = 100, Text = "South East" },
-        new MyNodeDefinition { Id = "sw", X = -100, Y = 100, Text = "South West" },
-        new MyNodeDefinition { Id = "nw", X = -100, Y = -100, Text = "North West" }
+        new MyNodeDefinition { Id = "n", X = 0, Y = -150, Text = "North" },
+        new MyNodeDefinition { Id = "s", X = 0, Y = 150, Text = "South" },
+        new MyNodeDefinition { Id = "e", X = 150, Y = 0, Text = "East" },
+        new MyNodeDefinition { Id = "w", X = -150, Y = 0, Text = "West" },
+        new MyNodeDefinition { Id = "ne", X = 150, Y = -150, Text = "North East" },
+        new MyNodeDefinition { Id = "se", X = 150, Y = 150, Text = "South East" },
+        new MyNodeDefinition { Id = "sw", X = -150, Y = 150, Text = "South West" },
+        new MyNodeDefinition { Id = "nw", X = -150, Y = -150, Text = "North West" }
     };
     public class MyLinkDefinition
     {

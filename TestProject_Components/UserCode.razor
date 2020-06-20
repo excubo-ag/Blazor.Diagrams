@@ -4,22 +4,26 @@
 <Diagram @ref="Diagram">
     <NodeLibrary style="background-color: aliceblue; border: 1px solid blue;" Orientation="Orientation.Vertical">
         <RectangleNode>
-            Template rectangle
+            <div style="width:5em; height:3em; margin: 1em;">
+                Template rectangle
+            </div>
         </RectangleNode>
         <RectangleNode>
             <input style="margin:1em; pointer-events:visiblePainted" type="text" placeholder="editable!" />
         </RectangleNode>
         <DiamondNode>
-            Template diamond
+            <div style="width:5em; height:3em; margin: 1em;">
+                Template diamond
+            </div>
         </DiamondNode>
         <EllipseNode>
-            Template Ellipse
+            <div style="width:5em; height:3em; margin: 1em;">Template Ellipse</div>
         </EllipseNode>
         <Node Type="NodeType.Ellipse">
-            Template Node
+            <div style="width:5em; height:3em; margin: 1em;">Template Node</div>
         </Node>
         <UserNodeCode>
-            Template User-defined!
+            <div style="width:5em; height:3em; margin: 1em;">Template User-defined!</div>
         </UserNodeCode>
     </NodeLibrary>
     <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved" OnAdd="NodeAdded">
@@ -58,10 +62,11 @@
             <Link Source="link.Source" Target="link.Target" Type="link.Type" Arrow="Arrow.Target" />
         }
     </Links>
-    <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
+    <NavigationSettings Origin="origin" Zoom="1" MinZoom=".1" MaxZoom="20" />
 </Diagram>
 
 @code {
+    private Point origin = new Point(-100, -100);
     public class MyNodeDefinition
     {
         public string Id { get; set; }

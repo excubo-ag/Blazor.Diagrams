@@ -208,6 +208,13 @@ namespace Excubo.Blazor.Diagrams
         }
         private void StopMove()
         {
+            if (ActionObject.Origin == null)
+            {
+                // no move was actually done
+                ActionObject.Clear();
+                ActionType = ActionType.None;
+                return;
+            }
             var nodes = Group.Nodes.ToList();
             var positions = nodes.Select(n => (X: n.X, Y: n.Y)).ToList();
             var (delta_x, delta_y) = (ActionObject.Node.X - ActionObject.Origin.X, ActionObject.Node.Y - ActionObject.Origin.Y);
