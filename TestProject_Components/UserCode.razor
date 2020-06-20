@@ -28,7 +28,7 @@
     </NodeLibrary>
     <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved" OnAdd="NodeAdded">
         <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
-        <Node Id="123" X="800" Y="200">
+        <Node Id="123" X="1000" Y="150">
             <div style="width:5em">
                 Hello node with id @context.Id
             </div>
@@ -50,7 +50,7 @@
             </DiamondNode>
         }
         <!-- Custom node, inherits from NodeBase. -->
-        <UserNodeCode Id="abc" X="800" Y="600">
+        <UserNodeCode Id="abc" X="900" Y="550">
             Hello custom node.
         </UserNodeCode>
     </Nodes>
@@ -62,11 +62,10 @@
             <Link Source="link.Source" Target="link.Target" Type="link.Type" Arrow="Arrow.Target" />
         }
     </Links>
-    <NavigationSettings Origin="origin" Zoom="1" MinZoom=".1" MaxZoom="20" />
+    <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
 </Diagram>
 
 @code {
-    private Point origin = new Point(-100, -100);
     public class MyNodeDefinition
     {
         public string Id { get; set; }
@@ -84,14 +83,14 @@
         new MyNodeDefinition
         {
             Id = "state1",
-            X = 300,
-            Y = 200
+            X = 400,
+            Y = 150
         },
         new MyNodeDefinition
         {
             Id = "state2",
-            X = 700,
-            Y = 400
+            X = 800,
+            Y = 350
         }
     };
     List<MyNodeDefinition> decisions = new List<MyNodeDefinition>
@@ -99,8 +98,8 @@
         new MyNodeDefinition
         {
             Id = "decision1",
-            X = 500,
-            Y = 300
+            X = 600,
+            Y = 250
         }
     };
     List<MyLinkDefinition> links = new List<MyLinkDefinition>
