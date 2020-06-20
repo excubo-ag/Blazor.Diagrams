@@ -10,6 +10,17 @@ Excubo.Blazor.Diagrams is a native-Blazor diagram component library. The project
 
 [Demo on github.io using Blazor Webassembly](https://excubo-ag.github.io/Blazor.Diagrams/)
 
+## Key features
+
+- Adding/Moving/Removing of nodes
+- Moving/Removing groups of nodes
+- Adding/Modifying/Removing links (including shape of curve for CurvedLink!)
+- Undo/Redo with `[Ctrl]+[z]` (undo) and `[Ctrl]+[Shift]+[z]` / `[Ctrl]+[y]`(redo)
+- Panning/Zooming
+- Default link connection ports by position (North, NorthEast, East,...)
+- Custom nodes/links
+- Node library (fully customizable) for adding new nodes
+
 ## How to use
 
 ### 1. Install the nuget package Excubo.Blazor.Diagrams
