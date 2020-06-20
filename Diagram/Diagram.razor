@@ -27,7 +27,8 @@
             <!-- area for node contents -->
             <div style="position: absolute;
                     left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
-                    top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;">
+                    top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;
+                    width: 100%">
                 <Renderer @ref="node_content_renderer" Region="div" />
             </div>
             <!-- area for node borders -->
