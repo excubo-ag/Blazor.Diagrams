@@ -197,7 +197,7 @@ A sample custom node is:
 }
 ```
 
-The same shape is defined twice: The second definition is for the shape itself, the first definition is the invisible border where links can be connected to. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.
+The same shape is defined twice nearly identically: The first definition is for the shape itself (as razor markup), the second definition is the invisible border where links can be connected to. This is defined in the code section, because the diagram component will put it in a dedicated layer. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.
 
 ## Roadmap
 
