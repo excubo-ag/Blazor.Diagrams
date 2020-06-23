@@ -271,8 +271,7 @@ namespace Excubo.Blazor.Diagrams
         {
             if (ActionObject.Point != null)
             {
-                NavigationSettings.Origin.X += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientX - ActionObject.Point.X) / NavigationSettings.Zoom;
-                NavigationSettings.Origin.Y += (NavigationSettings.InversedPanning ? 1 : -1) * (e.ClientY - ActionObject.Point.Y) / NavigationSettings.Zoom;
+                NavigationSettings.Pan(e.ClientX - ActionObject.Point.X, e.ClientY - ActionObject.Point.Y);
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
             }
             else

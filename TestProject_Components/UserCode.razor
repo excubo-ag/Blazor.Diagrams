@@ -62,10 +62,12 @@
             <Link Source="link.Source" Target="link.Target" Type="link.Type" Arrow="Arrow.Target" />
         }
     </Links>
-    <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
+    <NavigationSettings @bind-Origin="Origin" @bind-Zoom="Zoom" MinZoom=".1" MaxZoom="20" />
 </Diagram>
 
 @code {
+    private Point Origin { get; set; } = new Point(0, 0);
+    private double Zoom { get; set; } = 1;
     public class MyNodeDefinition
     {
         public string Id { get; set; }

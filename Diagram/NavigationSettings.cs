@@ -6,26 +6,31 @@ namespace Excubo.Blazor.Diagrams
 {
     public class NavigationSettings : ComponentBase
     {
-        [CascadingParameter] public Diagram Diagram { get; set; }
-        protected override void OnParametersSet()
-        {
-            System.Diagnostics.Debug.Assert(Diagram != null);
-            Diagram.NavigationSettings = this;
-            base.OnParametersSet();
-        }
+        /// <summary>
+        /// Whether panning feels like dragging the canvas or dragging all elements.
+        /// </summary>
+        [Parameter] public bool InversedPanning { get; set; }
+        /// <summary>
+        /// The coordinates displayed in the top left corner of the diagram.
+        /// </summary>
+        [Parameter] public Point Origin { get; set; } = new Point();
+        [Parameter] public EventCallback<Point> OriginChanged { get; set; }
         /// <summary>
         /// The current zoom level
         /// </summary>
-        [Parameter] public double Zoom { get; set; } = 1.0;
+        [Parameter] public double Zoom
+        {
+            get => zoom;
+            set => zoom = value <= 0 ? 1 : value;
+        }
         [Parameter] public EventCallback<double> ZoomChanged { get; set; }
-        private double min_zoom = double.Epsilon;
-        private double max_zoom = double.PositiveInfinity;
         /// <summary>
         /// The minimum zoom level. Must be smaller than MaxZoom and greater than zero.
         /// </summary>
-        [Parameter] public double MinZoom
+        [Parameter]
+        public double MinZoom
         {
-            get => min_zoom; 
+            get => min_zoom;
             set
             {
                 min_zoom = value;
@@ -38,7 +43,8 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// the maximum zoom level.Must be larger than MinZoom and less than infinity.
         /// </summary>
-        [Parameter] public double MaxZoom 
+        [Parameter]
+        public double MaxZoom
         {
             get => max_zoom;
             set
@@ -50,15 +56,16 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
-        /// <summary>
-        /// Whether panning feels like dragging the canvas or dragging all elements.
-        /// </summary>
-        [Parameter] public bool InversedPanning { get; set; }
-        /// <summary>
-        /// The coordinates displayed in the top left corner of the diagram. Use @bind-Origin="YourOriginVariable".
-        /// </summary>
-        [Parameter] public Point Origin { get; set; } = new Point();
-        [Parameter] public EventCallback<Point> OriginChanged { get; set; }
+        [CascadingParameter] public Diagram Diagram { get; set; }
+        protected override void OnParametersSet()
+        {
+            System.Diagnostics.Debug.Assert(Diagram != null);
+            Diagram.NavigationSettings = this;
+            base.OnParametersSet();
+        }
+        private double zoom = 1;
+        private double min_zoom = double.Epsilon;
+        private double max_zoom = double.PositiveInfinity;
 
         internal void OnMouseWheel(WheelEventArgs e)
         {
@@ -83,6 +90,16 @@ namespace Excubo.Blazor.Diagrams
             }
             Origin.X = canvas_x - e.RelativeXTo(Diagram);
             Origin.Y = canvas_y - e.RelativeYTo(Diagram);
+            OriginChanged.InvokeAsync(Origin).GetAwaiter().GetResult();
+            ZoomChanged.InvokeAsync(Zoom).GetAwaiter().GetResult();
+        }
+        protected override bool ShouldRender() => false;
+
+        internal void Pan(double offset_x, double offset_y)
+        {
+            Origin.X += (InversedPanning ? 1 : -1) * offset_x / Zoom;
+            Origin.Y += (InversedPanning ? 1 : -1) * offset_y / Zoom;
+            OriginChanged.InvokeAsync(Origin).GetAwaiter().GetResult();
         }
     }
 }
