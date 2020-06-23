@@ -28,7 +28,8 @@
             <div style="position: absolute;
                     left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
                     top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;
-                    width: 100%">
+                    right: -200px;
+                    bottom: -200px;">
                 <Renderer @ref="node_content_renderer" Region="div" />
             </div>
             <!-- area for node borders -->
