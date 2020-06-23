@@ -90,8 +90,8 @@ namespace Excubo.Blazor.Diagrams
             }
             Origin.X = canvas_x - e.RelativeXTo(Diagram);
             Origin.Y = canvas_y - e.RelativeYTo(Diagram);
-            OriginChanged.InvokeAsync(Origin).GetAwaiter().GetResult();
-            ZoomChanged.InvokeAsync(Zoom).GetAwaiter().GetResult();
+            OriginChanged.InvokeAsync(Origin);
+            ZoomChanged.InvokeAsync(Zoom);
         }
         protected override bool ShouldRender() => false;
 
@@ -99,7 +99,7 @@ namespace Excubo.Blazor.Diagrams
         {
             Origin.X += (InversedPanning ? 1 : -1) * offset_x / Zoom;
             Origin.Y += (InversedPanning ? 1 : -1) * offset_y / Zoom;
-            OriginChanged.InvokeAsync(Origin).GetAwaiter().GetResult();
+            OriginChanged.InvokeAsync(Origin);
         }
     }
 }
