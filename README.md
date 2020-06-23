@@ -194,6 +194,13 @@ A sample custom node is:
             _ => (0, 0)
         };
     }
+    @*The shape drawn might be larger than the rectangle from the X,Y position as top left corner with its width and height.
+      The margins here (positive if the shape is larger than the rectangle) help draw the node correctly in the node library.
+      There's no need to override this, if it's (0, 0, 0, 0).*@
+    protected override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return (0, 0, 0, 0);
+    }
 }
 ```
 

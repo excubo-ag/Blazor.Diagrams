@@ -7,8 +7,8 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <g transform="@PositionAndScale">
-        <ellipse rx="@(Width / 2 * 1.41)"
-                 ry="@(Height / 2 * 1.41)"
+        <ellipse rx="@(Width / 2 * Math.Sqrt(2))"
+                 ry="@(Height / 2 * Math.Sqrt(2))"
                  cx="@(Width / 2)"
                  cy="@(Height / 2)"
                  @onmouseover="OnNodeOver"
@@ -26,8 +26,8 @@
         @using (var temporary_culture = new CultureSwapper())
         {
             <g transform="@PositionAndScale">
-                <ellipse rx="@(Width / 2 * 1.41)"
-                         ry="@(Height / 2 * 1.41)"
+                <ellipse rx="@(Width / 2 * Math.Sqrt(2))"
+                         ry="@(Height / 2 * Math.Sqrt(2))"
                          cx="@(Width / 2)"
                          cy="@(Height / 2)"
                          style="@(Hidden? "display:none" : "")"
@@ -44,15 +44,19 @@
     {
         return position switch
         {
-            Position.North => ((Width / 2), (Height / 2 - (Height / 2 * 1.41))),
-            Position.South => ((Width / 2), (Height / 2 + (Height / 2 * 1.41))),
-            Position.East => ((Width / 2 + Width / 2 * 1.41), (Height / 2)),
-            Position.West => ((Width / 2 - Width / 2 * 1.41), (Height / 2)),
+            Position.North => ((Width / 2), (Height / 2 - (Height / 2 * Math.Sqrt(2)))),
+            Position.South => ((Width / 2), (Height / 2 + (Height / 2 * Math.Sqrt(2)))),
+            Position.East => ((Width / 2 + Width / 2 * Math.Sqrt(2)), (Height / 2)),
+            Position.West => ((Width / 2 - Width / 2 * Math.Sqrt(2)), (Height / 2)),
             Position.NorthWest => (0, 0),
             Position.SouthWest => (0, Height),
             Position.NorthEast => (Width, 0),
             Position.SouthEast => (Width, Height),
             _ => (0, 0)
         };
+    }
+    protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return ((Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2, (Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2);
     }
 }

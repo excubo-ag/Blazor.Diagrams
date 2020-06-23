@@ -62,4 +62,8 @@
             _ => (0, 0)
         };
     }
+    protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return (Width / 2, Height / 2, Width / 2, Height / 2);
+    }
 }

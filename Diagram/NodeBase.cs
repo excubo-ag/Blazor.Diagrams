@@ -213,6 +213,10 @@ namespace Excubo.Blazor.Diagrams
             return (0, 0);
         }
         public abstract RenderFragment border { get; }
+        protected internal virtual (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+        {
+            return (0, 0, 0, 0);
+        }
         private RenderFragment actual_border;
         private RenderFragment content;
         protected NodeContent content_reference;
