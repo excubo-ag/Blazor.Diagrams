@@ -29,7 +29,8 @@
                     left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
                     top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;
                     right: -200px;
-                    bottom: -200px;">
+                    bottom: -200px;
+                    pointer-events: none;">
                 <Renderer @ref="node_content_renderer" Region="div" />
             </div>
             <!-- area for node borders -->
