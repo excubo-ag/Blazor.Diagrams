@@ -4,12 +4,6 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    //TODO#05 background
-    //TODO#04 auto-layout
-    //TODO#03 virtualization
-    //TODO#02 overview screen
-    //TODO#01 common shape nodes (e.g. db, ...)
-    //TODO#00 image node
     public partial class Diagram
     {
 #pragma warning disable S2376, IDE0051
