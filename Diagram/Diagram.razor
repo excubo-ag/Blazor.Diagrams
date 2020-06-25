@@ -47,12 +47,14 @@
                     <Renderer @ref="node_template_content_renderer" Region="div" />
                 </div>
             </div>
+            @LinkSelectorArea
         </CascadingValue>
     </div>
 }
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
     internal RenderFragment NodeLibraryArea { get; set; }
+    internal RenderFragment LinkSelectorArea { get; set; }
     private ElementReference canvas;
     private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;

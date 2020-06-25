@@ -55,7 +55,7 @@
         </UserNodeCode>
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
-    <Links OnModified="LinkModified" OnRemove="LinkRemoved" OnAdd="LinkAdded" DefaultType="LinkType.Curved" DefaultArrow="Arrow.Target">
+    <Links OnModified="LinkModified" OnRemove="LinkRemoved" OnAdd="LinkAdded" DefaultType="link_type" DefaultArrow="arrows">
         <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get Straight -->
         @foreach (var link in links)
         {
@@ -63,9 +63,12 @@
         }
     </Links>
     <NavigationSettings @bind-Origin="Origin" @bind-Zoom="Zoom" MinZoom=".1" MaxZoom="20" />
+    <LinkSelector @bind-Type="link_type" @bind-Arrow="arrows" />
 </Diagram>
 
 @code {
+    private LinkType link_type { get; set; } = LinkType.Curved;
+    private Arrow arrows { get; set; } = Arrow.Both;
     private Point Origin { get; set; } = new Point(0, 0);
     private double Zoom { get; set; } = 1;
     public class MyNodeDefinition

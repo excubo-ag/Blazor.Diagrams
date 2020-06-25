@@ -1,0 +1,47 @@
+﻿<div style="position:absolute; right: 0; border-bottom: 1px solid black; border-left: 1px solid black; background-color: white">
+    <div>
+        <button @onclick="() => { Type = LinkType.Angled; TypeChanged.InvokeAsync(Type); }" style="border:none; background-color: @(Type == LinkType.Angled ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><path d="M 0 4 L 8 4 L 8 12 L 16 12" fill="none" stroke="black" /></svg></button>
+        <button @onclick="() => { Type = LinkType.Straight; TypeChanged.InvokeAsync(Type); }" style="border:none; background-color: @(Type == LinkType.Straight ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><path d="M 0 4 L 16 12" fill="none" stroke="black" /></svg></button>
+        <button @onclick="() => { Type = LinkType.Curved; TypeChanged.InvokeAsync(Type); }" style="border:none; background-color: @(Type == LinkType.Curved ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><path d="M 0 4 C 8 4 8 12 16 12" fill="none" stroke="black" /></svg></button>
+    </div>
+    <div>
+    <button @onclick="() => { Arrow = Arrow.None; ArrowChanged.InvokeAsync(Arrow); }" style="border:none; background-color: @(Arrow == Arrow.None ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /></svg></button>
+    <button @onclick="() => { Arrow = Arrow.Target; ArrowChanged.InvokeAsync(Arrow); }" style="border:none; background-color: @(Arrow == Arrow.Target ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
+    <button @onclick="() => { Arrow = Arrow.Both; ArrowChanged.InvokeAsync(Arrow); }" style="border:none; background-color: @(Arrow == Arrow.Both ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2em;"><polygon points="0,8 3,6 3,10" fill="black" /><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public LinkType Type { get; set; }
+    [Parameter] public EventCallback<LinkType> TypeChanged { get; set; }
+    [Parameter] public Arrow Arrow { get; set; }
+    [Parameter] public EventCallback<Arrow> ArrowChanged { get; set; }
+    private LinkType Next(LinkType type)
+    {
+        switch (type)
+        {
+            case LinkType.Angled:
+                return LinkType.Curved;
+            case LinkType.Curved:
+                return LinkType.Straight;
+            case LinkType.Straight:
+                return LinkType.Angled;
+            default:
+                return LinkType.Angled;
+        }
+    }
+    private Arrow Next(Arrow arrow)
+    {
+        switch (arrow)
+        {
+            case Arrow.Both:
+                return Arrow.None;
+            case Arrow.None:
+                return Arrow.Target;
+            case Arrow.Target:
+                return Arrow.Both;
+            default:
+                return Arrow.Both;
+        }
+    }
+}
