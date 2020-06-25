@@ -44,6 +44,7 @@ namespace Excubo.Blazor.Diagrams
             if (node.Deleted)
             {
                 node.MarkUndeleted();
+                node.AddBorderAndContent();
             }
             else
             {

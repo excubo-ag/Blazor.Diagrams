@@ -55,6 +55,7 @@ namespace Excubo.Blazor.Diagrams
                 ControlPoint = null;
                 Anchor = null;
                 Point = null;
+                Origin = null;
             }
             internal void Remember(NodeBase node, double x, double y)
             {
