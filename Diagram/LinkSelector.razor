@@ -2,15 +2,9 @@
 
 @code {
     [CascadingParameter] public Diagram Diagram { get; set; }
-    [Parameter] public LinkType Type { get; set; }
-    [Parameter] public EventCallback<LinkType> TypeChanged { get; set; }
-    [Parameter] public Arrow Arrow { get; set; }
-    [Parameter] public EventCallback<Arrow> ArrowChanged { get; set; }
     protected override void OnParametersSet()
     {
-        Diagram.LinkSelectorArea = @<CascadingValue Value="Diagram.Links" IsFixed="true">
-                <DefaultLinkSelector Type="Type" Arrow="Arrow" TypeChanged="TypeChanged" ArrowChanged="ArrowChanged"/>
-            </CascadingValue>;
+        Diagram.LinkSelectorArea = @<DefaultLinkSelector Type="Diagram.Links.DefaultType" TypeChanged="Diagram.Links.DefaultTypeChanged" Arrow="Diagram.Links.DefaultArrow" ArrowChanged="Diagram.Links.DefaultArrowChanged" />;
         base.OnParametersSet();
     }
 }
