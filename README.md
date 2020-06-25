@@ -43,25 +43,14 @@ dotnet add package Excubo.Blazor.Diagrams --version 0.6.0
 <PackageReference Include="Excubo.Blazor.Diagrams" Version="0.6.0" />
 ```
 
-### 2. Add the js to your `index.html` / `_Hosts.cshtml`
-
-Don't worry, it's a tiny payload: the JS only weighs around 200 bytes. CSS is only downloaded on demand, so your page load isn't affected by that (and it's tiny too).
-
-```html
-<head>
-    <!--your other code-->
-    <script src="_content/Excubo.Blazor.Diagrams/script.min.js" type="text/javascript"></script>
-</head>
-```
-
-### 3. Add the diagram service to your service collection
+### 2. Add the diagram service to your service collection
 
 ```cs
 //using Excubo.Blazor.Diagrams;
 services.AddDiagramServices();
 ```
 
-### 4. Add the `Diagram` component to your component
+### 3. Add the `Diagram` component to your component
 
 ```html
 @using Excubo.Blazor.Diagrams
@@ -117,9 +106,10 @@ Users get a set of built-in node shapes and link types, but can expand this free
 
 The API should feel like you're using Blazor, not a javascript library.
 
-- Minimal js, minimal css
+- Minimal js, minimal css, lazy-loaded only when you use the component
 
-The non-C# part of the code of the library should be as tiny as possible. We set ourselves a maximum amount of 10kB for combined js+css. The current payload is 292 bytes (minified).
+The non-C# part of the code of the library should be as tiny as possible. We set ourselves a maximum amount of 10kB for combined js+css.
+The current payload is less than 1kB, and only gets loaded dynamically when the component is actually used.
 
 ## How to design a custom node
 
