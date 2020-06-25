@@ -30,17 +30,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.5.1
+Install-Package Excubo.Blazor.Diagrams -Version 0.6.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.5.1
+dotnet add package Excubo.Blazor.Diagrams --version 0.6.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.5.1" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.6.0" />
 ```
 
 ### 2. Add the js to your `index.html` / `_Hosts.cshtml`
@@ -208,20 +208,12 @@ The same shape is defined twice nearly identically: The first definition is for 
 
 ## Roadmap
 
-This is an alpha release of Excubo.Blazor.Diagrams. There are a few things left to do:
+This is an early release of Excubo.Blazor.Diagrams.
 
-- Add new link according to the type of link that's selected.
+Longer term goals include:
+
 - More node types
-    - image node
-    - common shapes (e.g. DB icon)
-
-Longer term goals include
-
 - auto-layout
 - customizable background with gridlines
 - virtualization
 - overview screen
-
-## Known issues
-
-- Not all events are implemented
