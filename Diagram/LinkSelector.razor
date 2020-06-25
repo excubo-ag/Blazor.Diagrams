@@ -1,10 +1,11 @@
 ﻿@using Excubo.Blazor.Diagrams.__Internal
 
 @code {
+    [Parameter] public Position Position { get; set; } = Position.TopRight;
     [CascadingParameter] public Diagram Diagram { get; set; }
     protected override void OnParametersSet()
     {
-        Diagram.LinkSelectorArea = @<DefaultLinkSelector Type="Diagram.Links.DefaultType" TypeChanged="Diagram.Links.DefaultTypeChanged" Arrow="Diagram.Links.DefaultArrow" ArrowChanged="Diagram.Links.DefaultArrowChanged" />;
+        Diagram.LinkSelectorArea = @<DefaultLinkSelector Position="Position" Type="Diagram.Links.DefaultType" TypeChanged="Diagram.Links.DefaultTypeChanged" Arrow="Diagram.Links.DefaultArrow" ArrowChanged="Diagram.Links.DefaultArrowChanged" />;
         base.OnParametersSet();
     }
 }

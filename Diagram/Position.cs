@@ -13,6 +13,15 @@ namespace Excubo.Blazor.Diagrams
         NorthEast = North | East,
         SouthEast = South | East,
         NorthWest = North | West,
-        SouthWest = South | West
+        SouthWest = South | West,
+        Top = North,
+        Left = West,
+        Right = East,
+        Bottom = South,
+        TopLeft = NorthWest,
+        TopRight = NorthEast,
+        BottomLeft = SouthWest,
+        BottomRight = SouthEast,
+
     }
 }
