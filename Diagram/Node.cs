@@ -19,8 +19,6 @@ namespace Excubo.Blazor.Diagrams
                 case NodeType.Ellipse:
                     builder.OpenComponent<EllipseNode>(0);
                     break;
-                case NodeType.Custom:
-                    throw new NotSupportedException("Cannot instantiate a custom node type like this. Write a node component that inherits from NodeBase instead.");
                 case NodeType.Default:
                     System.Diagnostics.Debug.Assert(false, "RenderType is guaranteed to be non-default.");
                     break;

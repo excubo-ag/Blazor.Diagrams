@@ -2,7 +2,14 @@
 <CascadingValue Name="@(nameof(LinkBase.IsInternallyGenerated))" Value="true" IsFixed="true">
     @foreach (var link in Links)
     {
-        <Link @key="(link.Source, link.Target)" Source="link.Source" Target="link.Target" OnCreate="link.OnCreate" />
+        if (link.Type == null)
+        {
+            <Link @key="(link.Source, link.Target)" Source="link.Source" Target="link.Target" OnCreate="link.OnCreate" Arrow="link.Arrow" Type="link.LinkType" />
+        }
+        else
+        {
+            <LinkByType Data="link" />
+        }
     }
 </CascadingValue>
 

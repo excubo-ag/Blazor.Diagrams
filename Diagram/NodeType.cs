@@ -5,7 +5,6 @@
         Default,
         Rectangle,
         Diamond,
-        Ellipse,
-        Custom
+        Ellipse
     }
 }

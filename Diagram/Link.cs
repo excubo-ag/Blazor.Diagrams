@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using System;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -22,8 +21,6 @@ namespace Excubo.Blazor.Diagrams
                 case LinkType.Default:
                     System.Diagnostics.Debug.Assert(false, "RenderType is guaranteed to be non-default.");
                     break;
-                case LinkType.Custom:
-                    throw new NotSupportedException("Cannot instantiate a custom link type like this. Write a link component that inherits from LinkBase instead.");
             }
             builder.AddAttribute(1, nameof(Source), Source);
             builder.AddAttribute(2, nameof(Target), Target);
@@ -35,34 +32,50 @@ namespace Excubo.Blazor.Diagrams
             builder.CloseComponent();
         }
         [Parameter] public LinkType Type { get; set; }
+        private LinkType render_type;
         private LinkType RenderType
         {
             get
             {
-                if (Type != LinkType.Default)
+                if (render_type == LinkType.Default)
                 {
-                    return Type;
+                    if (Type != LinkType.Default)
+                    {
+                        render_type = Type;
+                    }
+                    else if (Links.DefaultType != LinkType.Default)
+                    {
+                        render_type = Links.DefaultType;
+                    }
+                    else
+                    {
+                        render_type = LinkType.Straight;
+                    }
                 }
-                if (Links.DefaultType != LinkType.Default)
-                {
-                    return Links.DefaultType;
-                }
-                return LinkType.Straight;
+                return render_type;
             }
         }
+        private Arrow render_arrow;
         private Arrow RenderArrow
         {
             get
             {
-                if (Arrow != Arrow.Default)
+                if (render_arrow == Arrow.Default)
                 {
-                    return Arrow;
+                    if (Arrow != Arrow.Default)
+                    {
+                        render_arrow = Arrow;
+                    }
+                    else if (Links.DefaultArrow != Arrow.Default)
+                    {
+                        render_arrow = Links.DefaultArrow;
+                    }
+                    else
+                    {
+                        render_arrow = Arrow.None;
+                    }
                 }
-                if (Links.DefaultArrow != Arrow.Default)
-                {
-                    return Links.DefaultArrow;
-                }
-                return Arrow.None;
+                return render_arrow;
             }
         }
     }

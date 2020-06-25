@@ -8,5 +8,7 @@ namespace Excubo.Blazor.Diagrams
         public NodeAnchor Target { get; set; }
         internal Action<LinkBase> OnCreate { get; set; }
         public Type Type { get; set; }
+        public LinkType LinkType { get; set; }
+        public Arrow Arrow { get; set; }
     }
 }

@@ -55,7 +55,7 @@ namespace Excubo.Blazor.Diagrams
             }
             else
             {
-                internally_generated_links.Add(new LinkData { Source = link.Source, Target = link.Target, Type = link.GetType(), OnCreate = (_) => { } });
+                internally_generated_links.Add(new LinkData { Source = link.Source, Target = link.Target, Arrow = link.Arrow, Type = link.GetType(), OnCreate = (_) => { } });
                 generated_links_ref.TriggerStateHasChanged();
                 OnAdd?.Invoke(link);
             }
@@ -88,7 +88,7 @@ namespace Excubo.Blazor.Diagrams
                 RelativeX = e.RelativeXToOrigin(Diagram),
                 RelativeY = e.RelativeYToOrigin(Diagram)
             };
-            internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, OnCreate = on_link_create });
+            internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, LinkType = DefaultType, Arrow = DefaultArrow, OnCreate = on_link_create });
             generated_links_ref.TriggerStateHasChanged();
         }
         internal void TriggerStateHasChanged() => StateHasChanged();

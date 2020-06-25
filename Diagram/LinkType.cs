@@ -5,7 +5,6 @@
         Default,
         Straight,
         Curved,
-        Angled,
-        Custom
+        Angled
     }
 }
