@@ -77,10 +77,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 if (first_render)
                 {
-                    if (IsInternallyGenerated)
-                    {
-                        Links.Register(this);
-                    }
+                    Links.Register(this);
                     OnCreate?.Invoke(this);
                 }
             }

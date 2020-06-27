@@ -35,7 +35,10 @@ namespace Excubo.Blazor.Diagrams
             if (!all_nodes.Contains(node))
             {
                 all_nodes.Add(node);
-                OnAdd?.Invoke(node);
+                if (node.IsInternallyGenerated)
+                {
+                    OnAdd?.Invoke(node);
+                }
             }
         }
         internal void Add(NodeBase node)

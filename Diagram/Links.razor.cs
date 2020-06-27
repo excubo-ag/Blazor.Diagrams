@@ -45,7 +45,10 @@ namespace Excubo.Blazor.Diagrams
             if (!all_links.Contains(link))
             {
                 all_links.Add(link);
-                OnAdd?.Invoke(link);
+                if (link.IsInternallyGenerated)
+                {
+                    OnAdd?.Invoke(link);
+                }
             }
         }
         internal void Add(LinkBase link)
