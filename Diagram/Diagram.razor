@@ -43,19 +43,27 @@
             </svg>
             <!-- area for nodes in the node library -->
             <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">
-                @NodeLibraryArea
+                @if (NodeLibrary != null)
+                {
+                    <NodeLibraryArea Orientation="@NodeLibrary.Orientation" AdditionalAttributes="@NodeLibrary.AdditionalAttributes">
+                        <CascadingValue Value="NodeLibrary" IsFixed="true">
+                            @NodeLibrary.ChildContent
+                        </CascadingValue>
+                    </NodeLibraryArea>;
+                }
                 <div style="position: absolute;">
                     <Renderer @ref="node_template_content_renderer" Region="div" />
                 </div>
             </div>
-            @LinkSelectorArea
+            @if (LinkSelectorSettings != null)
+            {
+                <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
+            }
         </CascadingValue>
     </div>
 }
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
-    internal RenderFragment NodeLibraryArea { get; set; }
-    internal RenderFragment LinkSelectorArea { get; set; }
     private ElementReference canvas;
     private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;

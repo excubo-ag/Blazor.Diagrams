@@ -20,5 +20,7 @@
                 navigation_settings = value;
             }
         }
+        internal NodeLibrary NodeLibrary { get; set; }
+        internal LinkSelectorSettings LinkSelectorSettings { get; set; }
     }
 }

@@ -1,11 +1,19 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Diagnostics;
 
 namespace Excubo.Blazor.Diagrams
 {
     public class NavigationSettings : ComponentBase
     {
+        [CascadingParameter] public Diagram Diagram { get; set; }
+        protected override void OnParametersSet()
+        {
+            Debug.Assert(Diagram != null, $"{nameof(NavigationSettings)} are not meant to be used outside a {nameof(Diagram)} component");
+            Diagram.NavigationSettings = this;
+            base.OnParametersSet();
+        }
         /// <summary>
         /// Whether panning feels like dragging the canvas or dragging all elements.
         /// </summary>
@@ -55,13 +63,6 @@ namespace Excubo.Blazor.Diagrams
                     (min_zoom, max_zoom) = (max_zoom, min_zoom);
                 }
             }
-        }
-        [CascadingParameter] public Diagram Diagram { get; set; }
-        protected override void OnParametersSet()
-        {
-            System.Diagnostics.Debug.Assert(Diagram != null);
-            Diagram.NavigationSettings = this;
-            base.OnParametersSet();
         }
         private double zoom = 1;
         private double min_zoom = double.Epsilon;
