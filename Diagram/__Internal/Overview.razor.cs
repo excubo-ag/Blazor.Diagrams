@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
-using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams.__Internal
@@ -23,12 +23,12 @@ namespace Excubo.Blazor.Diagrams.__Internal
         private double Scale { get; set; } = 1;
         private long last_trigger;
         private bool render_requested;
-        private Task update_task; 
+        private Task update_task;
         internal void TriggerUpdate()
         {
             render_requested = true;
             var current = DateTime.UtcNow.Ticks;
-            if (current < last_trigger + 16 * 100 * 1000) // 16 milliseconds in between refreshes make it 60Hz if refreshes happen often.
+            if (current < last_trigger + 25 * 100 * 1000) // 25 milliseconds in between refreshes make it 40Hz if refreshes happen often.
             {
                 return;
             }
@@ -105,21 +105,25 @@ namespace Excubo.Blazor.Diagrams.__Internal
             ViewWidth = (Diagram.CanvasWidth / Diagram.NavigationSettings.Zoom) * Scale;
             ViewHeight = (Diagram.CanvasHeight / Diagram.NavigationSettings.Zoom) * Scale;
 
-            await using var ctx = await canvas.GetContext2DAsync();
+            var hidden_canvas = canvas_2_visible ? canvas1 : canvas2;
+            await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: false);
             await ctx.SetTransformAsync(1, 0, 0, 1, 0, 0);
-            await ctx.ClearRectAsync(0, 0, Width, Height);
+            await ctx.FillStyleAsync("white");
+            await ctx.FillRectAsync(0, 0, Width, Height);
+            await ctx.FillStyleAsync("#222222");
             await ctx.ScaleAsync(Scale, Scale);
             await ctx.TranslateAsync(-min_x, -min_y);
-            foreach (var node in Diagram.Nodes.all_nodes)
+            foreach (var node in Diagram.Nodes.all_nodes.Where(n => !n.Deleted))
             {
                 await node.DrawShapeAsync(ctx);
             }
             await ctx.LineWidthAsync(4);
             await ctx.StrokeStyleAsync("black");
-            foreach (var link in Diagram.Links.all_links)
+            foreach (var link in Diagram.Links.all_links.Where(n => !n.Deleted))
             {
                 await link.DrawPathAsync(ctx);
             }
+            canvas_2_visible = (hidden_canvas == canvas2);
             await InvokeAsync(StateHasChanged);
         }
     }

@@ -22,11 +22,13 @@ namespace Excubo.Blazor.Diagrams
             else if (e.Key == "z" && e.CtrlKey && !e.ShiftKey)
             {
                 Changes.Undo();
+                Overview?.TriggerUpdate();
             }
             else if ((e.Key == "Z" && e.CtrlKey && e.ShiftKey)
                   || (e.Key == "y" && e.CtrlKey && !e.ShiftKey))
             {
                 Changes.Redo();
+                Overview?.TriggerUpdate();
             }
             else if (e.Key == "Delete" || e.Key == "Backspace")
             {
@@ -54,6 +56,7 @@ namespace Excubo.Blazor.Diagrams
                     OnRemove?.Invoke(Group);
                     Group = new Group();
                 }
+                Overview?.TriggerUpdate();
             }
         }
     }

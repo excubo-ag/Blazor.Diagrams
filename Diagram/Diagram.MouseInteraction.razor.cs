@@ -271,6 +271,7 @@ namespace Excubo.Blazor.Diagrams
             var link = ActionObject.Link;
             link.Target.RelativeX = e.RelativeXToOrigin(this);
             link.Target.RelativeY = e.RelativeYToOrigin(this);
+            Overview?.TriggerUpdate();
         }
         private void Pan(MouseEventArgs e)
         {
@@ -295,6 +296,7 @@ namespace Excubo.Blazor.Diagrams
                 point.X += delta_x;
                 point.Y += delta_y;
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
+                Overview?.TriggerUpdate();
             }
             else
             {
@@ -320,6 +322,7 @@ namespace Excubo.Blazor.Diagrams
                 anchor.RelativeX = e.RelativeXToOrigin(this);
                 anchor.RelativeY = e.RelativeYToOrigin(this);
             }
+            Overview?.TriggerUpdate();
         }
         private void MoveGroup(MouseEventArgs e)
         {

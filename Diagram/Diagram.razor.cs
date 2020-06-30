@@ -25,6 +25,7 @@ namespace Excubo.Blazor.Diagrams
             Nodes.TriggerStateHasChanged();
             Links.TriggerStateHasChanged();
             Links.Redraw();
+            Overview?.TriggerUpdate();
             StateHasChanged();
         }
     }

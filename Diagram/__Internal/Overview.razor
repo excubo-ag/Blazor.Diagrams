@@ -3,13 +3,16 @@
 @using (var temporary_culture = new CultureSwapper())
 {
     <div style="position: absolute; right: 0; bottom: 0; background-color: white; border: 2px solid black; border-bottom: 0; border-right: 0; padding: 1em;">
-        <Canvas @ref="canvas" width="@Width" height="@Height" />
+        <Canvas @ref="canvas1" width="@Width" height="@Height" />
+        <div style="position: absolute; top: 1em; display:@((canvas_2_visible ? "block" : "none"))">
+            <Canvas @ref="canvas2" width="@Width" height="@Height" />
+        </div>
         <svg style="position:absolute; width: @(Width)px; height: @(Height)px; left: 1em" @onmousemove="OnMouseMove" @onmousemove:stopPropagation>
             @{
                 var stroke_width = 4;
                 var half_stroke = stroke_width / 2;
                 <g transform="translate(@(ViewLeft + half_stroke) @(ViewTop + half_stroke))">
-                    <rect x="0" y="0" width="@(ViewWidth - stroke_width)" height="@(ViewHeight - stroke_width)" fill="transparent" stroke="deepskyblue" stroke-width="@stroke_width" style="cursor: move"/>
+                    <rect x="0" y="0" width="@(ViewWidth - stroke_width)" height="@(ViewHeight - stroke_width)" fill="transparent" stroke="deepskyblue" stroke-width="@stroke_width" style="cursor: move" />
                     <line x1="0" y1="0" x2="@(ViewWidth - stroke_width)" y2="0" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
                     <line x1="0" y1="0" x2="0" y2="@(ViewHeight - stroke_width)" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
                     <line x1="0" y1="@(ViewHeight - stroke_width)" x2="@(ViewWidth - stroke_width)" y2="@(ViewHeight - stroke_width)" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
@@ -21,5 +24,7 @@
 }
 
 @code {
-    private Canvas canvas;
+    private Canvas canvas1;
+    private Canvas canvas2;
+    private bool canvas_2_visible { get; set; }
 }
