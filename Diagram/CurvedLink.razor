@@ -72,4 +72,11 @@
         }
         base.OnParametersSet();
     }
+    protected internal override async Task DrawPathAsync(Context2D ctx)
+    {
+        await ctx.BeginPathAsync();
+        await ctx.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);
+        await ctx.BezierCurveToAsync(ControlPoints[1].X, ControlPoints[1].Y, ControlPoints[2].X, ControlPoints[2].Y, ControlPoints[3].X, ControlPoints[3].Y);
+        await ctx.StrokeAsync();
+    }
 }

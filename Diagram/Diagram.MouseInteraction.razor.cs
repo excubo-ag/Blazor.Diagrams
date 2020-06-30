@@ -138,6 +138,7 @@ namespace Excubo.Blazor.Diagrams
         {
             NavigationSettings.OnMouseWheel(e);
             Nodes.Redraw();
+            Overview?.TriggerUpdate();
         }
         private void OnMouseDown(MouseEventArgs e)
         {
@@ -206,6 +207,7 @@ namespace Excubo.Blazor.Diagrams
             var link = ActionObject.Link;
             ActionObject.Set(link);
             ActionType = ActionType.ModifyLink;
+            Overview?.TriggerUpdate();
         }
         private void StopMove()
         {
@@ -242,9 +244,11 @@ namespace Excubo.Blazor.Diagrams
                 Group.Nodes[0].Deselect();
             }
             NewNodeAddingInProgress = false;
+            Overview?.TriggerUpdate();
         }
         private void StopModifyingLink(MouseEventArgs e)
         {
+            Overview?.TriggerUpdate();
             // another click means ending the current action and starting a new one
             var link = ActionObject.Link;
             link.Deselect();
@@ -274,6 +278,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 NavigationSettings.Pan(e.ClientX - ActionObject.Point.X, e.ClientY - ActionObject.Point.Y);
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
+                Overview?.TriggerUpdate();
             }
             else
             {
@@ -333,6 +338,7 @@ namespace Excubo.Blazor.Diagrams
                 ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
                 ActionObject.RememberOrigin(new Point(ActionObject.Node.X, ActionObject.Node.Y));
             }
+            Overview?.TriggerUpdate();
         }
         private void FixNodeAnchor(MouseEventArgs e)
         {
@@ -350,6 +356,7 @@ namespace Excubo.Blazor.Diagrams
                 anchor.RelativeX = old_x;
                 anchor.RelativeY = old_y;
             }));
+            Overview?.TriggerUpdate();
             ActionObject.Set(ActionObject.Link);
             ActionType = ActionType.ModifyLink;
         }
@@ -369,6 +376,7 @@ namespace Excubo.Blazor.Diagrams
                 link.Target.RelativeX = e.RelativeXToOrigin(this);
                 link.Target.RelativeY = e.RelativeYToOrigin(this);
             }
+            Overview?.TriggerUpdate();
             Changes.New(new ChangeAction(() => { Links.Add(link); }, () => { Links.Remove(link); }));
             ActionType = ActionType.None;
         }
@@ -451,6 +459,7 @@ namespace Excubo.Blazor.Diagrams
                 ActionObject.Set(new_node);
                 ActionType = ActionType.Move;
                 NewNodeAddingInProgress = true;
+                Overview?.TriggerUpdate();
             });
         }
         private void CreateNewLink(MouseEventArgs e)
@@ -461,6 +470,7 @@ namespace Excubo.Blazor.Diagrams
                 ActionObject.Set(generated_link);
                 ActionType = ActionType.UpdateLinkTarget;
                 generated_link.Select();
+                Overview?.TriggerUpdate();
             });
         }
     }

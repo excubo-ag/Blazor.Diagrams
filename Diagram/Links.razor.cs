@@ -38,7 +38,7 @@ namespace Excubo.Blazor.Diagrams
             Diagram.Links = this;
             base.OnParametersSet();
         }
-        private readonly List<LinkBase> all_links = new List<LinkBase>();
+        internal readonly List<LinkBase> all_links = new List<LinkBase>();
         private readonly List<LinkData> internally_generated_links = new List<LinkData>();
         internal void Register(LinkBase link)
         {

@@ -66,4 +66,13 @@
     {
         return (Width / 2, Height / 2, Width / 2, Height / 2);
     }
+    protected internal override async Task DrawShapeAsync(Context2D context)
+    {
+        await context.BeginPathAsync();
+        await context.MoveToAsync(X + Width * 0.5, Y - Height * 0.5);
+        await context.LineToAsync(X + Width * 1.5, Y + Height * 0.5);
+        await context.LineToAsync(X + Width * 0.5, Y + Height * 1.5);
+        await context.LineToAsync(X - Width * 0.5, Y + Height * 0.5);
+        await context.FillAsync(Canvas.FillRule.NonZero);
+    }
 }

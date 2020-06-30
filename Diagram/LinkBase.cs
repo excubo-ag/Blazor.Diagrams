@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Excubo.Blazor.Canvas.Contexts;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -137,5 +139,12 @@ namespace Excubo.Blazor.Diagrams
             ControlPoints.Add(new ControlPoint(OnTargetOver, OnTargetOut) { X = Target.X, Y = Target.Y });
         }
         #endregion
+        protected internal virtual async Task DrawPathAsync(Context2D ctx)
+        {
+            await ctx.BeginPathAsync();
+            await ctx.MoveToAsync(Source.X, Source.Y);
+            await ctx.LineToAsync(Target.X, Target.Y);
+            await ctx.StrokeAsync();
+        }
     }
 }

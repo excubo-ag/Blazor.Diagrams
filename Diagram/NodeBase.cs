@@ -1,7 +1,10 @@
-﻿using Excubo.Blazor.Diagrams.__Internal;
+﻿using Excubo.Blazor.Canvas.Contexts;
+using Excubo.Blazor.Diagrams.__Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
+using System.Drawing;
+using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -208,6 +211,10 @@ namespace Excubo.Blazor.Diagrams
             base.OnAfterRender(first_render);
         }
         #endregion
+        protected internal virtual async Task DrawShapeAsync(Context2D context)
+        {
+            await context.FillRectAsync(X, Y, Width, Height);
+        }
         public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
         {
             return (0, 0);

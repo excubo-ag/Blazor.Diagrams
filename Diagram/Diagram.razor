@@ -59,6 +59,10 @@
             {
                 <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
             }
+            @if (OverviewSettings != null)
+            {
+                <Overview @ref="Overview" />
+            }
         </CascadingValue>
     </div>
 }
@@ -68,6 +72,7 @@
     private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;
     private Renderer node_border_renderer;
+    private Overview Overview;
     internal void AddNodeContentFragment(RenderFragment content) => node_content_renderer.Add(content);
     internal void AddNodeTemplateContentFragment(RenderFragment content) => node_template_content_renderer.Add(content);
     internal void AddNodeBorderFragment(RenderFragment content) => node_border_renderer.Add(content);

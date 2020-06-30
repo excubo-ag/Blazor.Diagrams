@@ -1,7 +1,7 @@
 ﻿@inherits LinkBase
 @using Excubo.Blazor.Diagrams.Extensions
 @if (Deleted)
-{ 
+{
     return;
 }
 @using (var temporary_culture = new CultureSwapper())
@@ -52,7 +52,7 @@
         }
     </g>
 }
-@code { 
+@code {
     private (double X, double Y) GetMiddlePoint()
     {
         return ((Source.X + Target.X) / 2, (Source.Y + Target.Y) / 2);
@@ -62,10 +62,26 @@
         if (ControlPointMethods == null)
         {
             ControlPointMethods = new List<Func<(double X, double Y)>>
-            {
+    {
                 GetMiddlePoint
             };
         }
         base.OnParametersSet();
+    }
+    protected internal override async Task DrawPathAsync(Context2D ctx)
+    {
+        var width = Math.Abs(ControlPoints[2].X - ControlPoints[0].X);
+        var height = Math.Abs(ControlPoints[2].Y - ControlPoints[0].Y);
+        var down_first = (width < height);
+        var first_point_x = (down_first) ? (ControlPoints[0].X) : (ControlPoints[1].X);
+        var first_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[0].Y);
+        var second_point_x = (down_first) ? (ControlPoints[2].X) : (ControlPoints[1].X);
+        var second_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[2].Y);
+        await ctx.BeginPathAsync();
+        await ctx.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);
+        await ctx.LineToAsync(first_point_x, first_point_y);
+        await ctx.LineToAsync(second_point_x, second_point_y);
+        await ctx.LineToAsync(ControlPoints[2].X, ControlPoints[2].Y);
+        await ctx.StrokeAsync();
     }
 }

@@ -22,5 +22,6 @@
         }
         internal NodeLibrary NodeLibrary { get; set; }
         internal LinkSelectorSettings LinkSelectorSettings { get; set; }
+        internal OverviewSettings OverviewSettings { get; set; }
     }
 }
