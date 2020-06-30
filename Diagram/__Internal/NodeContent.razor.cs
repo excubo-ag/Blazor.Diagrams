@@ -38,7 +38,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         /// <summary>
         /// Callback that tells the diagram how large the node must be
         /// </summary>
-        [Parameter] public Action<double[]> SizeCallback { get; set; }
+        [Parameter] public Action<(double Width, double Height)> SizeCallback { get; set; }
         [Inject] private IJSRuntime js { get; set; }
         [Inject] private IScriptInjectionTracker script_injection_tracker { get; set; }
         public void TriggerRender(double x, double y, double width, double height, double zoom)

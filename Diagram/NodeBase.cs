@@ -146,7 +146,7 @@ namespace Excubo.Blazor.Diagrams
                 {
                     builder.AddAttribute(6, nameof(NodeContent.ChildContent), ChildContent(this));
                 }
-                builder.AddAttribute(7, nameof(NodeContent.SizeCallback), (Action<double[]>)GetSize);
+                builder.AddAttribute(7, nameof(NodeContent.SizeCallback), (Action<(double Width, double Height)>)GetSize);
                 builder.AddComponentReferenceCapture(8, (reference) => content_reference = (NodeContent)reference);
                 builder.CloseComponent();
             };
@@ -162,10 +162,9 @@ namespace Excubo.Blazor.Diagrams
             StateHasChanged();
         }
         protected bool Hidden { get; set; } = true;
-        protected void GetSize(double[] result)
+        protected void GetSize((double Width, double Height) result)
         {
-            Width = result[0];
-            Height = result[1];
+            (Width, Height) = result;
             if (NodeLibrary != null)
             {
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);

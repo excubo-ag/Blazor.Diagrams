@@ -14,15 +14,15 @@ namespace Excubo.Blazor.Diagrams.__Internal
                 : "position: absolute; top: 0; left: 0; height: 100%";
             if (AdditionalAttributes != null && AdditionalAttributes.ContainsKey("style"))
             {
-                builder.AddAttribute(2, "style", $"{default_style}; {AdditionalAttributes["style"]}");
+                builder.AddAttribute(1, "style", $"{default_style}; {AdditionalAttributes["style"]}");
             }
             else
             {
-                builder.AddAttribute(2, "style", default_style);
+                builder.AddAttribute(1, "style", default_style);
             }
             if (AdditionalAttributes != null)
             {
-                var i = 3;
+                var i = 2;
                 foreach (var (key, value) in AdditionalAttributes)
                 {
                     if (key == "class"
@@ -34,7 +34,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
                     i++;
                 }
             }
-            builder.AddContent(1, ChildContent);
+            builder.AddContent(999, ChildContent);
             builder.CloseElement();
         }
         [Parameter] public RenderFragment ChildContent { get; set; }

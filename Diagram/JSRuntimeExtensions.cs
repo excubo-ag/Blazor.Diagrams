@@ -17,13 +17,15 @@ namespace Excubo.Blazor.Diagrams
         {
             return script_injection_tracker.LoadedAsync(JsSource);
         }
-        public static async Task<double[]> GetPositionAsync(this IJSRuntime js, ElementReference element)
+        public static async Task<(double Left, double Top)> GetPositionAsync(this IJSRuntime js, ElementReference element)
         {
-            return await js.InvokeAsync<double[]>($"{@namespace}.GetPosition", element);
+            var values = await js.InvokeAsync<double[]>($"{@namespace}.GetPosition", element);
+            return (Left: values[0], Top: values[1]);
         }
-        public static async Task<double[]> GetDimensionsAsync(this IJSRuntime js_runtime, ElementReference element)
+        public static async Task<(double Width, double Height)> GetDimensionsAsync(this IJSRuntime js_runtime, ElementReference element)
         {
-            return await js_runtime.InvokeAsync<double[]>($"{@namespace}.GetDimensions", element);
+            var values = await js_runtime.InvokeAsync<double[]>($"{@namespace}.GetDimensions", element);
+            return (Width: values[0], Height: values[1]);
         }
     }
 }

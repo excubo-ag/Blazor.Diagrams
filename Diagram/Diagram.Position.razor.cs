@@ -16,12 +16,8 @@ namespace Excubo.Blazor.Diagrams
         private async Task GetPositionAsync()
         {
             await script_injection_tracker.DiagramJsSourceLoadedAsync();
-            var values = await js.GetPositionAsync(canvas);
-            CanvasLeft = values[0];
-            CanvasTop = values[1];
-            values = await js.GetDimensionsAsync(canvas);
-            CanvasWidth = values[0];
-            CanvasHeight = values[1];
+            (CanvasLeft, CanvasTop) = await js.GetPositionAsync(canvas);
+            (CanvasWidth, CanvasHeight) = await js.GetDimensionsAsync(canvas);
         }
     }
 }
