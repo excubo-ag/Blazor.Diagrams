@@ -7,7 +7,7 @@ namespace Excubo.Blazor.Diagrams
 {
     internal static class JSRuntimeExtensions
     {
-        private static readonly string @namespace = "Excubo.Blazor.Diagrams";
+        private static readonly string @namespace = "Excubo.Diagrams"; // Blazor removed from namespaces, as all JS would be for Blazor anyway.
 #if DEBUG
         public static readonly string JsSource = "_content/Excubo.Blazor.Diagrams/script.js";
 #else
