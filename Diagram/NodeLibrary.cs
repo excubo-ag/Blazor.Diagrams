@@ -49,7 +49,7 @@ namespace Excubo.Blazor.Diagrams
             return positions[node];
 
         }
-        private Dictionary<NodeBase, (double X, double Y, double Width, double Height)> positions = new Dictionary<NodeBase, (double X, double Y, double Width, double Height)>();
+        private readonly Dictionary<NodeBase, (double X, double Y, double Width, double Height)> positions = new Dictionary<NodeBase, (double X, double Y, double Width, double Height)>();
     }
 
 }

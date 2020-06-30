@@ -3,7 +3,6 @@ using Excubo.Blazor.Diagrams.__Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
-using System.Drawing;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams

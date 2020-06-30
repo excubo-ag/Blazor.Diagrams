@@ -39,7 +39,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             }
             RenderAsync();
         }
-        private async Task RenderAsync()
+        private async void RenderAsync()
         {
             while (render_requested)
             {
