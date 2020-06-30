@@ -53,9 +53,9 @@ namespace Excubo.Blazor.Diagrams
         }
         internal void Add(LinkBase link)
         {
-            all_links.Add(link);
             if (link.Deleted)
             {
+                all_links.Add(link);
                 link.MarkUndeleted();
             }
             else
