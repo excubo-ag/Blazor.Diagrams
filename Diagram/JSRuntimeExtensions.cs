@@ -8,7 +8,11 @@ namespace Excubo.Blazor.Diagrams
     internal static class JSRuntimeExtensions
     {
         private static readonly string @namespace = "Excubo.Blazor.Diagrams";
+#if DEBUG
+        public static readonly string JsSource = "_content/Excubo.Blazor.Diagrams/script.js";
+#else
         public static readonly string JsSource = "_content/Excubo.Blazor.Diagrams/script.min.js";
+#endif
         public static Task DiagramJsSourceLoadedAsync(this IScriptInjectionTracker script_injection_tracker)
         {
             return script_injection_tracker.LoadedAsync(JsSource);
