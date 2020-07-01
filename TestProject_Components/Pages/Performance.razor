@@ -1,5 +1,4 @@
 ﻿@page "/performance"
-@using Excubo.Blazor.Diagrams
 
 <Diagram @ref="Diagram">
     <Nodes>
@@ -36,8 +35,8 @@
     List<MyNodeDefinition> states = Enumerable.Range(0, n * n).Select(i => new MyNodeDefinition
     {
         Id = $"state{i}",
-        X = 100 * (i % n),
-        Y = 100 * (i / n)
+        X = 150 * (i % n),
+        Y = 150 * (i / n)
     }).ToList();
     List<MyLinkDefinition> links = Enumerable.Range(0, n * n / 4).Select(i => new MyLinkDefinition
     {

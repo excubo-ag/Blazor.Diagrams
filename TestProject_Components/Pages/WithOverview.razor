@@ -1,0 +1,29 @@
+﻿@page "/with_overview"
+
+<Diagram>
+    <Nodes>
+        <RectangleNode Id="n1" X="100" Y="100">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </RectangleNode>
+        <EllipseNode Id="n2" X="200" Y="100">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </EllipseNode>
+        <DiamondNode Id="n3" X="200" Y="200">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </DiamondNode>
+        <RectangleNode Id="n4" X="1000" Y="-800">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </RectangleNode>
+        <RectangleNode Id="n5" X="-1000" Y="-800">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </RectangleNode>
+        <RectangleNode Id="n6" X="-1000" Y="800">
+            <div style="width:4em; height:3em; text-align: center;"></div>
+        </RectangleNode>
+    </Nodes>
+    <Links>
+        <Link Source="@(new NodeAnchor { NodeId = "n1", Port = Position.Right })" Target="@(new NodeAnchor { NodeId = "n2", Port = Position.Left })" />
+        <Link Source="@(new NodeAnchor { NodeId = "n1", Port = Position.BottomRight })" Target="@(new NodeAnchor { NodeId = "n3", Port = Position.TopLeft })" />
+    </Links>
+    <OverviewSettings Position="Position.TopRight" />
+</Diagram>

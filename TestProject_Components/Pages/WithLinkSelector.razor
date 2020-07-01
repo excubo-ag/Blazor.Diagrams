@@ -1,0 +1,40 @@
+﻿@page "/link_selector"
+
+<Diagram>
+    <Nodes>
+
+        <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
+        <Node Id="n1" X="100" Y="100" Type="NodeType.Rectangle">
+            <div style="width:4em; height:3em"></div>
+        </Node>
+        <Node Id="n2" X="100" Y="300" Type="NodeType.Rectangle">
+            <div style="width:4em; height:3em"></div>
+        </Node>
+        <Node Id="n3" X="300" Y="100" Type="NodeType.Rectangle">
+            <div style="width:4em; height:3em"></div>
+        </Node>
+        <Node Id="n4" X="300" Y="300" Type="NodeType.Rectangle">
+            <div style="width:4em; height:3em"></div>
+        </Node>
+    </Nodes>
+    <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
+    <Links OnRemove="LinkRemoved" OnAdd="LinkAdded" @bind-DefaultType="link_type" @bind-DefaultArrow="arrows">
+        <AngledLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.BottomRight })" Target="@(new NodeAnchor{ NodeId = "n4", Port = Position.TopLeft })" Arrow="Arrow.None" />
+        <CurvedLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.TopRight })" Target="@(new NodeAnchor{ NodeId = "n3", Port = Position.BottomLeft })" Arrow="Arrow.Target" />
+        <StraightLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.Bottom })" Target="@(new NodeAnchor{ NodeId = "n2", Port = Position.Top })" Arrow="Arrow.Both" />
+    </Links>
+    <LinkSelectorSettings Position="Position.TopRight" />
+</Diagram>
+
+@code {
+    private LinkType link_type { get; set; } = LinkType.Curved;
+    private Arrow arrows { get; set; } = Arrow.Both;
+    private void LinkRemoved(LinkBase link)
+    {
+        Console.WriteLine($"A link was removed: {link.Source} -> {link.Target}");
+    }
+    private void LinkAdded(LinkBase link)
+    {
+        Console.WriteLine($"A link was added: {link.Source} -> {link.Target}");
+    }
+}

@@ -1,0 +1,37 @@
+﻿@page "/node_library"
+
+<Diagram>
+    <NodeLibrary style="background-color: aliceblue; border: 1px solid blue; " Orientation="Orientation.Vertical">
+        <RectangleNode>
+            <div style="width:5em; height:3em; margin: 1em;">
+                Template rectangle
+            </div>
+        </RectangleNode>
+        <RectangleNode>
+            <input style="margin:1em; pointer-events:visiblePainted" type="text" placeholder="editable!" />
+        </RectangleNode>
+        <DiamondNode>
+            <div style="width:5em; height:3em; margin: 1em;">
+                Template diamond
+            </div>
+        </DiamondNode>
+        <EllipseNode>
+            <div style="width:5em; height:3em; margin: 1em;">Template Ellipse</div>
+        </EllipseNode>
+        <Node Type="NodeType.Ellipse">
+            <div style="width:5em; height:3em; margin: 1em;">Template Node</div>
+        </Node>
+    </NodeLibrary>
+    <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved" OnAdd="NodeAdded">
+    </Nodes>
+    <Links />
+</Diagram>
+
+@code {
+    private void NodeAdded(NodeBase node)
+    {
+    }
+    private void NodeRemoved(NodeBase node)
+    {
+    }
+}

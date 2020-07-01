@@ -1,5 +1,4 @@
-﻿@using Excubo.Blazor.Diagrams
-@inherits NodeBase
+﻿@inherits NodeBase
 <!--This is important to prohibit rendering of deleted, user-provided nodes.-->
 @if (Deleted)
 {
@@ -14,8 +13,7 @@
         <!--Beginning of the customizable part-->
         <!--This defines the area which can be interacted with to select/move the node. -->
         <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
-        <rect width="@Width"
-              height="@Height"
+        <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
               @onmouseover="OnNodeOver"
               @onmouseout="OnNodeOut"
               stroke="@Stroke"
@@ -36,8 +34,7 @@
                 <!--Beginning of the customizable part-->
                 <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
                 <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
-                <rect width="@Width"
-                      height="@Height"
+                <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
                       style="@(Hidden? "display:none" : "")"
                       stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
                       stroke-width="@(.5 / Zoom)rem"
@@ -54,13 +51,14 @@
     {
         return position switch
         {
-            Position.North => (Width / 2, 0),
+            Position.NorthWest => (0, 0),
+            Position.North => (Width / 2, -10),
             Position.NorthEast => (Width, 0),
-            Position.East => (Width, Height / 2),
+            Position.East => (Width + 10, Height / 2),
             Position.SouthEast => (Width, Height),
-            Position.South => (Width / 2, Height),
+            Position.South => (Width / 2, Height + 10),
             Position.SouthWest => (0, Height),
-            Position.NorthWest => (0, Height / 2),
+            Position.West => (-10, Height / 2),
             _ => (0, 0)
         };
     }
@@ -70,5 +68,19 @@
     protected override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
     {
         return (0, 0, 0, 0);
+    }
+    protected override async Task DrawShapeAsync(Excubo.Blazor.Canvas.Contexts.Context2D ctx)
+    {
+        await ctx.BeginPathAsync();
+        await ctx.MoveToAsync(X, Y);
+        await ctx.LineToAsync(X + Width / 2, Y - 10);
+        await ctx.LineToAsync(X + Width, Y);
+        await ctx.LineToAsync(X + Width + 10, Y + Height / 2);
+        await ctx.LineToAsync(X + Width, Y + Height);
+        await ctx.LineToAsync(X + Width / 2, Y + Height + 10);
+        await ctx.LineToAsync(X, Y + Height);
+        await ctx.LineToAsync(X - 10, Y + Height / 2);
+        await ctx.LineToAsync(X, Y);
+        await ctx.FillAsync(Excubo.Blazor.Canvas.FillRule.NonZero);
     }
 }
