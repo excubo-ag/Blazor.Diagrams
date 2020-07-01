@@ -45,7 +45,13 @@ namespace Excubo.Blazor.Diagrams.__Internal
             {
                 render_requested = false;
                 update_task = CreateImgAsync();
-                await update_task;
+                try
+                {
+                    await update_task;
+                }
+                catch
+                {
+                }
             }
         }
         private Point last_point; 
