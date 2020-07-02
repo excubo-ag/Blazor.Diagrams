@@ -1,5 +1,6 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components.Web;
+using System;
 using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
@@ -111,7 +112,7 @@ namespace Excubo.Blazor.Diagrams
             switch (ActionType)
             {
                 case ActionType.SelectRegion:
-                    // TODO select by region
+                    UpdateSelection(e);
                     break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
@@ -197,6 +198,24 @@ namespace Excubo.Blazor.Diagrams
                     // this shouldn't do anything as link creation is simply clicking twice.
                     // therefore, the mouse up movement shouldn't change the process.
                     break;
+            }
+        }
+        private void UpdateSelection(MouseEventArgs e)
+        {
+            var p1 = e.RelativeToOrigin(this);
+            (ActionObject.Point.X, ActionObject.Point.Y) = e.RelativeToOrigin(this);
+            var p2 = ActionObject.Origin;
+            var (min_x, max_x) = (Math.Min(p1.X, p2.X), Math.Max(p1.X, p2.X));
+            var (min_y, max_y) = (Math.Min(p1.Y, p2.Y), Math.Max(p1.Y, p2.Y));
+            foreach (var node in Nodes.all_nodes)
+            {
+                if (min_x <= node.X && node.X <= max_x
+                 && min_y <= node.Y && node.Y <= max_y
+                 && !Group.Contains(node))
+                {
+                    node.Select();
+                    Group.Add(node);
+                }
             }
         }
         private void GoBackToEditingLink()
@@ -389,9 +408,14 @@ namespace Excubo.Blazor.Diagrams
         {
             switch (ActiveElementType)
             {
-                case HoverType.Unknown when !e.CtrlKey:
+                case HoverType.Unknown when !e.CtrlKey && !e.ShiftKey:
                     // panning starts, when you simply press the mouse down anywhere where there's nothing.
                     ActionType = ActionType.Pan;
+                    break;
+                case HoverType.Unknown when e.ShiftKey:
+                    ActionType = ActionType.SelectRegion;
+                    ActionObject.RememberOrigin(new Point(e.RelativeToOrigin(this)));
+                    ActionObject.SetPoint(new Point(e.RelativeToOrigin(this)));
                     break;
                 case HoverType.Unknown when e.CtrlKey:
                     // this isn't really a sensible thing to do. It's probably a misplaced select

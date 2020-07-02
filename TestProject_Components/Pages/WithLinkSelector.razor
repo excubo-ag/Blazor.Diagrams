@@ -4,16 +4,16 @@
     <Nodes>
 
         <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
-        <Node Id="n1" X="100" Y="100" Type="NodeType.Rectangle">
+        <Node Id="n1" @bind-X="n1p.X" @bind-Y="n1p.Y" Type="NodeType.Rectangle">
             <div style="width:4em; height:3em"></div>
         </Node>
-        <Node Id="n2" X="100" Y="300" Type="NodeType.Rectangle">
+        <Node Id="n2" @bind-X="n2p.X" @bind-Y="n2p.Y" Type="NodeType.Rectangle">
             <div style="width:4em; height:3em"></div>
         </Node>
-        <Node Id="n3" X="300" Y="100" Type="NodeType.Rectangle">
+        <Node Id="n3" @bind-X="n3p.X" @bind-Y="n3p.Y" Type="NodeType.Rectangle">
             <div style="width:4em; height:3em"></div>
         </Node>
-        <Node Id="n4" X="300" Y="300" Type="NodeType.Rectangle">
+        <Node Id="n4" @bind-X="n4p.X" @bind-Y="n4p.Y" Type="NodeType.Rectangle">
             <div style="width:4em; height:3em"></div>
         </Node>
     </Nodes>
@@ -27,6 +27,10 @@
 </Diagram>
 
 @code {
+    private Point n1p = new Point(100, 100);
+    private Point n2p = new Point(100, 300);
+    private Point n3p = new Point(300, 100);
+    private Point n4p = new Point(300, 300);
     private LinkType link_type { get; set; } = LinkType.Curved;
     private Arrow arrows { get; set; } = Arrow.Both;
     private void LinkRemoved(LinkBase link)

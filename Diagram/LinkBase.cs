@@ -68,6 +68,10 @@ namespace Excubo.Blazor.Diagrams
                 {
                     InitializeControlPoints();
                 }
+                else
+                {
+                    UpdateControlPoints();
+                }
             }
             base.OnParametersSet();
         }

@@ -19,7 +19,7 @@
               stroke="@Stroke"
               stroke-width="2px"
               fill="@Fill"
-              cursor="move"
+              cursor="@(Movable ? "move" : "inherit")"
               style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
         <!--End of the customizable part-->
     </g>

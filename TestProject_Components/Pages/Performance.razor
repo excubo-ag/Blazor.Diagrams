@@ -5,7 +5,7 @@
         @foreach (var state in states)
         {
             <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
-            <Node @key="state.Id" Id="@state.Id" X="state.X" Y="state.Y" Type="NodeType.Rectangle">
+            <Node @key="state.Id" Id="@state.Id" @bind-X="state.X" @bind-Y="state.Y" Type="NodeType.Rectangle">
                 State @state.Id
             </Node>
         }

@@ -30,17 +30,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.7.0
+Install-Package Excubo.Blazor.Diagrams -Version 0.8.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.7.0
+dotnet add package Excubo.Blazor.Diagrams --version 0.8.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.7.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.8.0" />
 ```
 
 ### 2. Add the diagram service to your service collection

@@ -40,6 +40,10 @@
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
                     <Renderer @ref="node_border_renderer" Region="g" />
                 </g>
+                @if (ActionType == ActionType.SelectRegion)
+                {
+                    <rect x="@Math.Min(ActionObject.Point.X, ActionObject.Origin.X)" y="@Math.Min(ActionObject.Point.Y, ActionObject.Origin.Y)" width="@Math.Abs(ActionObject.Point.X - ActionObject.Origin.X)" height="@Math.Abs(ActionObject.Point.Y - ActionObject.Origin.Y)" stroke="gray" fill="none" stroke-dasharray="2 2" stroke-width="2"></rect>
+                }
             </svg>
             <!-- area for nodes in the node library -->
             <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">

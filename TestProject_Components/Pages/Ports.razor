@@ -2,29 +2,11 @@
 
 <Diagram @ref="Diagram">
     <Nodes>
-        @{
-            string prefix;
-            prefix = "r";
-            foreach (var node in nodes)
-            {
-                <RectangleNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="node.X" Y="node.Y">
-                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
-                </RectangleNode>
-            }
-            prefix = "d";
-            foreach (var node in nodes)
-            {
-                <DiamondNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="500 + node.X" Y="node.Y">
-                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
-                </DiamondNode>
-            }
-            prefix = "e";
-            foreach (var node in nodes)
-            {
-                <EllipseNode @key="@(prefix + node.Id)" Id="@(prefix + node.Id)" X="node.X" Y="500 + node.Y">
-                    <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
-                </EllipseNode>
-            }
+        @foreach (var node in nodes)
+        {
+            <Node @key="@(node.Id)" Id="@(node.Id)" @bind-X="node.X" @bind-Y="node.Y" Type="node.Type">
+                <div style="width:4em; height:3em; text-align: center;">@node.Text</div>
+            </Node>
         }
     </Nodes>
     <Links>
@@ -44,19 +26,20 @@
         public double X { get; set; }
         public double Y { get; set; }
         public string Text { get; set; }
+        public NodeType Type { get; set; }
     }
-    List<MyNodeDefinition> nodes = new List<MyNodeDefinition>
+    List<MyNodeDefinition> nodes = new string[] { "r", "d", "e" }.SelectMany((prefix, index) => new List<MyNodeDefinition>
     {
-        new MyNodeDefinition { Id = "c", X = 0, Y = 0, Text = "Center" },
-        new MyNodeDefinition { Id = "n", X = 0, Y = -150, Text = "North" },
-        new MyNodeDefinition { Id = "s", X = 0, Y = 150, Text = "South" },
-        new MyNodeDefinition { Id = "e", X = 150, Y = 0, Text = "East" },
-        new MyNodeDefinition { Id = "w", X = -150, Y = 0, Text = "West" },
-        new MyNodeDefinition { Id = "ne", X = 150, Y = -150, Text = "North East" },
-        new MyNodeDefinition { Id = "se", X = 150, Y = 150, Text = "South East" },
-        new MyNodeDefinition { Id = "sw", X = -150, Y = 150, Text = "South West" },
-        new MyNodeDefinition { Id = "nw", X = -150, Y = -150, Text = "North West" }
-    };
+        new MyNodeDefinition { Id = prefix + "c", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) + 0, Text = "Center", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "n", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) - 150, Text = "North", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "s", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) + 150, Text = "South", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "e", X = ((index == 1) ? 500 : 0) + 150, Y = ((index == 2) ? 500 : 0) + 0, Text = "East", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "w", X = ((index == 1) ? 500 : 0) - 150, Y = ((index == 2) ? 500 : 0) + 0, Text = "West", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "ne", X = ((index == 1) ? 500 : 0) + 150, Y = ((index == 2) ? 500 : 0) - 150, Text = "North East", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "se", X = ((index == 1) ? 500 : 0) + 150, Y = ((index == 2) ? 500 : 0) + 150, Text = "South East", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "sw", X = ((index == 1) ? 500 : 0) - 150, Y = ((index == 2) ? 500 : 0) + 150, Text = "South West", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
+        new MyNodeDefinition { Id = prefix + "nw", X = ((index == 1) ? 500 : 0) - 150, Y = ((index == 2) ? 500 : 0) - 150, Text = "North West", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } }
+    }).ToList();
     public class MyLinkDefinition
     {
         public NodeAnchor Source { get; set; }
