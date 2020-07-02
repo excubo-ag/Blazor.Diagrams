@@ -2,15 +2,18 @@
 
 <Diagram>
     <NodeLibrary style="background-color: aliceblue; border: 1px solid blue; " Orientation="Orientation.Vertical">
-        <UserNodeCode>
+        <UserDefinedNode>
             <div style="width:5em; height:3em; margin: 1em;">Template User-defined!</div>
-        </UserNodeCode>
+        </UserDefinedNode>
     </NodeLibrary>
-    <Nodes>
-        <UserNodeCode X="300" Y="300">
+    <Nodes OnAdd="(_) => {}">
+        <UserDefinedNode X="300" Y="300">
             Hello custom node.
-        </UserNodeCode>
+        </UserDefinedNode>
     </Nodes>
     <Links />
     <OverviewSettings />
 </Diagram>
+@code {
+
+}
