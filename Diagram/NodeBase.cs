@@ -15,13 +15,12 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Horizontal position of the node
         /// </summary>
-        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; XChanged?.Invoke(x); } }
-        [Parameter] public Action<double> XChanged { get; set; }
+        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
+        internal event EventHandler PositionChanged;
         /// <summary>
         /// Vertical position of the node
         /// </summary>
-        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; YChanged?.Invoke(y); } }
-        [Parameter] public Action<double> YChanged { get; set; }
+        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }

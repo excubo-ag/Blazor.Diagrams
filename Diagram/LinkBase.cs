@@ -62,13 +62,11 @@ namespace Excubo.Blazor.Diagrams
                         (Target.RelativeX, Target.RelativeY) = Target.Node.GetDefaultPort(Target.Port);
                     }
                 }
+                Source.CoordinatesChanged = UpdateControlPoints;
+                Target.CoordinatesChanged = UpdateControlPoints;
                 if (!ControlPoints.Any())
                 {
                     InitializeControlPoints();
-                }
-                else
-                {
-                    UpdateControlPoints();
                 }
             }
             base.OnParametersSet();
@@ -127,6 +125,7 @@ namespace Excubo.Blazor.Diagrams
                 cp.Y = new_y;
             }
             (ControlPoints.Last().X, ControlPoints.Last().Y) = (Target.X, Target.Y);
+            StateHasChanged();
         }
 
         private void InitializeControlPoints()
@@ -142,8 +141,8 @@ namespace Excubo.Blazor.Diagrams
         protected internal virtual async Task DrawPathAsync(Context2D ctx)
         {
             await ctx.BeginPathAsync();
-            await ctx.MoveToAsync(Source.X, Source.Y);
-            await ctx.LineToAsync(Target.X, Target.Y);
+            await ctx.MoveToAsync(ControlPoints.First().X, ControlPoints.First().Y);
+            await ctx.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
             await ctx.StrokeAsync();
         }
     }

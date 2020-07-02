@@ -35,9 +35,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
                             || key == nameof(NodeBase.ChildContent)
                             || key == nameof(NodeBase.OnCreate)
                             || key == nameof(NodeBase.X)
-                            || key == nameof(NodeBase.XChanged)
-                            || key == nameof(NodeBase.Y)
-                            || key == nameof(NodeBase.YChanged))
+                            || key == nameof(NodeBase.Y))
                             {
                                 continue;
                             }

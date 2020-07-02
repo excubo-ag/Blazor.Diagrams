@@ -138,6 +138,7 @@ namespace Excubo.Blazor.Diagrams
         {
             NavigationSettings.OnMouseWheel(e);
             Nodes.Redraw();
+            Links.Redraw();
             Overview?.TriggerUpdate();
         }
         private void OnMouseDown(MouseEventArgs e)
@@ -297,6 +298,7 @@ namespace Excubo.Blazor.Diagrams
                 point.Y += delta_y;
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
                 Overview?.TriggerUpdate();
+                ActionObject.Link.TriggerStateHasChanged();
             }
             else
             {
