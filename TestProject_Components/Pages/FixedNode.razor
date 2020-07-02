@@ -1,0 +1,16 @@
+﻿@page "/fixed_node"
+
+<Diagram>
+    <Nodes>
+        <RectangleNode X="200" Y="200">
+            Hello fixed node
+        </RectangleNode>
+        <RectangleNode @bind-X="p.X" @bind-Y="p.Y">
+            Hello movable node
+        </RectangleNode>
+    </Nodes>
+    <Links />
+</Diagram>
+@code {
+    private Point p = new Point(400, 200);
+}
