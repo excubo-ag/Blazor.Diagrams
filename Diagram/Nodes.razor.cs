@@ -27,7 +27,6 @@ namespace Excubo.Blazor.Diagrams
             Diagram.Nodes = this;
             base.OnParametersSet();
         }
-        protected override bool ShouldRender() => false;
         internal readonly List<NodeBase> all_nodes = new List<NodeBase>();
         private readonly List<NodeData> internally_generated_nodes = new List<NodeData>();
         public void Register(NodeBase node)
