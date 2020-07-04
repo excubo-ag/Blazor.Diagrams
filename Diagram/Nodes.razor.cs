@@ -94,7 +94,7 @@ namespace Excubo.Blazor.Diagrams
                 Y = Diagram.NavigationSettings.Origin.Y + node.Y / Diagram.NavigationSettings.Zoom,
                 Attributes = node.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.GetCustomAttribute<ParameterAttribute>() != null)
-                .Where(p => p.Name != nameof(NodeBase.ChildContent)) // TODO ignore other properties too, those that are manually added.
+                .Where(p => p.Name != nameof(NodeBase.ChildContent))
                 .Where(p => p.Name != nameof(NodeBase.Id))
                 .Where(p => p.Name != nameof(NodeBase.OnCreate))
                 .Where(p => p.Name != nameof(NodeBase.X))

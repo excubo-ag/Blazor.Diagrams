@@ -191,7 +191,6 @@ namespace Excubo.Blazor.Diagrams
                     // nothing to do here
                     break;
                 case ActionType.SelectRegion:
-                    // TODO finish selection
                     ActionType = ActionType.None;
                     break;
                 case ActionType.UpdateLinkTarget:
