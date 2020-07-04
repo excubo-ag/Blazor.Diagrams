@@ -206,4 +206,3 @@ Longer term goals include:
 - auto-layout
 - customizable background with gridlines
 - virtualization
-- overview screen
