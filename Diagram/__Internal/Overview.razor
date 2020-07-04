@@ -2,12 +2,12 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div style="position: absolute; right: 0; bottom: 0; background-color: white; border: 2px solid black; border-bottom: 0; border-right: 0; padding: 1em;">
+    <div style="position:relative; width: calc(@(Width)px + 2em); @(position) @(border) background-color: white; padding: 1em;">
         <Canvas @ref="canvas1" width="@Width" height="@Height" />
         <div style="position: absolute; top: 1em; display:@((canvas_2_visible ? "block" : "none"))">
             <Canvas @ref="canvas2" width="@Width" height="@Height" />
         </div>
-        <svg style="position:absolute; width: @(Width)px; height: @(Height)px; left: 1em" @onmousemove="OnMouseMove" @onmousemove:stopPropagation>
+        <svg style="position:absolute; width: @(Width)px; height: @(Height)px; left: 1em; top: 1em" @onmousemove="OnMouseMove" @onmousemove:stopPropagation>
             @{
                 var stroke_width = 4;
                 var half_stroke = stroke_width / 2;
@@ -24,6 +24,31 @@
 }
 
 @code {
+    [Parameter] public Position Position { get; set; }
+    private string position => Position switch
+    {
+        Position.Top => "top: 0; margin-left: auto; margin-right: auto;",
+        Position.TopRight => "top: 0; margin-left: auto;",
+        Position.Right => $"margin-left: auto; top: calc(50% - {Height / 2}px);",
+        Position.BottomRight => $"margin-left: auto; top: calc(100% - {Height}px - 2em);",
+        Position.Bottom => $"top: calc(100% - {Height}px - 2em); margin-left: auto; margin-right: auto;",
+        Position.BottomLeft => $"top: calc(100% - {Height}px - 2em);",
+        Position.Left => $"top: calc(50% - {Height / 2}px);",
+        Position.TopLeft => "",
+        _ => ""
+    };
+    private string border => Position switch
+    {
+        Position.Top => "border-bottom: 2px solid black; border-left: 2px solid black; border-right: 2px solid black;",
+        Position.TopRight => "border-bottom: 2px solid black; border-left: 2px solid black;",
+        Position.Right => "border-top: 2px solid black; border-bottom: 2px solid black; border-left: 2px solid black;",
+        Position.BottomRight => "border-top: 2px solid black; border-left: 2px solid black;",
+        Position.Bottom => "border-top: 2px solid black; border-left: 2px solid black; border-right: 2px solid black;",
+        Position.BottomLeft => "border-top: 2px solid black; border-right: 2px solid black;",
+        Position.Left => "border-top: 2px solid black; border-bottom: 2px solid black; border-right: 2px solid black;",
+        Position.TopLeft => "border-bottom: 2px solid black; border-right: 2px solid black;",
+        _ => "border-bottom: 2px solid black; border-right: 2px solid black;"
+    };
     private Canvas canvas1;
     private Canvas canvas2;
     private bool canvas_2_visible { get; set; }
