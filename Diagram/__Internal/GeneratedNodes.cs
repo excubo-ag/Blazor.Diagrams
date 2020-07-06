@@ -44,7 +44,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
                         }
                     }
                     builder.SetKey(node.Id);
-                    builder.AddComponentReferenceCapture(7, (reference) =>
+                    builder.AddComponentReferenceCapture(1000, (reference) =>
                     {
                         if (references.ContainsKey(node))
                         {
