@@ -119,6 +119,7 @@ namespace Excubo.Blazor.Diagrams
         private bool render_necessary;
         private void OnMouseMove(MouseEventArgs e)
         {
+            render_necessary = false;
             switch (ActionType)
             {
                 case ActionType.SelectRegion:
