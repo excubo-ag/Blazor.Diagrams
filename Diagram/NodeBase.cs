@@ -26,7 +26,7 @@ namespace Excubo.Blazor.Diagrams
         protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
-        protected bool Movable => XChanged.HasDelegate && YChanged.HasDelegate;
+        protected bool Movable => NodeLibrary != null || IsInternallyGenerated || (XChanged.HasDelegate && YChanged.HasDelegate);
         protected double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
         private double width = 100;
         private double height = 100;
