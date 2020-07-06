@@ -103,31 +103,48 @@ namespace Excubo.Blazor.Diagrams
             ActiveElement.Clear();
             ActiveElementType = HoverType.Unknown;
         }
-        private HoverType ActiveElementType { get; set; }
+        private HoverType ActiveElementType;
         private readonly ActiveElementContainer ActionObject = new ActiveElementContainer();
-        private ActionType ActionType { get; set; }
+        private ActionType ActionType;
         private bool NewNodeAddingInProgress { get; set; }
+        protected override bool ShouldRender()
+        {
+            if (mouse_moved_but_no_change)
+            {
+                mouse_moved_but_no_change = false;
+                return false;
+            }
+            return base.ShouldRender();
+        }
+        private bool mouse_moved_but_no_change;
         private void OnMouseMove(MouseEventArgs e)
         {
+            mouse_moved_but_no_change = true;
             switch (ActionType)
             {
                 case ActionType.SelectRegion:
                     UpdateSelection(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 case ActionType.MoveControlPoint when e.Buttons == 1:
                     MoveControlPoint(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 case ActionType.MoveAnchor when e.Buttons == 1:
                     MoveNodeAnchor(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 case ActionType.Move when e.Buttons == 1:
                     MoveGroup(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 case ActionType.UpdateLinkTarget:
                     FollowCursorForLinkTarget(e);
+                    mouse_moved_but_no_change = false;
                     break;
                 default:
                     // no action, reset original_cursor_position
