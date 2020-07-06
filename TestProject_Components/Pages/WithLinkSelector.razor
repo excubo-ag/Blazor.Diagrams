@@ -19,9 +19,9 @@
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
     <Links OnRemove="LinkRemoved" OnAdd="LinkAdded" @bind-DefaultType="link_type" @bind-DefaultArrow="arrows">
-        <AngledLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.BottomRight })" Target="@(new NodeAnchor{ NodeId = "n4", Port = Position.TopLeft })" Arrow="Arrow.None" />
-        <CurvedLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.TopRight })" Target="@(new NodeAnchor{ NodeId = "n3", Port = Position.BottomLeft })" Arrow="Arrow.Target" />
-        <StraightLink Source="@(new NodeAnchor{ NodeId = "n1", Port = Position.Bottom })" Target="@(new NodeAnchor{ NodeId = "n2", Port = Position.Top })" Arrow="Arrow.Both" />
+        <AngledLink Source="l1s" Target="l1t" Arrow="Arrow.None" />
+        <CurvedLink Source="l2s" Target="l2t" Arrow="Arrow.Target" />
+        <StraightLink Source="l3s" Target="l3t" Arrow="Arrow.Both" />
     </Links>
     <LinkSelectorSettings Position="Position.TopRight" />
 </Diagram>
@@ -31,6 +31,12 @@
     private Point n2p = new Point(100, 300);
     private Point n3p = new Point(300, 100);
     private Point n4p = new Point(300, 300);
+    private NodeAnchor l1s = new NodeAnchor { NodeId = "n1", Port = Position.BottomRight };
+    private NodeAnchor l1t = new NodeAnchor { NodeId = "n4", Port = Position.TopLeft };
+    private NodeAnchor l2s = new NodeAnchor { NodeId = "n1", Port = Position.TopRight };
+    private NodeAnchor l2t = new NodeAnchor { NodeId = "n3", Port = Position.BottomLeft };
+    private NodeAnchor l3s = new NodeAnchor { NodeId = "n1", Port = Position.Bottom };
+    private NodeAnchor l3t = new NodeAnchor { NodeId = "n2", Port = Position.Top };
     private LinkType link_type { get; set; } = LinkType.Curved;
     private Arrow arrows { get; set; } = Arrow.Both;
     private void LinkRemoved(LinkBase link)
