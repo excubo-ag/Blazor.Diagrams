@@ -60,8 +60,8 @@ namespace Excubo.Blazor.Diagrams
         public bool Deleted { get; private set; }
         #endregion
         #region hover
-        internal void MarkDeleted() { Deleted = true; StateHasChanged(); }
-        internal void MarkUndeleted() { Deleted = false; StateHasChanged(); }
+        internal void MarkDeleted() { Deleted = true; }
+        internal void MarkUndeleted() { Deleted = false; }
         protected void OnNodeOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, (NodeLibrary == null) ? HoverType.Node : HoverType.NewNode); }
         protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
         protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, HoverType.Border); }
@@ -71,7 +71,6 @@ namespace Excubo.Blazor.Diagrams
         {
             X = x;
             Y = y;
-            StateHasChanged();
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected override void OnParametersSet()
@@ -153,16 +152,8 @@ namespace Excubo.Blazor.Diagrams
                 builder.CloseComponent();
             };
         }
-        internal void Select()
-        {
-            Selected = true;
-            StateHasChanged();
-        }
-        internal void Deselect()
-        {
-            Selected = false;
-            StateHasChanged();
-        }
+        internal void Select() { Selected = true; }
+        internal void Deselect() { Selected = false; }
         protected bool Hidden { get; set; } = true;
         protected void GetSize((double Width, double Height) result)
         {
@@ -172,7 +163,6 @@ namespace Excubo.Blazor.Diagrams
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
             Hidden = false;
-            StateHasChanged();
         }
         protected override void OnAfterRender(bool first_render)
         {

@@ -10,7 +10,7 @@ namespace Excubo.Blazor.Diagrams
         public NodeBase Node { get => node; set 
             {
                 node = value; 
-                if (node != null)
+                if (node != null && CoordinatesChanged != null)
                 {
                     node.PositionChanged += (_, __) => CoordinatesChanged();
                 } 

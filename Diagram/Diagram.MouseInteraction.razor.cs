@@ -116,7 +116,7 @@ namespace Excubo.Blazor.Diagrams
             }
             return base.ShouldRender();
         }
-        private bool render_necessary;
+        private bool render_necessary = true;
         private void OnMouseMove(MouseEventArgs e)
         {
             render_necessary = false;
@@ -127,6 +127,8 @@ namespace Excubo.Blazor.Diagrams
                     break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
+                    Nodes.render_not_necessary = true;
+                    Links.render_not_necessary = true;
                     render_necessary = true;
                     break;
                 case ActionType.MoveControlPoint when e.Buttons == 1:
@@ -150,8 +152,6 @@ namespace Excubo.Blazor.Diagrams
         private void OnMouseWheel(WheelEventArgs e)
         {
             NavigationSettings.OnMouseWheel(e);
-            Nodes.Redraw();
-            Links.Redraw();
             Overview?.TriggerUpdate();
         }
         private void OnMouseDown(MouseEventArgs e)

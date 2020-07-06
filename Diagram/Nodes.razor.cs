@@ -21,6 +21,16 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public Action<NodeBase> OnAdd { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }
+        internal bool render_not_necessary;
+        protected override bool ShouldRender()
+        {
+            if (render_not_necessary)
+            {
+                render_not_necessary = false;
+                return false;
+            }
+            return base.ShouldRender();
+        }
         protected override void OnParametersSet()
         {
             System.Diagnostics.Debug.Assert(Diagram != null);

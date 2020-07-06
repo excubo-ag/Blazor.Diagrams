@@ -9,6 +9,16 @@ namespace Excubo.Blazor.Diagrams
 {
     public partial class Links
     {
+        internal bool render_not_necessary;
+        protected override bool ShouldRender()
+        {
+            if (render_not_necessary)
+            {
+                render_not_necessary = false;
+                return false;
+            }
+            return base.ShouldRender();
+        }
         /// <summary>
         /// Default link type for links created as <Link />
         /// </summary>
@@ -61,7 +71,6 @@ namespace Excubo.Blazor.Diagrams
             else
             {
                 internally_generated_links.Add(new LinkData { Source = link.Source, Target = link.Target, Arrow = link.Arrow, Type = link.GetType(), OnCreate = (_) => { } });
-                generated_links_ref.TriggerStateHasChanged();
                 OnAdd?.Invoke(link);
             }
         }
@@ -72,7 +81,6 @@ namespace Excubo.Blazor.Diagrams
             if (match != null)
             {
                 _ = internally_generated_links.Remove(match);
-                generated_links_ref.TriggerStateHasChanged();
             }
             else
             {
