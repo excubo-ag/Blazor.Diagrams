@@ -1,6 +1,6 @@
 ﻿@page "/performance"
 
-<Diagram @ref="Diagram">
+<Diagram>
     <Nodes>
         @foreach (var state in states)
         {
@@ -47,5 +47,4 @@
         Source = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i}", Port = Position.NorthEast },
         Target = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i + 1}", Port = Position.SouthWest }
     })).ToList();
-    private Diagram Diagram { get; set; }
 }
