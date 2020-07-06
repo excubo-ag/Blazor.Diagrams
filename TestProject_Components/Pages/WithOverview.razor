@@ -22,8 +22,8 @@
         </RectangleNode>
     </Nodes>
     <Links>
-        <Link Source="@(new NodeAnchor { NodeId = "n1", Port = Position.Right })" Target="@(new NodeAnchor { NodeId = "n2", Port = Position.Left })" />
-        <Link Source="@(new NodeAnchor { NodeId = "n1", Port = Position.BottomRight })" Target="@(new NodeAnchor { NodeId = "n3", Port = Position.TopLeft })" />
+        <Link Source="l1s" Target="l1t" Arrow="Arrow.None" />
+        <Link Source="l2s" Target="l2t" Arrow="Arrow.Target" />
     </Links>
     <OverviewSettings Position="Position.BottomRight" />
 </Diagram>
@@ -35,4 +35,8 @@
     private Point n4p = new Point(1000, -800);
     private Point n5p = new Point(-100, -800);
     private Point n6p = new Point(-1000, 800);
+    private NodeAnchor l1s = new NodeAnchor { NodeId = "n1", Port = Position.Right };
+    private NodeAnchor l1t = new NodeAnchor { NodeId = "n2", Port = Position.Left };
+    private NodeAnchor l2s = new NodeAnchor { NodeId = "n1", Port = Position.BottomRight };
+    private NodeAnchor l2t = new NodeAnchor { NodeId = "n3", Port = Position.TopLeft };
 }
