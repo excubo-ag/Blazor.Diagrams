@@ -149,7 +149,7 @@ namespace Excubo.Blazor.Diagrams
         {
             NavigationSettings.OnMouseWheel(e);
             Links.TriggerStateHasChanged();
-            Overview?.TriggerUpdate();
+            Overview?.TriggerUpdate(just_pan_or_zoom: true);
         }
         private void OnMouseDown(MouseEventArgs e)
         {
@@ -314,7 +314,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 MoveOrigin(e.ClientX - ActionObject.Point.X, e.ClientY - ActionObject.Point.Y);
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
-                Overview?.TriggerUpdate();
+                Overview?.TriggerUpdate(just_pan_or_zoom: true);
             }
             else
             {

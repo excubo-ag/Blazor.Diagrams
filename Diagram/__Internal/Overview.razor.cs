@@ -24,7 +24,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         private long last_trigger;
         private bool render_requested;
         private Task update_task;
-        internal void TriggerUpdate()
+        internal void TriggerUpdate(bool just_pan_or_zoom = false)
         {
             render_requested = true;
             var current = DateTime.UtcNow.Ticks;
@@ -37,14 +37,14 @@ namespace Excubo.Blazor.Diagrams.__Internal
             {
                 return;
             }
-            RenderAsync();
+            RenderAsync(just_pan_or_zoom);
         }
-        private async void RenderAsync()
+        private async void RenderAsync(bool just_pan_or_zoom)
         {
             while (render_requested)
             {
                 render_requested = false;
-                update_task = CreateImgAsync();
+                update_task = CreateImgAsync(just_pan_or_zoom);
                 try
                 {
                     await update_task;
@@ -65,7 +65,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             if (last_point != null)
             {
                 Diagram.MoveOrigin(Diagram.NavigationSettings.Zoom * (last_point.X - e.ClientX) / Scale, Diagram.NavigationSettings.Zoom * (last_point.Y - e.ClientY) / Scale);
-                TriggerUpdate();
+                TriggerUpdate(just_pan_or_zoom: true);
                 last_point.X = e.ClientX;
                 last_point.Y = e.ClientY;
             }
@@ -74,7 +74,11 @@ namespace Excubo.Blazor.Diagrams.__Internal
                 last_point = new Point(e.ClientX, e.ClientY);
             }
         }
-        private async Task CreateImgAsync()
+        private double old_min_x = double.MaxValue;
+        private double old_max_x = double.MinValue;
+        private double old_min_y = double.MaxValue;
+        private double old_max_y = double.MinValue;
+        private async Task CreateImgAsync(bool just_pan_or_zoom)
         {
             if (Height == 0 || double.IsNaN(Height))
             {
@@ -110,6 +114,16 @@ namespace Excubo.Blazor.Diagrams.__Internal
             ViewTop = (Diagram.NavigationSettings.Origin.Y - min_y) * Scale;
             ViewWidth = (Diagram.CanvasWidth / Diagram.NavigationSettings.Zoom) * Scale;
             ViewHeight = (Diagram.CanvasHeight / Diagram.NavigationSettings.Zoom) * Scale;
+
+            if (just_pan_or_zoom && old_min_x == min_x && old_min_y == min_y && old_max_x == max_x && old_max_y == max_y)
+            {
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+            old_min_x = min_x;
+            old_min_y = min_y;
+            old_max_x = max_x;
+            old_max_y = max_y;
 
             var hidden_canvas = canvas_2_visible ? canvas1 : canvas2;
             await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: false);
