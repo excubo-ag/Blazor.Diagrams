@@ -126,9 +126,6 @@ namespace Excubo.Blazor.Diagrams
                     break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
-                    Nodes.render_not_necessary = true;
-                    Links.render_not_necessary = true;
-                    render_necessary = true;
                     break;
                 case ActionType.MoveControlPoint when e.Buttons == 1:
                     MoveControlPoint(e);
@@ -315,7 +312,7 @@ namespace Excubo.Blazor.Diagrams
         {
             if (ActionObject.Point != null)
             {
-                NavigationSettings.Pan(e.ClientX - ActionObject.Point.X, e.ClientY - ActionObject.Point.Y);
+                MoveOrigin(e.ClientX - ActionObject.Point.X, e.ClientY - ActionObject.Point.Y);
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
                 Overview?.TriggerUpdate();
             }
@@ -323,6 +320,15 @@ namespace Excubo.Blazor.Diagrams
             {
                 ActionObject.SetPoint(new Point(e.ClientX, e.ClientY));
             }
+        }
+        internal void MoveOrigin(double offset_x, double offset_y)
+        {
+            NavigationSettings.Pan(offset_x, offset_y);
+            Nodes.render_not_necessary = true;
+            Nodes.ReRenderIfOffCanvasChanged();
+            Links.render_not_necessary = true;
+            render_necessary = true;
+            StateHasChanged();
         }
         private void MoveControlPoint(MouseEventArgs e)
         {

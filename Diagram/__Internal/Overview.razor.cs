@@ -64,7 +64,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             }
             if (last_point != null)
             {
-                Diagram.NavigationSettings.Pan(Diagram.NavigationSettings.Zoom * (last_point.X - e.ClientX) / Scale, Diagram.NavigationSettings.Zoom * (last_point.Y - e.ClientY) / Scale);
+                Diagram.MoveOrigin(Diagram.NavigationSettings.Zoom * (last_point.X - e.ClientX) / Scale, Diagram.NavigationSettings.Zoom * (last_point.Y - e.ClientY) / Scale);
                 TriggerUpdate();
                 last_point.X = e.ClientX;
                 last_point.Y = e.ClientY;
