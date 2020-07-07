@@ -104,7 +104,7 @@ namespace Excubo.Blazor.Diagrams
             internally_generated_links.Add(new LinkData { Source = source_point, Target = target_point, LinkType = DefaultType, Arrow = DefaultArrow, OnCreate = on_link_create });
             generated_links_ref.TriggerStateHasChanged();
         }
-        internal void TriggerStateHasChanged() => StateHasChanged();
+        internal void TriggerStateHasChanged() => generated_links_ref?.TriggerStateHasChanged();
         internal void Redraw()
         {
             foreach (var link in all_links)

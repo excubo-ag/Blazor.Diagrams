@@ -45,7 +45,16 @@ namespace Excubo.Blazor.Diagrams
         private NodeBase node;
         private double relative_x;
         private double relative_y;
-        internal Action CoordinatesChanged { get; set; }
+        private Action coordinates_changed;
+        internal Action CoordinatesChanged 
+        { 
+            get => coordinates_changed;
+            set
+            {
+                coordinates_changed = value;
+                Node = node; // try attaching this callback again.
+            }
+        }
         public override string ToString()
         {
             return $"{(Node?.Id != null ? "#" + Node.Id : "")}+({RelativeX},{RelativeY})";

@@ -106,7 +106,6 @@ namespace Excubo.Blazor.Diagrams
         private HoverType ActiveElementType;
         private readonly ActiveElementContainer ActionObject = new ActiveElementContainer();
         private ActionType ActionType;
-        private bool NewNodeAddingInProgress { get; set; }
         protected override bool ShouldRender()
         {
             if (!render_necessary)
@@ -152,10 +151,12 @@ namespace Excubo.Blazor.Diagrams
         private void OnMouseWheel(WheelEventArgs e)
         {
             NavigationSettings.OnMouseWheel(e);
+            Links.TriggerStateHasChanged();
             Overview?.TriggerUpdate();
         }
         private void OnMouseDown(MouseEventArgs e)
         {
+            render_necessary = false;
             switch (ActionType)
             {
                 case ActionType.Move:
@@ -185,6 +186,7 @@ namespace Excubo.Blazor.Diagrams
         }
         private void OnMouseUp(MouseEventArgs e)
         {
+            render_necessary = false;
             switch (ActionType)
             {
                 case ActionType.MoveAnchor:
@@ -274,7 +276,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 Group.Nodes[0].Deselect();
             }
-            NewNodeAddingInProgress = false;
+            node_library_wrapper.NewNodeAddingInProgress = false;
             Overview?.TriggerUpdate();
         }
         private void StopModifyingLink(MouseEventArgs e)
@@ -283,6 +285,7 @@ namespace Excubo.Blazor.Diagrams
             // another click means ending the current action and starting a new one
             var link = ActionObject.Link;
             link.Deselect();
+            link.TriggerStateHasChanged();
             ActionObject.Clear();
             ActionType = ActionType.None;
             StartAction(e);
@@ -498,7 +501,7 @@ namespace Excubo.Blazor.Diagrams
                 new_node.Select();
                 ActionObject.Set(new_node);
                 ActionType = ActionType.Move;
-                NewNodeAddingInProgress = true;
+                node_library_wrapper.NewNodeAddingInProgress = true;
                 Overview?.TriggerUpdate();
             });
         }

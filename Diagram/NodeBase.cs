@@ -69,8 +69,16 @@ namespace Excubo.Blazor.Diagrams
         #endregion
         public void UpdatePosition(double x, double y)
         {
+            if (!Movable)
+            {
+                return;
+            }
             X = x;
             Y = y;
+            if (IsInternallyGenerated)
+            {
+                StateHasChanged();
+            }
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected override void OnParametersSet()

@@ -46,19 +46,7 @@
                 }
             </svg>
             <!-- area for nodes in the node library -->
-            <div style="@(NewNodeAddingInProgress ? "opacity: 0.1; pointer-events:none" : "")">
-                @if (NodeLibrary != null)
-                {
-                    <NodeLibraryArea Orientation="@NodeLibrary.Orientation" AdditionalAttributes="@NodeLibrary.AdditionalAttributes">
-                        <CascadingValue Value="NodeLibrary" IsFixed="true">
-                            @NodeLibrary.ChildContent
-                        </CascadingValue>
-                    </NodeLibraryArea>;
-                }
-                <div style="position: absolute;">
-                    <Renderer @ref="node_template_content_renderer" Region="div" />
-                </div>
-            </div>
+            <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper"/>
             @if (LinkSelectorSettings != null)
             {
                 <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
@@ -73,14 +61,14 @@
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
     private ElementReference canvas;
-    private Renderer node_template_content_renderer;
     private Renderer node_content_renderer;
     private Renderer node_border_renderer;
     private Overview Overview;
+    private NodeLibraryWrapper node_library_wrapper;
     internal void AddNodeContentFragment(RenderFragment content) => node_content_renderer.Add(content);
-    internal void AddNodeTemplateContentFragment(RenderFragment content) => node_template_content_renderer.Add(content);
+    internal void AddNodeTemplateContentFragment(RenderFragment content) => node_library_wrapper.Add(content);
     internal void AddNodeBorderFragment(RenderFragment content) => node_border_renderer.Add(content);
     internal void RemoveNodeContentFragment(RenderFragment content) => node_content_renderer.Remove(content);
-    internal void RemoveNodeTemplateContentFragment(RenderFragment content) => node_template_content_renderer.Remove(content);
+    internal void RemoveNodeTemplateContentFragment(RenderFragment content) => node_library_wrapper.Remove(content);
     internal void RemoveNodeBorderFragment(RenderFragment content) => node_border_renderer.Remove(content);
 }

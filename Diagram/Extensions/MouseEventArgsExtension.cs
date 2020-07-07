@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
-using System.Runtime.CompilerServices;
 
 namespace Excubo.Blazor.Diagrams.Extensions
 {
