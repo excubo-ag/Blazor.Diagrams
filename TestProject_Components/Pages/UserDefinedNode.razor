@@ -1,6 +1,6 @@
 ﻿@inherits NodeBase
 <!--This is important to prohibit rendering of deleted, user-provided nodes.-->
-@if (Deleted)
+@if (Deleted || OffCanvas)
 {
     return;
 }

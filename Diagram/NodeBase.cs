@@ -58,6 +58,24 @@ namespace Excubo.Blazor.Diagrams
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }
+        protected bool OffCanvas { get; set; }
+        internal void ReRenderIfOffCanvasChanged()
+        {
+            var margins = GetDrawingMargins();
+            var left = X - margins.Left;
+            var right = X + Width + margins.Right;
+            var top = Y - margins.Top;
+            var bottom = Y + Height + margins.Bottom;
+            var value = right < Diagram.NavigationSettings.Origin.X
+                || bottom < Diagram.NavigationSettings.Origin.Y
+                || left > Diagram.NavigationSettings.Origin.X + Diagram.CanvasWidth / Diagram.NavigationSettings.Zoom
+                || top > Diagram.NavigationSettings.Origin.Y + Diagram.CanvasHeight / Diagram.NavigationSettings.Zoom;
+            if (value != OffCanvas)
+            {
+                OffCanvas = value;
+                StateHasChanged();
+            }
+        }
         #endregion
         #region hover
         internal void MarkDeleted() { Deleted = true; }
@@ -75,6 +93,7 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
+            ReRenderIfOffCanvasChanged();
             if (IsInternallyGenerated)
             {
                 StateHasChanged();
@@ -135,6 +154,10 @@ namespace Excubo.Blazor.Diagrams
         {
             return (builder) =>
             {
+                if (OffCanvas)
+                {
+                    return;
+                }
                 builder.OpenComponent<NodeBorder>(0);
                 builder.AddAttribute(1, nameof(NodeBorder.ChildContent), border);
                 builder.AddComponentReferenceCapture(2, (reference) => node_border_reference = (NodeBorder)reference);
@@ -145,6 +168,10 @@ namespace Excubo.Blazor.Diagrams
         {
             return (builder) =>
             {
+                if (OffCanvas)
+                {
+                    return;
+                }
                 builder.OpenComponent<NodeContent>(0);
                 builder.AddAttribute(1, nameof(NodeContent.X), X);
                 builder.AddAttribute(2, nameof(NodeContent.Y), Y);

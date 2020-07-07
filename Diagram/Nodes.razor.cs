@@ -93,6 +93,13 @@ namespace Excubo.Blazor.Diagrams
                 node.TriggerStateHasChanged();
             }
         }
+        internal void ReRenderIfOffCanvasChanged()
+        {
+            foreach (var node in all_nodes)
+            {
+                node.ReRenderIfOffCanvasChanged();
+            }
+        }
         internal void AddNewNode(NodeBase node, Action<NodeBase> on_create)
         {
             internally_generated_nodes.Add(new NodeData
