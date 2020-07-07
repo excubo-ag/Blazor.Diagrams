@@ -1,0 +1,35 @@
+﻿
+@if (Point != null && Origin != null)
+{
+    <g transform="scale(@Diagram.NavigationSettings.Zoom)">
+        <rect x="@Math.Min(Point.X, Origin.X)"
+              y="@Math.Min(Point.Y, Origin.Y)"
+              width="@Math.Abs(Point.X - Origin.X)"
+              height="@Math.Abs(Point.Y - Origin.Y)"
+              stroke="gray" fill="none" stroke-dasharray="2 2" stroke-width="2" />
+    </g>
+}
+@code {
+    [CascadingParameter] public Diagram Diagram { get; set; }
+    private Point origin;
+    private Point point;
+    internal Point Origin
+    {
+        get => origin;
+        set
+        {
+            origin = value;
+            StateHasChanged();
+        }
+    }
+    internal Point Point
+    {
+        get => point;
+        set
+        {
+            point = value;
+            StateHasChanged();
+        }
+    }
+    internal void TriggerStateHasChanged() => StateHasChanged();
+}

@@ -34,16 +34,12 @@
                     pointer-events: none;">
                 <Renderer @ref="node_content_renderer" Region="div" />
             </div>
-            <!-- area for node borders -->
             <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none">
                 <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
                     <Renderer @ref="node_border_renderer" Region="g" />
+                    <SelectRegion @ref="select_region" />
                 </g>
-                @if (ActionType == ActionType.SelectRegion)
-                {
-                    <rect x="@Math.Min(ActionObject.Point.X, ActionObject.Origin.X)" y="@Math.Min(ActionObject.Point.Y, ActionObject.Origin.Y)" width="@Math.Abs(ActionObject.Point.X - ActionObject.Origin.X)" height="@Math.Abs(ActionObject.Point.Y - ActionObject.Origin.Y)" stroke="gray" fill="none" stroke-dasharray="2 2" stroke-width="2"></rect>
-                }
             </svg>
             <!-- area for nodes in the node library -->
             <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper"/>
@@ -65,6 +61,7 @@
     private Renderer node_border_renderer;
     private Overview Overview;
     private NodeLibraryWrapper node_library_wrapper;
+    private SelectRegion select_region;
     internal void AddNodeContentFragment(RenderFragment content) => node_content_renderer.Add(content);
     internal void AddNodeTemplateContentFragment(RenderFragment content) => node_library_wrapper.Add(content);
     internal void AddNodeBorderFragment(RenderFragment content) => node_border_renderer.Add(content);

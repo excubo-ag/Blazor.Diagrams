@@ -205,6 +205,8 @@ namespace Excubo.Blazor.Diagrams
                     // nothing to do here
                     break;
                 case ActionType.SelectRegion:
+                    select_region.Origin = null;
+                    select_region.Point = null;
                     ActionType = ActionType.None;
                     break;
                 case ActionType.UpdateLinkTarget:
@@ -215,9 +217,10 @@ namespace Excubo.Blazor.Diagrams
         }
         private void UpdateSelection(MouseEventArgs e)
         {
-            var p1 = e.RelativeToOrigin(this);
-            (ActionObject.Point.X, ActionObject.Point.Y) = e.RelativeToOrigin(this);
-            var p2 = ActionObject.Origin;
+            (select_region.Point.X, select_region.Point.Y) = e.RelativeToOrigin(this);
+            select_region.TriggerStateHasChanged();
+            var p1 = select_region.Point;
+            var p2 = select_region.Origin;
             var (min_x, max_x) = (Math.Min(p1.X, p2.X), Math.Max(p1.X, p2.X));
             var (min_y, max_y) = (Math.Min(p1.Y, p2.Y), Math.Max(p1.Y, p2.Y));
             foreach (var node in Nodes.all_nodes)
@@ -227,6 +230,7 @@ namespace Excubo.Blazor.Diagrams
                  && !Group.Contains(node))
                 {
                     node.Select();
+                    node.TriggerStateHasChanged();
                     Group.Add(node);
                 }
             }
@@ -428,8 +432,8 @@ namespace Excubo.Blazor.Diagrams
                     break;
                 case HoverType.Unknown when e.ShiftKey:
                     ActionType = ActionType.SelectRegion;
-                    ActionObject.RememberOrigin(new Point(e.RelativeToOrigin(this)));
-                    ActionObject.SetPoint(new Point(e.RelativeToOrigin(this)));
+                    select_region.Origin = new Point(e.RelativeToOrigin(this));
+                    select_region.Point = new Point(e.RelativeToOrigin(this));
                     break;
                 case HoverType.Unknown when e.CtrlKey:
                     // this isn't really a sensible thing to do. It's probably a misplaced select
