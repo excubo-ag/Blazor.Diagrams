@@ -1,5 +1,4 @@
-﻿using Excubo.Blazor.ScriptInjection;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
@@ -40,7 +39,6 @@ namespace Excubo.Blazor.Diagrams.__Internal
         /// </summary>
         [Parameter] public Action<(double Width, double Height)> SizeCallback { get; set; }
         [Inject] private IJSRuntime js { get; set; }
-        [Inject] private IScriptInjectionTracker script_injection_tracker { get; set; }
         public void TriggerRender(double x, double y, double width, double height, double zoom)
         {
             X = x;
@@ -54,7 +52,6 @@ namespace Excubo.Blazor.Diagrams.__Internal
         {
             if (first_render)
             {
-                await script_injection_tracker.DiagramJsSourceLoadedAsync();
                 var result = await js.GetDimensionsAsync(element); // TODO: handle content size changes.
                 SizeCallback?.Invoke(result);
             }

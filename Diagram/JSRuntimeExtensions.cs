@@ -1,5 +1,4 @@
-﻿using Excubo.Blazor.ScriptInjection;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Threading.Tasks;
 
@@ -7,25 +6,25 @@ namespace Excubo.Blazor.Diagrams
 {
     internal static class JSRuntimeExtensions
     {
-        private static readonly string @namespace = "Excubo.Diagrams"; // Blazor removed from namespaces, as all JS would be for Blazor anyway.
-#if DEBUG
-        public static readonly string JsSource = "_content/Excubo.Blazor.Diagrams/script.js";
-#else
-        public static readonly string JsSource = "_content/Excubo.Blazor.Diagrams/script.min.js";
-#endif
-        public static Task DiagramJsSourceLoadedAsync(this IScriptInjectionTracker script_injection_tracker)
+        private class Position
         {
-            return script_injection_tracker.LoadedAsync(JsSource);
+            public double Left { get; set; }
+            public double Top { get; set; }
+        }
+        private class Dimension
+        {
+            public double Width { get; set; }
+            public double Height { get; set; }
         }
         public static async Task<(double Left, double Top)> GetPositionAsync(this IJSRuntime js, ElementReference element)
         {
-            var values = await js.InvokeAsync<double[]>($"{@namespace}.GetPosition", element);
-            return (Left: values[0], Top: values[1]);
+            var position = await js.InvokeAsync<Position>("eval", $"let e = document.querySelector('[_bl_{element.Id}=\"\"]'); let r = {{ 'Left': e.offsetLeft, 'Top': e.offsetTop }}; r");
+            return (position.Left, position.Top);
         }
-        public static async Task<(double Width, double Height)> GetDimensionsAsync(this IJSRuntime js_runtime, ElementReference element)
+        public static async Task<(double Width, double Height)> GetDimensionsAsync(this IJSRuntime js, ElementReference element)
         {
-            var values = await js_runtime.InvokeAsync<double[]>($"{@namespace}.GetDimensions", element);
-            return (Width: values[0], Height: values[1]);
+            var dimensions = await js.InvokeAsync<Dimension>("eval", $"let e = document.querySelector('[_bl_{element.Id}=\"\"]'); let r = {{ 'Width': e.clientWidth, 'Height': e.clientHeight }}; r");
+            return (dimensions.Width, dimensions.Height);
         }
     }
 }
