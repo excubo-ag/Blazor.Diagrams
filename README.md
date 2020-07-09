@@ -4,7 +4,7 @@
 ![Nuget](https://img.shields.io/nuget/dt/Excubo.Blazor.Diagrams)
 ![GitHub](https://img.shields.io/github/license/excubo-ag/Blazor.Diagrams)
 
-Excubo.Blazor.Diagrams is a native-Blazor diagram component library. The project status is in alpha. API might still change considerably.
+Excubo.Blazor.Diagrams is a native-Blazor diagram component library.
 
 ![Ready to install?](screenshot.png)
 
@@ -111,7 +111,7 @@ The API should feel like you're using Blazor, not a javascript library.
 - Minimal js, minimal css, lazy-loaded only when you use the component
 
 The non-C# part of the code of the library should be as tiny as possible. We set ourselves a maximum amount of 10kB for combined js+css.
-The current payload is less than 1kB, and only gets loaded dynamically when the component is actually used.
+The current payload is less than 100 bytes, and only gets loaded dynamically when the component is actually used.
 
 ## How to design a custom node
 
@@ -207,4 +207,3 @@ Longer term goals include:
 - More node types
 - auto-layout
 - customizable background with gridlines
-- virtualization
