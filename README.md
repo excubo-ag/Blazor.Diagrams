@@ -22,6 +22,7 @@ Excubo.Blazor.Diagrams is a native-Blazor diagram component library.
 - Node library (fully customizable) for adding new nodes
 - Change shape and arrows for links
 - Overview screen for easy navigation on large diagrams
+- Customizable background (grid lines, color, any style you want)
 
 ## How to use
 
@@ -32,17 +33,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.9.0
+Install-Package Excubo.Blazor.Diagrams -Version 0.10.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.9.0
+dotnet add package Excubo.Blazor.Diagrams --version 0.10.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.9.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.10.0" />
 ```
 
 ### 2. Add the `Diagram` component to your component
@@ -176,4 +177,3 @@ Longer term goals include:
 
 - More node types
 - auto-layout
-- customizable background with gridlines
