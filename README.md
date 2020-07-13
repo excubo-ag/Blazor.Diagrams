@@ -32,71 +32,41 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.8.0
+Install-Package Excubo.Blazor.Diagrams -Version 0.9.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.8.0
+dotnet add package Excubo.Blazor.Diagrams --version 0.9.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.8.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.9.0" />
 ```
 
-### 2. Add the diagram service to your service collection
-
-```cs
-//using Excubo.Blazor.Diagrams;
-services.AddDiagramServices();
-```
-
-### 3. Add the `Diagram` component to your component
+### 2. Add the `Diagram` component to your component
 
 ```html
 @using Excubo.Blazor.Diagrams
 
 <Diagram @ref="Diagram">
-    <!--The node library is where you can drag new nodes from. The style is fully customizable-->
-    <NodeLibrary style="background-color: aliceblue; border: 1px solid blue;" Orientation="Orientation.Vertical">
-        <!--Put any node you want in the library-->
-        <RectangleNode>
-            <!--Careful with node contents! There must be an area of the node where the node is draggable, so only a bare minimum of node content should receive pointer events-->
-            <input style="margin:1em; pointer-events:visiblePainted" type="text" />
-        </RectangleNode>
-    </NodeLibrary>
-    <Nodes DefaultType="NodeType.Ellipse" OnRemove="NodeRemoved">
-        <!-- Adding a single node. As the node type is not specified, the type is taken from the default node type as defined in diagram's node collection. If that's missing, it defaults to Rectangle. In this case, we'll get an ellipse -->
+    <Nodes>
+        <Node Id="abc" X="500" Y="500">
+            Hello node @context.Id
+        </Node>
         <Node Id="def" X="1000" Y="500">
             Hello node @context.Id
         </Node>
-        <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
-        <Node @key="state" Id="@state.Id" X="state.X" Y="state.Y" Type="NodeType.Rectangle">
-            State @context.Id
-        </Node>
-        <!-- Builtin node, node-type specified by strongly typed component -->
-        <DiamondNode @key="decision.Id" Id="@decision.Id" X="decision.X" Y="decision.Y">
-            <div style="color:green; width: 100px; height: 100px">Decision @decision.Id</div>
-        </DiamondNode>
-        <!-- Custom node, inherits from NodeBase. -->
-        <UserNodeCode Id="abc" X="10" Y="20">
-            Hello custom node
-        </UserNodeCode>
     </Nodes>
-    <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
-    <Links OnLinkModified="LinkModified" OnRemoveLink="LinkRemoved" BeforeRemoveLink="BeforeLinkRemoved" OnAddLink="LinkAdded" DefaultType="LinkType.Curved">
-        <!-- Adding a single link. As the link type is not specified, the type is taken from the default link type as defined in diagram. If that's missing, it defaults to Straight. In this case, we'll get a curved link -->
-        @foreach (var link in links)
-        {
-            <Link Source="link.Source" Target="link.Target" Arrow="Arrow.Target" />
-        }
+    <Links>
+        <Link Source="link.Source" Target="link.Target" Arrow="Arrow.Target" />
     </Links>
-    <NavigationSettings Zoom="1" MinZoom=".1" MaxZoom="20" />
 </Diagram>
 ```
 
-Have a look at the fully working examples provided in [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/master/TestProject_Components).
+This is of course only a minimalistic example.
+For more examples, have a look at [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/master/TestProject_Components), which is the basis for the [demo application](https://excubo-ag.github.io/Blazor.Diagrams/).
 
 ## Design principles
 
