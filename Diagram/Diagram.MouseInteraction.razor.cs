@@ -424,6 +424,7 @@ namespace Excubo.Blazor.Diagrams
                 link.Target.RelativeX = e.RelativeXToOrigin(this);
                 link.Target.RelativeY = e.RelativeYToOrigin(this);
             }
+            link.Links.OnModified?.Invoke(link);
             Overview?.TriggerUpdate();
             Changes.New(new ChangeAction(() => { Links.Add(link); }, () => { Links.Remove(link); }));
             ActionType = ActionType.None;

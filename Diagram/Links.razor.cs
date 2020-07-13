@@ -40,7 +40,7 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Callback for when a link source or target is changed.
         /// </summary>
-        [Parameter] public Action<LinkBase> OnModified { get; set; } // TODO use
+        [Parameter] public Action<LinkBase> OnModified { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }
         protected override void OnParametersSet()
         {
