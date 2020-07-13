@@ -198,6 +198,7 @@ namespace Excubo.Blazor.Diagrams
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
             Hidden = false;
+            StateHasChanged();
         }
         protected override void OnAfterRender(bool first_render)
         {

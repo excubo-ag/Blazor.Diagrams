@@ -26,5 +26,11 @@ namespace Excubo.Blazor.Diagrams
             var dimensions = await js.InvokeAsync<Dimension>("eval", $"let e = document.querySelector('[_bl_{element.Id}=\"\"]'); let r = {{ 'Width': e.clientWidth, 'Height': e.clientHeight }}; r");
             return (dimensions.Width, dimensions.Height);
         }
+        public static async Task RegisterResizeObserverAsync(this IJSRuntime js, ElementReference element, __Internal.NodeContent node)
+        {
+            var reference = DotNetObjectReference.Create(node);
+            await js.InvokeVoidAsync("eval", "window.ebd = window.ebd || { observeResizes: (el, r) => new ResizeObserver((e) => { r.invokeMethodAsync('OnResize', { 'Width': e[0].contentRect.width, 'Height': e[0].contentRect.height}); }).observe(el) }"); 
+            await js.InvokeVoidAsync("ebd.observeResizes", element, reference);
+        }
     }
 }

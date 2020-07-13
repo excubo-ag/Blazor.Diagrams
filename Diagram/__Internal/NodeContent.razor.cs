@@ -52,10 +52,22 @@ namespace Excubo.Blazor.Diagrams.__Internal
         {
             if (first_render)
             {
-                var result = await js.GetDimensionsAsync(element); // TODO: handle content size changes.
+                var result = await js.GetDimensionsAsync(element);
+                await js.RegisterResizeObserverAsync(element, this);
                 SizeCallback?.Invoke(result);
             }
             await base.OnAfterRenderAsync(first_render);
         }
+        public class Dimensions
+        {
+            public double Width { get; set; }
+            public double Height { get; set; }
+        }
+        [JSInvokable]
+        public void OnResize(Dimensions dimensions)
+        {
+            SizeCallback?.Invoke((dimensions.Width, dimensions.Height));
+        }
     }
+
 }
