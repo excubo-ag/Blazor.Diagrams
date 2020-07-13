@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -21,5 +23,11 @@ namespace Excubo.Blazor.Diagrams
         /// The distance between two adjacent grid lines (only shown when ShowGridLines is set to true). Default value is 100.
         /// </summary>
         [Parameter] public int GridLineDistance { get; set; } = 100;
+        /// <summary>
+        /// Any other parameter will be applied to the diagram div.
+        /// </summary>
+        [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; }
+        private string additional_style => (AdditionalAttributes == null || !AdditionalAttributes.ContainsKey("style")) ? null : AdditionalAttributes["style"].ToString();
+        private IEnumerable<KeyValuePair<string, object>> other_additional_attributes => AdditionalAttributes?.Where(kv => kv.Key != "style");
     }
 }
