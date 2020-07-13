@@ -1,0 +1,14 @@
+﻿@page "/grid_lines"
+
+<Diagram ShowGridLines="true" GridLineDistance="100">
+    <Nodes>
+        <RectangleNode @bind-X="@X" @bind-Y="@Y">
+            This node has its top left corner at position @X,@Y.
+        </RectangleNode>
+    </Nodes>
+    <Links />
+</Diagram>
+@code {
+    private double X { get; set; } = 300;
+    private double Y { get; set; } = 300;
+}

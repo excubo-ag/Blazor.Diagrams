@@ -4,7 +4,9 @@
 <Excubo.Blazor.LazyStyleSheet.Stylesheet Src="_content/Excubo.Blazor.Diagrams/style.min.css" />
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div style="width: 100%; height: 100%; position: relative; overflow: hidden; cursor: grab;"
+    <div style="width: 100%; height: 100%; position: relative; overflow: hidden; cursor: grab;
+                background-image: @(ShowGridLines ? "linear-gradient(90deg, #eee .1em, transparent .1em), linear-gradient(#eee .1em, transparent .1em)": "");
+                background-size: @(100 * NavigationSettings.Zoom)px @(100 * NavigationSettings.Zoom)px; background-position-x: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px; background-position-y: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;"
          @ref="canvas"
          tabindex="-1"
          @onkeydown="OnKeyPress"
@@ -42,14 +44,14 @@
                 </g>
             </svg>
             <!-- area for nodes in the node library -->
-            <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper"/>
+            <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper" />
             @if (LinkSelectorSettings != null)
             {
                 <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
             }
             @if (OverviewSettings != null)
             {
-                <Overview @ref="Overview" Position="@OverviewSettings.Position"/>
+                <Overview @ref="Overview" Position="@OverviewSettings.Position" />
             }
         </CascadingValue>
     </div>
