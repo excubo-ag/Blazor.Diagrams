@@ -26,6 +26,8 @@ Excubo.Blazor.Diagrams is a native-Blazor diagram component library.
 
 ## How to use
 
+Using Excubo.Blazor.Diagrams doesn't require any difficult installation. You need to install it and use it, that's it:
+
 ### 1. Install the nuget package Excubo.Blazor.Diagrams
 
 Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/packages/Excubo.Blazor.Diagrams/).
@@ -33,17 +35,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 0.10.0
+Install-Package Excubo.Blazor.Diagrams -Version 1.0.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 0.10.0
+dotnet add package Excubo.Blazor.Diagrams --version 1.0.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="0.10.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="1.0.0" />
 ```
 
 ### 2. Add the `Diagram` component to your component
@@ -61,7 +63,6 @@ dotnet add package Excubo.Blazor.Diagrams --version 0.10.0
         </Node>
     </Nodes>
     <Links>
-        <Link Source="link.Source" Target="link.Target" Arrow="Arrow.Target" />
     </Links>
 </Diagram>
 ```
@@ -86,94 +87,13 @@ The current payload is less than 100 bytes, and only gets loaded dynamically whe
 
 ## How to design a custom node
 
-Your node type has to inherit `NodeBase` to be compatible with the Diagram component.
-
-A sample custom node is:
-
-```html
-@using Excubo.Blazor.Diagrams
-@inherits NodeBase
-<!--This is important to prohibit rendering of deleted, user-provided nodes.-->
-@if (Deleted)
-{
-    return;
-}
-@using Excubo.Blazor.Diagrams.Extensions
-<!--This using statement helps with locales that do not have the period as decimal separator: The DOM expects the period as decimal separator.-->
-@using (var temporary_culture = new CultureSwapper())
-{
-    <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-    <g transform="@PositionAndScale">
-        <!--Beginning of the customizable part-->
-        <!--This defines the area which can be interacted with to select/move the node. -->
-        <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
-        <rect width="@Width"
-              height="@Height"
-              @onmouseover="OnNodeOver"
-              @onmouseout="OnNodeOut"
-              stroke="@Stroke"
-              stroke-width="2px"
-              fill="@Fill"
-              cursor="move"
-              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
-        <!--End of the customizable part-->
-    </g>
-}
-@code {
-    @*This part is essentially the same as the node above, except it's just the border. This is where links can be connected to. This does not need to be equivalent to the border, but can be any shape.*@
-    public override RenderFragment border =>@<text>
-        @using (var temporary_culture = new CultureSwapper())
-        {
-            <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
-            <g transform="@PositionAndScale">
-                <!--Beginning of the customizable part-->
-                <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
-                <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
-                <rect width="@Width"
-                      height="@Height"
-                      style="@(Hidden? "display:none" : "")"
-                      stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
-                      stroke-width="@(.5 / Zoom)rem"
-                      fill="none"
-                      cursor="pointer"
-                      @onmouseover="OnBorderOver"
-                      @onmouseout="OnBorderOut" />
-                <!--End of the customizable part-->
-            </g>
-        }
-    </text>;
-    @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
-    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
-    {
-        return position switch
-        {
-            Position.North => (Width / 2, 0),
-            Position.NorthEast => (Width, 0),
-            Position.East => (Width, Height / 2),
-            Position.SouthEast => (Width, Height),
-            Position.South => (Width / 2, Height),
-            Position.SouthWest => (0, Height),
-            Position.NorthWest => (0, Height / 2),
-            _ => (0, 0)
-        };
-    }
-    @*The shape drawn might be larger than the rectangle from the X,Y position as top left corner with its width and height.
-      The margins here (positive if the shape is larger than the rectangle) help draw the node correctly in the node library.
-      There's no need to override this, if it's (0, 0, 0, 0).*@
-    protected override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
-    {
-        return (0, 0, 0, 0);
-    }
-}
-```
-
-The same shape is defined twice nearly identically: The first definition is for the shape itself (as razor markup), the second definition is the invisible border where links can be connected to. This is defined in the code section, because the diagram component will put it in a dedicated layer. To make your shape work with the Diagram component, you need to at least have the four onmouseover/out callbacks registered, as well as the outer `g` with the transform as displayed above.
+A complete example of how to design a custom node is available [here](https://github.com/excubo-ag/Blazor.Diagrams/blob/master/TestProject_Components/Pages/UserDefinedNode.razor).
 
 ## Roadmap
 
-This is an early release of Excubo.Blazor.Diagrams.
-
-Longer term goals include:
+There are more features to come! Goals include:
 
 - More node types
 - auto-layout
+
+If you want to contribute, simply get in touch, open an issue, or open a pull request!
