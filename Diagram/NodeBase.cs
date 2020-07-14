@@ -254,5 +254,11 @@ namespace Excubo.Blazor.Diagrams
         private RenderFragment content;
         protected NodeContent content_reference;
         protected NodeBorder node_border_reference;
+        internal void MoveTo(double x, double y)
+        {
+            X = x;
+            Y = y;
+            StateHasChanged();
+        }
     }
 }

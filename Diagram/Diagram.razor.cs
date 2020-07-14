@@ -9,6 +9,10 @@ namespace Excubo.Blazor.Diagrams
             if (first_render)
             {
                 await js.InitializeJsAsync();
+                if (AutoLayoutSettings != null)
+                {
+                    AutoLayoutSettings.Layout(Nodes.all_nodes, Links.all_links);
+                }
             }
             if (Links != null && Nodes != null && render_cycles < 2)
             {

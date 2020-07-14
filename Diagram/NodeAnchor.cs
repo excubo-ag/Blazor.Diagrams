@@ -23,7 +23,23 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Specify a position on the node (optional. Otherwise, RelativeX and RelativeY are used).
         /// </summary>
-        public Position Port { get; set; }
+        public Position Port 
+        {
+            get => port;
+            set 
+            {
+                if (value == port)
+                {
+                    return;
+                }
+                port = value;
+                if (Port != Position.Any && Node != null)
+                {
+                    (RelativeX, RelativeY) = Node.GetDefaultPort(Port);
+                }
+            }
+        }
+        private Position port;
         /// <summary>
         /// The relative horizontal position of the anchor in reference to the node. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// Only used if Port is not used.
