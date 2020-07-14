@@ -32,14 +32,15 @@ namespace Excubo.Blazor.Diagrams.__Internal
         }
         public void Dispose()
         {
+            if (js_interop_reference_to_this == null)
+            {
+                return;
+            }
             if (element.Id != null)
             {
                 js.UnobserveResizesAsync(element);
             }
-            if (js_interop_reference_to_this != null)
-            {
-                js_interop_reference_to_this.Dispose();
-            }
+            js_interop_reference_to_this.Dispose();
         }
     }
 }
