@@ -6,6 +6,10 @@ namespace Excubo.Blazor.Diagrams
     {
         protected override async Task OnAfterRenderAsync(bool first_render)
         {
+            if (first_render)
+            {
+                await js.InitializeJsAsync();
+            }
             if (Links != null && Nodes != null && render_cycles < 2)
             {
                 ++render_cycles;
