@@ -127,21 +127,22 @@ namespace Excubo.Blazor.Diagrams.__Internal
 
             var hidden_canvas = canvas_2_visible ? canvas1 : canvas2;
             await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: false);
-            await ctx.SetTransformAsync(1, 0, 0, 1, 0, 0);
-            await ctx.FillStyleAsync("white");
-            await ctx.FillRectAsync(0, 0, Width, Height);
-            await ctx.FillStyleAsync("#222222");
-            await ctx.ScaleAsync(Scale, Scale);
-            await ctx.TranslateAsync(-min_x, -min_y);
+            await using var batch = await ctx.CreateBatchAsync();
+            await batch.SetTransformAsync(1, 0, 0, 1, 0, 0);
+            await batch.FillStyleAsync("white");
+            await batch.FillRectAsync(0, 0, Width, Height);
+            await batch.FillStyleAsync("#222222");
+            await batch.ScaleAsync(Scale, Scale);
+            await batch.TranslateAsync(-min_x, -min_y);
             foreach (var node in Diagram.Nodes.all_nodes.Where(n => !n.Deleted))
             {
-                await node.DrawShapeAsync(ctx);
+                await node.DrawShapeAsync(batch);
             }
-            await ctx.LineWidthAsync(4);
-            await ctx.StrokeStyleAsync("black");
+            await batch.LineWidthAsync(4);
+            await batch.StrokeStyleAsync("black");
             foreach (var link in Diagram.Links.all_links.Where(n => !n.Deleted))
             {
-                await link.DrawPathAsync(ctx);
+                await link.DrawPathAsync(batch);
             }
             canvas_2_visible = (hidden_canvas == canvas2);
             await InvokeAsync(StateHasChanged);

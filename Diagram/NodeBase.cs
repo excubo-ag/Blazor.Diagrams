@@ -237,7 +237,7 @@ namespace Excubo.Blazor.Diagrams
             base.OnAfterRender(first_render);
         }
         #endregion
-        protected internal virtual async Task DrawShapeAsync(Context2D context)
+        protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
         {
             await context.FillRectAsync(X, Y, Width, Height);
         }

@@ -59,7 +59,7 @@
     {
         return ((Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2, (Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2);
     }
-    protected internal override async Task DrawShapeAsync(Context2D context)
+    protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
     {
         await context.BeginPathAsync();
         await context.EllipseAsync(X + Width / 2, Y + Height / 2, Width / 2 * Math.Sqrt(2), Height / 2 * Math.Sqrt(2), 0, 0, 360);

@@ -72,7 +72,7 @@
         }
         base.OnParametersSet();
     }
-    protected internal override async Task DrawPathAsync(Context2D ctx)
+    protected internal override async Task DrawPathAsync(IContext2DWithoutGetters ctx)
     {
         await ctx.BeginPathAsync();
         await ctx.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);

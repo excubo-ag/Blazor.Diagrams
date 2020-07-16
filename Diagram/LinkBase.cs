@@ -142,7 +142,7 @@ namespace Excubo.Blazor.Diagrams
             ControlPoints.Add(new ControlPoint(OnTargetOver, OnTargetOut) { X = Target.X, Y = Target.Y });
         }
         #endregion
-        protected internal virtual async Task DrawPathAsync(Context2D ctx)
+        protected internal virtual async Task DrawPathAsync(IContext2DWithoutGetters ctx)
         {
             await ctx.BeginPathAsync();
             await ctx.MoveToAsync(ControlPoints.First().X, ControlPoints.First().Y);

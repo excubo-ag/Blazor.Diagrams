@@ -68,7 +68,7 @@
         }
         base.OnParametersSet();
     }
-    protected internal override async Task DrawPathAsync(Context2D ctx)
+    protected internal override async Task DrawPathAsync(IContext2DWithoutGetters ctx)
     {
         var width = Math.Abs(ControlPoints[2].X - ControlPoints[0].X);
         var height = Math.Abs(ControlPoints[2].Y - ControlPoints[0].Y);

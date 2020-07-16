@@ -69,7 +69,7 @@
     {
         return (0, 0, 0, 0);
     }
-    protected override async Task DrawShapeAsync(Excubo.Blazor.Canvas.Contexts.Context2D ctx)
+    protected override async Task DrawShapeAsync(Excubo.Blazor.Canvas.Contexts.IContext2DWithoutGetters ctx)
     {
         await ctx.BeginPathAsync();
         await ctx.MoveToAsync(X, Y);
