@@ -121,10 +121,10 @@ namespace Excubo.Blazor.Diagrams
                 // In that case we default back to the default point returned by the appropriate method.
                 var new_x = old_sx == old_tx
                     ? method().X
-                    : Source.X + (ControlPoints[i + 1].X - old_sx) / (old_tx - old_sx) * (Target.X - Source.X);
+                    : Source.X + (cp.X - old_sx) / (old_tx - old_sx) * (Target.X - Source.X);
                 var new_y = old_sy == old_ty 
                     ? method().Y
-                    : Source.Y + (ControlPoints[i + 1].Y - old_sy) / (old_ty - old_sy) * (Target.Y - Source.Y);
+                    : Source.Y + (cp.Y - old_sy) / (old_ty - old_sy) * (Target.Y - Source.Y);
                 cp.X = new_x;
                 cp.Y = new_y;
             }

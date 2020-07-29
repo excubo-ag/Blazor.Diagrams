@@ -16,10 +16,16 @@
             var first_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[0].Y);
             var second_point_x = (down_first) ? (ControlPoints[2].X) : (ControlPoints[1].X);
             var second_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[2].Y);
-            <path d="M @(ControlPoints[0].X) @(ControlPoints[0].Y)
+            var start_angle = Math.Atan2(first_point_y - ControlPoints[0].Y, first_point_x - ControlPoints[0].X);
+            var start_x = Arrow == Arrow.Both ? 6 * Math.Cos(start_angle) : 0;
+            var start_y = Arrow == Arrow.Both ? 6 * Math.Sin(start_angle) : 0;
+            var end_angle = Math.Atan2(second_point_y - ControlPoints[2].Y, second_point_x - ControlPoints[2].X);
+            var end_x = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? 6 * Math.Cos(end_angle) : 0;
+            var end_y = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? 6 * Math.Sin(end_angle) : 0;
+            <path d="M @(ControlPoints[0].X + start_x) @(ControlPoints[0].Y + start_y)
                      L @(first_point_x) @(first_point_y)
                      L @(second_point_x) @(second_point_y)
-                     L @(ControlPoints[2].X) @(ControlPoints[2].Y)"
+                     L @(ControlPoints[2].X + end_x) @(ControlPoints[2].Y + end_y)"
                   stroke-width="3"
                   fill="none"
                   stroke="black"
@@ -29,17 +35,17 @@
             if (Arrow == Arrow.Both || Arrow == Arrow.Target)
             {
                 var cp = ControlPoints.Last();
-                var angle = Math.Atan2(second_point_y - cp.Y, second_point_x - cp.X) * 180 / Math.PI - 90;
+                var angle = Math.Atan2(second_point_y - cp.Y, second_point_x - cp.X) * 180 / Math.PI + 90;
                 <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
-                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                    <polygon points="0,0 4,-6 -4,-6" fill="black" />
                 </g>
             }
             if (Arrow == Arrow.Both)
             {
                 var cp = ControlPoints.First();
-                var angle = Math.Atan2(first_point_y - cp.Y, first_point_x - cp.X) * 180 / Math.PI - 90;
+                var angle = Math.Atan2(first_point_y - cp.Y, first_point_x - cp.X) * 180 / Math.PI + 90;
                 <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
-                    <polygon points="0,-6 4,0 -4,0" fill="black" />
+                    <polygon points="0,0 4,-6 -4,-6" fill="black" />
                 </g>
             }
             if (Selected)
