@@ -43,6 +43,14 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public string Stroke { get; set; } = "#e8e8e8";
         /// <summary>
+        /// The minimum height the node should have. (Default: 0).
+        /// </summary>
+        [Parameter] public double MinHeight { get; set; }
+        /// <summary>
+        /// The minimum width the node should have. (Default: 0).
+        /// </summary>
+        [Parameter] public double MinWidth { get; set; }
+        /// <summary>
         /// The node's content.
         /// </summary>
         [Parameter] public RenderFragment<NodeBase> ChildContent { get; set; }
@@ -53,8 +61,8 @@ namespace Excubo.Blazor.Diagrams
         [Parameter] public Action<NodeBase> OnCreate { get; set; }
         [CascadingParameter] public Nodes Nodes { get; set; }
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
-        public double Width { get => width; set { if (value == width) { return; } width = value; } }
-        public double Height { get => height; set { if (value == height) { return; } height = value; } }
+        public double Width { get => width; set { if (value == width) { return; } width = Math.Max(MinWidth, value); } }
+        public double Height { get => height; set { if (value == height) { return; } height = Math.Max(MinHeight, value); } }
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }

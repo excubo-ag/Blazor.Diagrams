@@ -30,8 +30,10 @@ namespace Excubo.Blazor.Diagrams
             builder.AddAttribute(5, nameof(Id), Id);
             builder.AddAttribute(6, nameof(Fill), Fill);
             builder.AddAttribute(7, nameof(Stroke), Stroke);
-            builder.AddAttribute(8, nameof(ChildContent), ChildContent);
-            builder.AddComponentReferenceCapture(9, (r) => actual_node = (NodeBase)r);
+            builder.AddAttribute(8, nameof(MinWidth), MinWidth);
+            builder.AddAttribute(9, nameof(MinHeight), MinHeight);
+            builder.AddAttribute(10, nameof(ChildContent), ChildContent);
+            builder.AddComponentReferenceCapture(11, (r) => actual_node = (NodeBase)r);
             builder.CloseComponent();
         }
         internal Type GetImplicitType()
