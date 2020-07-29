@@ -16,6 +16,14 @@ namespace Excubo.Blazor.Diagrams
                 } 
             }
         }
+        public static implicit operator NodeAnchor((string NodeId, Position Port) value)
+        {
+            return new NodeAnchor { NodeId = value.NodeId, Port = value.Port };
+        }
+        public static implicit operator NodeAnchor(string node_id)
+        {
+            return new NodeAnchor { NodeId = node_id };
+        }
         /// <summary>
         /// The node id that this anchor should be associated to.
         /// </summary>
