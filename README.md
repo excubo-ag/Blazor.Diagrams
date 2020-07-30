@@ -35,17 +35,17 @@ Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/pack
 
 #### Package Manager:
 ```ps
-Install-Package Excubo.Blazor.Diagrams -Version 1.3.0
+Install-Package Excubo.Blazor.Diagrams -Version 1.4.0
 ```
 
 #### .NET Cli:
 ```cmd
-dotnet add package Excubo.Blazor.Diagrams --version 1.3.0
+dotnet add package Excubo.Blazor.Diagrams --version 1.4.0
 ```
 
 #### Package Reference
 ```xml
-<PackageReference Include="Excubo.Blazor.Diagrams" Version="1.3.0" />
+<PackageReference Include="Excubo.Blazor.Diagrams" Version="1.4.0" />
 ```
 
 ### 2. Add the `Diagram` component to your component

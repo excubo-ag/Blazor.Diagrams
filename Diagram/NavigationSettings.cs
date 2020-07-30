@@ -67,9 +67,22 @@ namespace Excubo.Blazor.Diagrams
         private double zoom = 1;
         private double min_zoom = double.Epsilon;
         private double max_zoom = double.PositiveInfinity;
-
+        /// <summary>
+        /// When true, zooming by user interaction is disabled (default: false). Note that changing the zoom parameter still affects zoom.
+        /// </summary>
+        [Parameter]
+        public bool DisableZooming { get; set; }
+        /// <summary>
+        /// When true, panning by user interaction is disabled (default: false). Note that changing the origin parameter still affects the diagram area.
+        /// </summary>
+        [Parameter]
+        public bool DisablePanning { get; set; }
         internal void OnMouseWheel(WheelEventArgs e)
         {
+            if (DisableZooming)
+            {
+                return;
+            }
             // this point should remain where it is right now (the cursor is the stable zoom point), hence if we adjust zoom, we need to adjust origin as well.
             var canvas_x = Origin.X + e.RelativeXTo(Diagram);
             var canvas_y = Origin.Y + e.RelativeYTo(Diagram);
@@ -98,6 +111,10 @@ namespace Excubo.Blazor.Diagrams
 
         internal void Pan(double offset_x, double offset_y)
         {
+            if (DisablePanning)
+            {
+                return;
+            }
             Origin.X += (InversedPanning ? 1 : -1) * offset_x / Zoom;
             Origin.Y += (InversedPanning ? 1 : -1) * offset_y / Zoom;
             _ = OriginChanged.InvokeAsync(Origin);
