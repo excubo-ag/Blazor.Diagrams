@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public partial class Diagram
+    public partial class Diagram : IDisposable
     {
         private DotNetObjectReference<Diagram> js_interop_reference_to_this;
 

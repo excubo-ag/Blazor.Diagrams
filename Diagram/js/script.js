@@ -50,8 +50,9 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to start observing moves. Captures a reference to all the parents of an element, and a C# object.
     observeMoves: (el, id, r) => {
         const d = window.Excubo.Diagrams;
-        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
+        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight, Parents: [] };
         while (el.parentElement != null) {
+            d.rs[id].Parents.push(el.parentElement);
             d.mo.observe(el.parentElement, {attributes: true});
             el = el.parentElement;
         }
@@ -59,10 +60,26 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to stop observing moves. Frees the references.
     unobserveMoves: (el, id) => {
         const d = window.Excubo.Diagrams;
+        const parents = d.rs[id].Parents;
         delete d.rs[id];
-        while (el.parentElement != null) {
-            d.mo.unobserve(el.parentElement);
-            el = el.parentElement;
+        const used_elsewhere = (p) => {
+            // check whether any other reference holds on to this parent.
+            for (const id in d.rs) {
+                const r = d.rs[id];
+                if (r != undefined && r.Parents != undefined && r.Parents.includes(p)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        while (true) {
+            const parent = parents.pop();
+            if (parent == undefined) {
+                break;
+            }
+            if (!used_elsewhere(parent)) {
+                d.mo.unobserve(parent);
+            }
         }
     }
 };
