@@ -8,7 +8,7 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     ro: new ResizeObserver((es) => {
         for (const e of es) {
             let el = Array.from(new Set(e.target.attributes)).find((e) => e.name.startsWith('_bl_')).name;
-            let r = window.Excubo.Diagrams.references[el];
+            let r = window.Excubo.Diagrams.rs[el];
             if (r != undefined) {
                 r.Ref.invokeMethodAsync('OnResize', { 'Width': e.contentRect.width, 'Height': e.contentRect.height }).catch(() => { });
             }
@@ -16,8 +16,8 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     }),
     // the mo (mutationObserver) is one instance of a MutationObserver for any diagram. it is used to identify changes in the position of the diagram canvas.
     mo: new MutationObserver((es) => {
-        for (const key in window.Excubo.Diagrams.references) {
-            var r = window.Excubo.Diagrams.references[key];
+        for (const key in window.Excubo.Diagrams.rs) {
+            var r = window.Excubo.Diagrams.rs[key];
             if (r != undefined) {
                 const new_left = r.Element.offsetLeft;
                 const new_top = r.Element.offsetTop;
@@ -33,24 +33,24 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
             }
         }
     }),
-    // captured references to C# objects and DOM elements used in the resize observer.
-    references: {},
+    // captured references (rs) to C# objects and DOM elements used in the resize observer.
+    rs: {},
     // function callable from C# to start observing resizes. Captures a reference to an element and a C# object.
     observeResizes: (el, id, r) => {
         const d = window.Excubo.Diagrams;
-        d.references[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
+        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
         d.ro.observe(el)
     },
     // function callable from C# to stop observing resizes. Frees the references.
     unobserveResizes: (el, id) => {
         const d = window.Excubo.Diagrams;
-        delete d.references[id];
+        delete d.rs[id];
         d.ro.unobserve(el)
     },
     // function callable from C# to start observing moves. Captures a reference to all the parents of an element, and a C# object.
     observeMoves: (el, id, r) => {
         const d = window.Excubo.Diagrams;
-        d.references[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
+        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
         while (el.parentElement != null) {
             d.mo.observe(el.parentElement, {attributes: true});
             el = el.parentElement;
@@ -59,7 +59,7 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to stop observing moves. Frees the references.
     unobserveMoves: (el, id) => {
         const d = window.Excubo.Diagrams;
-        delete d.references[id];
+        delete d.rs[id];
         while (el.parentElement != null) {
             d.mo.unobserve(el.parentElement);
             el = el.parentElement;
