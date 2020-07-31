@@ -1,9 +1,9 @@
 window.Excubo = window.Excubo || {};
 window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to get the position of an element
-    position: (e) => { return { 'Left': e.offsetLeft, 'Top': e.offsetTop } },
+    position: (e) => { const r = e.getBoundingClientRect(); return { 'Left': r.left, 'Top': r.top } },
     // function callable from C# to get the size of an element
-    size: (e) => { return { 'Width': e.clientWidth, 'Height': e.clientHeight } },
+    size: (e) => { const r = e.getBoundingClientRect(); return { 'Width': r.width, 'Height': r.height } },
     // the ro (resizeObserver) is one instance of a ResizeObserver for any diagram. It is used to identify changes in the size of nodes.
     ro: new ResizeObserver((es) => {
         for (const e of es) {
@@ -18,11 +18,12 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     mo: new MutationObserver((es) => {
         for (const key in window.Excubo.Diagrams.rs) {
             var r = window.Excubo.Diagrams.rs[key];
-            if (r != undefined) {
-                const new_left = r.Element.offsetLeft;
-                const new_top = r.Element.offsetTop;
-                const new_width = r.Element.clientWidth;
-                const new_height = r.Element.clientHeight;
+            if (r != undefined && r.Parents != undefined) {
+                const br = r.Element.getBoundingClientRect();
+                const new_left = br.left;
+                const new_top = br.top;
+                const new_width = br.width;
+                const new_height = br.height;
                 if (r.Left != new_left || r.Top != new_top || r.Width != new_width || r.Height != new_height) {
                     r.Left = new_left;
                     r.Top = new_top;
@@ -38,7 +39,8 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to start observing resizes. Captures a reference to an element and a C# object.
     observeResizes: (el, id, r) => {
         const d = window.Excubo.Diagrams;
-        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight };
+        const br = el.getBoundingClientRect();
+        d.rs[id] = { Element: el, Ref: r, Width: br.width, Height: br.height };
         d.ro.observe(el)
     },
     // function callable from C# to stop observing resizes. Frees the references.
@@ -50,7 +52,8 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // function callable from C# to start observing moves. Captures a reference to all the parents of an element, and a C# object.
     observeMoves: (el, id, r) => {
         const d = window.Excubo.Diagrams;
-        d.rs[id] = { Element: el, Ref: r, Left: el.offsetLeft, Top: el.offsetTop, Width: el.clientWidth, Height: el.clientHeight, Parents: [] };
+        const br = el.getBoundingClientRect();
+        d.rs[id] = { Element: el, Ref: r, Left: br.left, Top: br.top, Width: br.width, Height: br.height, Parents: [] };
         while (el.parentElement != null) {
             d.rs[id].Parents.push(el.parentElement);
             d.mo.observe(el.parentElement, {attributes: true});
