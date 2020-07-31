@@ -6,6 +6,8 @@ namespace Excubo.Blazor.Diagrams
 {
     public partial class Diagram
     {
+        private DotNetObjectReference<Diagram> js_interop_reference_to_this;
+
         [Inject] private IJSRuntime js { get; set; }
         internal double CanvasLeft { get; private set; }
         internal double CanvasTop { get; private set; }
@@ -15,6 +17,32 @@ namespace Excubo.Blazor.Diagrams
         {
             (CanvasLeft, CanvasTop) = await js.GetPositionAsync(canvas);
             (CanvasWidth, CanvasHeight) = await js.GetDimensionsAsync(canvas);
+            js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
+            await js.RegisterMoveObserverAsync(canvas, js_interop_reference_to_this);
+        }
+        public class Rect
+        {
+            public double Left { get; set; }
+            public double Top { get; set; }
+            public double Width { get; set; }
+            public double Height { get; set; }
+        }
+        [JSInvokable]
+        public void OnMove(Rect rect)
+        {
+            (CanvasLeft, CanvasTop, CanvasWidth, CanvasHeight) = (rect.Left, rect.Top, rect.Width, rect.Height);
+        }
+        public void Dispose()
+        {
+            if (js_interop_reference_to_this == null)
+            {
+                return;
+            }
+            if (canvas.Id != null)
+            {
+                js.UnobserveMovesAsync(canvas);
+            }
+            js_interop_reference_to_this.Dispose();
         }
     }
 }
