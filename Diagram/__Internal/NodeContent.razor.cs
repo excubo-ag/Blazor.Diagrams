@@ -36,6 +36,14 @@ namespace Excubo.Blazor.Diagrams.__Internal
         /// Callback that tells the diagram how large the node must be
         /// </summary>
         [Parameter] public Action<(double Width, double Height)> SizeCallback { get; set; }
+        /// <summary>
+        /// Additional classes for the node content container
+        /// </summary>
+        [Parameter] public string ContentClasses { get; set; }
+        /// <summary>
+        /// Additional style for the node content container
+        /// </summary>
+        [Parameter] public string ContentStyle { get; set; }
         public void TriggerRender(double x, double y, double width, double height, double zoom)
         {
             X = x;

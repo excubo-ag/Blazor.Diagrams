@@ -1,15 +1,15 @@
-﻿@using Microsoft.JSInterop
-@using Excubo.Blazor.Diagrams.Extensions
+﻿@using Excubo.Blazor.Diagrams.Extensions
 
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div style="
-                 position: absolute;
-                 left: @(X)px;
-                 top: @(Y)px;
-                 pointer-events: none;
-                 transform: scale(@Zoom);
-                 transform-origin: 0 0;"
+    <div class="@ContentClasses" style="
+                @ContentStyle;
+                position: absolute;
+                left: @(X)px;
+                top: @(Y)px;
+                pointer-events: none;
+                transform: scale(@Zoom);
+                transform-origin: 0 0;"
          @ref="element">
         @using (var suspension = temporary_culture.Suspend())
         {

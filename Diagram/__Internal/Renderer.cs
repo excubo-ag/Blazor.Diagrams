@@ -11,21 +11,16 @@ namespace Excubo.Blazor.Diagrams.__Internal
         {
             foreach (var (fragment, key) in fragments)
             {
-                builder.OpenElement(0, Region);
-                builder.SetKey(key);
-                builder.AddContent(1, fragment);
-                builder.CloseElement();
+                builder.AddContent(0, fragment(key));
             }
         }
-        private readonly Dictionary<RenderFragment, string> fragments = new Dictionary<RenderFragment, string>();
-        public void Add(RenderFragment render_fragment)
+        private readonly Dictionary<RenderFragment<string>, string> fragments = new Dictionary<RenderFragment<string>, string>();
+        public void Add(RenderFragment<string> render_fragment)
         {
             fragments.Add(render_fragment, Guid.NewGuid().ToString());
             StateHasChanged();
         }
-        [Parameter] public string Region { get; set; } = "g";
-
-        internal void Remove(RenderFragment render_fragment)
+        internal void Remove(RenderFragment<string> render_fragment)
         {
             _ = fragments.Remove(render_fragment);
             StateHasChanged();

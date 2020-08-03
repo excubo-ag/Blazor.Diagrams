@@ -9,7 +9,7 @@
         </NodeLibraryArea>
     }
     <div style="position: absolute;">
-        <Renderer @ref="node_template_content_renderer" Region="div" />
+        <Renderer @ref="node_template_content_renderer" />
     </div>
 </div>
 
@@ -26,6 +26,6 @@
     }
     [Parameter] public NodeLibrary NodeLibrary { get; set; }
     private Renderer node_template_content_renderer;
-    internal void Add(RenderFragment render_fragment) => node_template_content_renderer.Add(render_fragment);
-    internal void Remove(RenderFragment render_fragment) => node_template_content_renderer.Remove(render_fragment);
+    internal void Add(RenderFragment<string> render_fragment) => node_template_content_renderer.Add(render_fragment);
+    internal void Remove(RenderFragment<string> render_fragment) => node_template_content_renderer.Remove(render_fragment);
 }

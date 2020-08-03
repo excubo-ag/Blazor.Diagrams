@@ -2,10 +2,19 @@
 
 <Diagram @ref="Diagram">
     <Nodes>
+        <style>
+            .port-node {
+                width: 4em;
+                height: 3em;
+                display: grid;
+                place-items: center;
+                text-align: center;
+            }
+        </style>
         @foreach (var node in nodes)
         {
-            <Node @key="@(node.Id)" Id="@(node.Id)" @bind-X="node.X" @bind-Y="node.Y" Type="node.Type" MinHeight="30" MinWidth="60">
-                <div style="width:4em; height:3em; display: grid; place-items: center;">@node.Text</div>
+            <Node @key="@(node.Id)" Id="@(node.Id)" @bind-X="node.X" @bind-Y="node.Y" Type="node.Type" MinHeight="30" MinWidth="60" ContentClasses="port-node">
+                @node.Text
             </Node>
         }
     </Nodes>

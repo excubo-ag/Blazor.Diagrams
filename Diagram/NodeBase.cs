@@ -43,6 +43,14 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public string Stroke { get; set; } = "#e8e8e8";
         /// <summary>
+        /// Any child content of the node is placed inside a div. To apply CSS classes to that div, use this property.
+        /// </summary>
+        [Parameter] public string ContentClasses { get; set; }
+        /// <summary>
+        /// Any child content of the node is placed inside a div. To apply CSS style to that div, use this property.
+        /// </summary>
+        [Parameter] public string ContentStyle { get; set; }
+        /// <summary>
         /// The minimum height the node should have. (Default: 0).
         /// </summary>
         [Parameter] public double MinHeight { get; set; }
@@ -158,9 +166,9 @@ namespace Excubo.Blazor.Diagrams
                 Diagram.AddNodeTemplateContentFragment(content);
             }
         }
-        private RenderFragment GetBorderWrapper()
+        private RenderFragment<string> GetBorderWrapper()
         {
-            return (builder) =>
+            return (key) => (builder) =>
             {
                 if (OffCanvas)
                 {
@@ -169,12 +177,13 @@ namespace Excubo.Blazor.Diagrams
                 builder.OpenComponent<NodeBorder>(0);
                 builder.AddAttribute(1, nameof(NodeBorder.ChildContent), border);
                 builder.AddComponentReferenceCapture(2, (reference) => node_border_reference = (NodeBorder)reference);
+                builder.SetKey(key);
                 builder.CloseComponent();
             };
         }
-        private RenderFragment GetChildContentWrapper()
+        private RenderFragment<string> GetChildContentWrapper()
         {
-            return (builder) =>
+            return (key) => (builder) =>
             {
                 if (OffCanvas)
                 {
@@ -190,8 +199,17 @@ namespace Excubo.Blazor.Diagrams
                 {
                     builder.AddAttribute(6, nameof(NodeContent.ChildContent), ChildContent(this));
                 }
-                builder.AddAttribute(7, nameof(NodeContent.SizeCallback), (Action<(double Width, double Height)>)GetSize);
-                builder.AddComponentReferenceCapture(8, (reference) => content_reference = (NodeContent)reference);
+                if (ContentClasses != null)
+                {
+                    builder.AddAttribute(7, nameof(NodeContent.ContentClasses), ContentClasses);
+                }
+                if (ContentStyle != null)
+                {
+                    builder.AddAttribute(8, nameof(NodeContent.ContentStyle), ContentStyle);
+                }
+                builder.AddAttribute(9, nameof(NodeContent.SizeCallback), (Action<(double Width, double Height)>)GetSize);
+                builder.AddComponentReferenceCapture(10, (reference) => content_reference = (NodeContent)reference);
+                builder.SetKey(key);
                 builder.CloseComponent();
             };
         }
@@ -258,8 +276,8 @@ namespace Excubo.Blazor.Diagrams
         {
             return (0, 0, 0, 0);
         }
-        private RenderFragment actual_border;
-        private RenderFragment content;
+        private RenderFragment<string> actual_border;
+        private RenderFragment<string> content;
         protected NodeContent content_reference;
         protected NodeBorder node_border_reference;
         internal void MoveTo(double x, double y)
