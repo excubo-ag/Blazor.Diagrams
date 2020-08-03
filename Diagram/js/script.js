@@ -7,7 +7,7 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     // the ro (resizeObserver) is one instance of a ResizeObserver for any diagram. It is used to identify changes in the size of nodes.
     ro: new ResizeObserver((es) => {
         for (const e of es) {
-            let el = Array.from(new Set(e.target.attributes)).find((e) => e.name.startsWith('_bl_')).name;
+            let el = Array.from(new Set(e.target.attributes)).find((e) => e.name.startsWith('_bl_')).name.substring(4);
             let r = window.Excubo.Diagrams.rs[el];
             if (r != undefined) {
                 r.Ref.invokeMethodAsync('OnResize', { 'Width': e.contentRect.width, 'Height': e.contentRect.height }).catch(() => { });
