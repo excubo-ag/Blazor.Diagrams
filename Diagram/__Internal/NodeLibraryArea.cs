@@ -9,8 +9,8 @@ namespace Excubo.Blazor.Diagrams.__Internal
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             builder.OpenElement(0, "svg");
-            var default_style = Orientation == Orientation.Horizontal 
-                ? "position: absolute; top: 0; left: 0; width: 100%" 
+            var default_style = Orientation == Orientation.Horizontal
+                ? "position: absolute; top: 0; left: 0; width: 100%"
                 : "position: absolute; top: 0; left: 0; height: 100%";
             if (AdditionalAttributes != null && AdditionalAttributes.ContainsKey("style"))
             {

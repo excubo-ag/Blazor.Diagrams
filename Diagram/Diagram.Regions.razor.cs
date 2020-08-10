@@ -5,8 +5,8 @@
         internal Links Links { get; set; }
         internal Nodes Nodes { get; set; }
         private NavigationSettings navigation_settings;
-        internal NavigationSettings NavigationSettings 
-        { 
+        internal NavigationSettings NavigationSettings
+        {
             get
             {
                 if (navigation_settings == null)

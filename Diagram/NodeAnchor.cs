@@ -7,13 +7,15 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// The Node that this anchor is attached to. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// </summary>
-        public NodeBase Node { get => node; set 
+        public NodeBase Node
+        {
+            get => node; set
             {
-                node = value; 
+                node = value;
                 if (node != null && CoordinatesChanged != null)
                 {
                     node.PositionChanged += (_, __) => CoordinatesChanged();
-                } 
+                }
             }
         }
         public static implicit operator NodeAnchor((string NodeId, Position Port) value)
@@ -31,10 +33,10 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Specify a position on the node (optional. Otherwise, RelativeX and RelativeY are used).
         /// </summary>
-        public Position Port 
+        public Position Port
         {
             get => port;
-            set 
+            set
             {
                 if (value == port)
                 {
@@ -70,8 +72,8 @@ namespace Excubo.Blazor.Diagrams
         private double relative_x;
         private double relative_y;
         private Action coordinates_changed;
-        internal Action CoordinatesChanged 
-        { 
+        internal Action CoordinatesChanged
+        {
             get => coordinates_changed;
             set
             {

@@ -26,7 +26,8 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// The current zoom level
         /// </summary>
-        [Parameter] public double Zoom
+        [Parameter]
+        public double Zoom
         {
             get => zoom;
             set => zoom = value <= 0 ? 1 : value;

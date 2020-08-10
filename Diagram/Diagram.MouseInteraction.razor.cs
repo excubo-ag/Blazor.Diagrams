@@ -256,7 +256,7 @@ namespace Excubo.Blazor.Diagrams
             var positions = nodes.Select(n => (X: n.X, Y: n.Y)).ToList();
             var (delta_x, delta_y) = (ActionObject.Node.X - ActionObject.Origin.X, ActionObject.Node.Y - ActionObject.Origin.Y);
             var old_positions = nodes.Select(n => (X: n.X - delta_x, Y: n.Y - delta_y)).ToList();
-            Changes.New(new ChangeAction(() => 
+            Changes.New(new ChangeAction(() =>
             {
                 foreach (var (node, position) in nodes.Zip(positions, (n, p) => (n, p)))
                 {

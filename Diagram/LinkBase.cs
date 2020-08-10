@@ -122,7 +122,7 @@ namespace Excubo.Blazor.Diagrams
                 var new_x = old_sx == old_tx
                     ? method().X
                     : Source.X + (cp.X - old_sx) / (old_tx - old_sx) * (Target.X - Source.X);
-                var new_y = old_sy == old_ty 
+                var new_y = old_sy == old_ty
                     ? method().Y
                     : Source.Y + (cp.Y - old_sy) / (old_ty - old_sy) * (Target.Y - Source.Y);
                 cp.X = new_x;

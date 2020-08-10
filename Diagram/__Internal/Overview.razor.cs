@@ -54,7 +54,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
                 }
             }
         }
-        private Point last_point; 
+        private Point last_point;
         private void OnMouseMove(MouseEventArgs e)
         {
             if (e.Buttons != 1) // only modify with mouse pressed.

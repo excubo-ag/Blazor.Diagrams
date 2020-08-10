@@ -31,7 +31,8 @@ namespace Excubo.Blazor.Diagrams
             base.OnParametersSet();
         }
         private Algorithm algorithm;
-        [Parameter] public Algorithm Algorithm 
+        [Parameter]
+        public Algorithm Algorithm
         {
             get => algorithm;
             set

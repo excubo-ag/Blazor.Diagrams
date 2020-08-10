@@ -72,10 +72,10 @@ namespace Excubo.Blazor.Diagrams
             set
             {
                 _actual_node = value;
-                _actual_node.PositionChanged += (_, __) => 
+                _actual_node.PositionChanged += (_, __) =>
                 {
-                    X = _actual_node.X; 
-                    Y = _actual_node.Y; 
+                    X = _actual_node.X;
+                    Y = _actual_node.Y;
                 };
             }
         }
