@@ -68,7 +68,7 @@ dotnet add package Excubo.Blazor.Diagrams --version 1.6.5
 ```
 
 This is of course only a minimalistic example.
-For more examples, have a look at [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/master/TestProject_Components), which is the basis for the [demo application](https://excubo-ag.github.io/Blazor.Diagrams/).
+For more examples, have a look at [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/main/TestProject_Components), which is the basis for the [demo application](https://excubo-ag.github.io/Blazor.Diagrams/).
 
 ## Design principles
 
@@ -87,7 +87,7 @@ The current payload is less than 100 bytes, and only gets loaded dynamically whe
 
 ## How to design a custom node
 
-A complete example of how to design a custom node is available [here](https://github.com/excubo-ag/Blazor.Diagrams/blob/master/TestProject_Components/Pages/UserDefinedNode.razor).
+A complete example of how to design a custom node is available [here](https://github.com/excubo-ag/Blazor.Diagrams/blob/main/TestProject_Components/Pages/UserDefinedNode.razor).
 
 ## Roadmap
 
