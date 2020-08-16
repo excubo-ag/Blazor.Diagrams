@@ -15,13 +15,13 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// Horizontal position of the node
         /// </summary>
-        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); XChanged.InvokeAsync(x); } }
+        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         [Parameter] public EventCallback<double> XChanged { get; set; }
         internal event EventHandler PositionChanged;
         /// <summary>
         /// Vertical position of the node
         /// </summary>
-        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; PositionChanged?.Invoke(this, EventArgs.Empty); YChanged.InvokeAsync(y); } }
+        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         [Parameter] public EventCallback<double> YChanged { get; set; }
         protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         [CascadingParameter] public Diagram Diagram { get; set; }
@@ -109,11 +109,10 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
+            XChanged.InvokeAsync(X);
+            YChanged.InvokeAsync(y);
             ReRenderIfOffCanvasChanged();
-            if (IsInternallyGenerated)
-            {
-                StateHasChanged();
-            }
+            StateHasChanged();
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected override void OnParametersSet()
@@ -284,6 +283,8 @@ namespace Excubo.Blazor.Diagrams
         {
             X = x;
             Y = y;
+            XChanged.InvokeAsync(X);
+            YChanged.InvokeAsync(y);
             StateHasChanged();
         }
     }
