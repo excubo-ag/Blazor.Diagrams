@@ -1,8 +1,8 @@
 ## Excubo.Blazor.Diagrams
 
-![Nuget](https://img.shields.io/nuget/v/Excubo.Blazor.Diagrams)
-![Nuget](https://img.shields.io/nuget/dt/Excubo.Blazor.Diagrams)
-![GitHub](https://img.shields.io/github/license/excubo-ag/Blazor.Diagrams)
+[![Nuget](https://img.shields.io/nuget/v/Excubo.Blazor.Diagrams)](https://www.nuget.org/packages/Excubo.Blazor.Diagrams/)
+[![Nuget](https://img.shields.io/nuget/dt/Excubo.Blazor.Diagrams)](https://www.nuget.org/packages/Excubo.Blazor.Diagrams/)
+[![GitHub](https://img.shields.io/github/license/excubo-ag/Blazor.Diagrams)](https://github.com/excubo-ag/Blazor.Diagrams)
 
 Excubo.Blazor.Diagrams is a native-Blazor diagram component library.
 
@@ -31,7 +31,7 @@ Using Excubo.Blazor.Diagrams doesn't require any difficult installation. You nee
 ### 1. Install the nuget package Excubo.Blazor.Diagrams
 
 Excubo.Blazor.Diagrams is distributed [via nuget.org](https://www.nuget.org/packages/Excubo.Blazor.Diagrams/).
-![Nuget](https://img.shields.io/nuget/v/Excubo.Blazor.Diagrams)
+[![Nuget](https://img.shields.io/nuget/v/Excubo.Blazor.Diagrams)](https://www.nuget.org/packages/Excubo.Blazor.Diagrams/)
 
 #### Package Manager:
 ```ps
