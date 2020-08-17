@@ -1,4 +1,5 @@
 ﻿@page "/ports"
+<SourceCodeLink Repository="Blazor.Diagrams" Page="@(nameof(Ports))" />
 
 <Diagram @ref="Diagram">
     <Nodes>
@@ -38,7 +39,7 @@
         public NodeType Type { get; set; }
     }
     List<MyNodeDefinition> nodes = new string[] { "r", "d", "e" }.SelectMany((prefix, index) => new List<MyNodeDefinition>
-    {
+{
         new MyNodeDefinition { Id = prefix + "c", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) + 0, Text = "Center", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
         new MyNodeDefinition { Id = prefix + "n", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) - 150, Text = "North", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },
         new MyNodeDefinition { Id = prefix + "s", X = ((index == 1) ? 500 : 0) + 0, Y = ((index == 2) ? 500 : 0) + 150, Text = "South", Type = index switch { 0 => NodeType.Rectangle, 1 => NodeType.Ellipse, _ => NodeType.Diamond } },

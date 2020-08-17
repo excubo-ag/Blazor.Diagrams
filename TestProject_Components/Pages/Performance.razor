@@ -1,50 +1,46 @@
 ﻿@page "/performance"
+<SourceCodeLink Repository="Blazor.Diagrams" Page="@(nameof(Performance))" />
 
 <Diagram>
     <Nodes>
         @foreach (var state in states)
-        {
-            <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
-            <Node @key="state.Id" Id="@state.Id" @bind-X="state.X" @bind-Y="state.Y" Type="NodeType.Rectangle">
-                State @state.Id
-            </Node>
-        }
+        {<!-- Builtin node, node-type (i.e. shape) specified by Type property -->
+                        <Node @key="state.Id" Id="@state.Id" @bind-X="state.X" @bind-Y="state.Y" Type="NodeType.Rectangle">
+                            State @state.Id
+                        </Node>}
     </Nodes>
     <Links>
         @foreach (var link in links)
         {
-            <Link @key="link.Source.NodeId" Source="@link.Source" Target="@link.Target" />
-        }
+<Link @key="link.Source.NodeId" Source="@link.Source" Target="@link.Target" />}
     </Links>
 </Diagram>
 
-@code {
-    private const int n = 10;
-    public class MyNodeDefinition
-    {
-        public string Id { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-    }
-    public class MyLinkDefinition
-    {
-        public NodeAnchor Source { get; set; }
-        public NodeAnchor Target { get; set; }
-        public LinkType Type { get; set; }
-    }
-    List<MyNodeDefinition> states = Enumerable.Range(0, n * n).Select(i => new MyNodeDefinition
-    {
-        Id = $"state{i}",
-        X = 150 * (i % n),
-        Y = 150 * (i / n)
-    }).ToList();
-    List<MyLinkDefinition> links = Enumerable.Range(0, n * n / 4).Select(i => new MyLinkDefinition
-    {
-        Source = new NodeAnchor { NodeId = $"state{2 * i}", Port = Position.East },
-        Target = new NodeAnchor { NodeId = $"state{2 * i + 1}", Port = Position.West }
-    }).Concat(Enumerable.Range(0, n * n / 4).Select(i => new MyLinkDefinition
-    {
-        Source = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i}", Port = Position.NorthEast },
-        Target = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i + 1}", Port = Position.SouthWest }
-    })).ToList();
-}
+@code { private const int n = 10;
+            public class MyNodeDefinition
+            {
+                public string Id { get; set; }
+                public double X { get; set; }
+                public double Y { get; set; }
+            }
+            public class MyLinkDefinition
+            {
+                public NodeAnchor Source { get; set; }
+                public NodeAnchor Target { get; set; }
+                public LinkType Type { get; set; }
+            }
+            List<MyNodeDefinition> states = Enumerable.Range(0, n * n).Select(i => new MyNodeDefinition
+            {
+                Id = $"state{i}",
+                X = 150 * (i % n),
+                Y = 150 * (i / n)
+            }).ToList();
+            List<MyLinkDefinition> links = Enumerable.Range(0, n * n / 4).Select(i => new MyLinkDefinition
+            {
+                Source = new NodeAnchor { NodeId = $"state{2 * i}", Port = Position.East },
+                Target = new NodeAnchor { NodeId = $"state{2 * i + 1}", Port = Position.West }
+            }).Concat(Enumerable.Range(0, n * n / 4).Select(i => new MyLinkDefinition
+            {
+                Source = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i}", Port = Position.NorthEast },
+                Target = new NodeAnchor { NodeId = $"state{2 * n * n / 4 + 2 * i + 1}", Port = Position.SouthWest }
+            })).ToList(); }
