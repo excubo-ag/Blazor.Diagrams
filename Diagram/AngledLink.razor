@@ -83,11 +83,11 @@
         var first_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[0].Y);
         var second_point_x = (down_first) ? (ControlPoints[2].X) : (ControlPoints[1].X);
         var second_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[2].Y);
-        await ctx.BeginPathAsync();
-        await ctx.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);
-        await ctx.LineToAsync(first_point_x, first_point_y);
-        await ctx.LineToAsync(second_point_x, second_point_y);
-        await ctx.LineToAsync(ControlPoints[2].X, ControlPoints[2].Y);
-        await ctx.StrokeAsync();
+        await ctx.Paths.BeginPathAsync();
+        await ctx.Paths.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);
+        await ctx.Paths.LineToAsync(first_point_x, first_point_y);
+        await ctx.Paths.LineToAsync(second_point_x, second_point_y);
+        await ctx.Paths.LineToAsync(ControlPoints[2].X, ControlPoints[2].Y);
+        await ctx.DrawingPaths.StrokeAsync();
     }
 }

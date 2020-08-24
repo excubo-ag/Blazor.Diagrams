@@ -71,16 +71,16 @@
     }
     protected override async Task DrawShapeAsync(Excubo.Blazor.Canvas.Contexts.IContext2DWithoutGetters ctx)
     {
-        await ctx.BeginPathAsync();
-        await ctx.MoveToAsync(X, Y);
-        await ctx.LineToAsync(X + Width / 2, Y - 10);
-        await ctx.LineToAsync(X + Width, Y);
-        await ctx.LineToAsync(X + Width + 10, Y + Height / 2);
-        await ctx.LineToAsync(X + Width, Y + Height);
-        await ctx.LineToAsync(X + Width / 2, Y + Height + 10);
-        await ctx.LineToAsync(X, Y + Height);
-        await ctx.LineToAsync(X - 10, Y + Height / 2);
-        await ctx.LineToAsync(X, Y);
-        await ctx.FillAsync(Excubo.Blazor.Canvas.FillRule.NonZero);
+        await ctx.Paths.BeginPathAsync();
+        await ctx.Paths.MoveToAsync(X, Y);
+        await ctx.Paths.LineToAsync(X + Width / 2, Y - 10);
+        await ctx.Paths.LineToAsync(X + Width, Y);
+        await ctx.Paths.LineToAsync(X + Width + 10, Y + Height / 2);
+        await ctx.Paths.LineToAsync(X + Width, Y + Height);
+        await ctx.Paths.LineToAsync(X + Width / 2, Y + Height + 10);
+        await ctx.Paths.LineToAsync(X, Y + Height);
+        await ctx.Paths.LineToAsync(X - 10, Y + Height / 2);
+        await ctx.Paths.LineToAsync(X, Y);
+        await ctx.DrawingPaths.FillAsync(Excubo.Blazor.Canvas.FillRule.NonZero);
     }
 }

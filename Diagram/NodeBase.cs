@@ -264,7 +264,7 @@ namespace Excubo.Blazor.Diagrams
         #endregion
         protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
         {
-            await context.FillRectAsync(X, Y, Width, Height);
+            await context.DrawingRectangles.FillRectAsync(X, Y, Width, Height);
         }
         public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
         {

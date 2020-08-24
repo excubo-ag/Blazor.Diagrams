@@ -68,11 +68,11 @@
     }
     protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
     {
-        await context.BeginPathAsync();
-        await context.MoveToAsync(X + Width * 0.5, Y - Height * 0.5);
-        await context.LineToAsync(X + Width * 1.5, Y + Height * 0.5);
-        await context.LineToAsync(X + Width * 0.5, Y + Height * 1.5);
-        await context.LineToAsync(X - Width * 0.5, Y + Height * 0.5);
-        await context.FillAsync(Canvas.FillRule.NonZero);
+        await context.Paths.BeginPathAsync();
+        await context.Paths.MoveToAsync(X + Width * 0.5, Y - Height * 0.5);
+        await context.Paths.LineToAsync(X + Width * 1.5, Y + Height * 0.5);
+        await context.Paths.LineToAsync(X + Width * 0.5, Y + Height * 1.5);
+        await context.Paths.LineToAsync(X - Width * 0.5, Y + Height * 0.5);
+        await context.DrawingPaths.FillAsync(Canvas.FillRule.NonZero);
     }
 }

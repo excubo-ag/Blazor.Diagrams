@@ -144,10 +144,10 @@ namespace Excubo.Blazor.Diagrams
         #endregion
         protected internal virtual async Task DrawPathAsync(IContext2DWithoutGetters ctx)
         {
-            await ctx.BeginPathAsync();
-            await ctx.MoveToAsync(ControlPoints.First().X, ControlPoints.First().Y);
-            await ctx.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
-            await ctx.StrokeAsync();
+            await ctx.Paths.BeginPathAsync();
+            await ctx.Paths.MoveToAsync(ControlPoints.First().X, ControlPoints.First().Y);
+            await ctx.Paths.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
+            await ctx.DrawingPaths.StrokeAsync();
         }
     }
 }
