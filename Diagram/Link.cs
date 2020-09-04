@@ -29,6 +29,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 builder.AddAttribute(4, nameof(OnCreate), OnCreate);
             }
+            builder.AddAttribute(5, nameof(AdditionalAttributes), AdditionalAttributes);
             builder.CloseComponent();
         }
         [Parameter] public LinkType Type { get; set; }

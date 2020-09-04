@@ -23,7 +23,10 @@
                   stroke-width="3"
                   cursor="pointer"
                   @onmouseover="OnLinkOver"
-                  @onmouseout="OnLinkOut" />
+                  @onmouseout="OnLinkOut"
+                  class="@Class"
+                  style="@Style"
+                  @attributes="other_attributes" />
             if (Arrow == Arrow.Both || Arrow == Arrow.Target)
             {
                 var cp = ControlPoints.Last();

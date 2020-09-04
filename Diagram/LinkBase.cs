@@ -27,6 +27,10 @@ namespace Excubo.Blazor.Diagrams
         /// Arrow settings for the link. For an arrow at the target, set Arrow.Target, for arrows on both ends, set Arrow.Both. Defaults to Arrow.None.
         /// </summary>
         [Parameter] public Arrow Arrow { get; set; }
+        [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; }
+        protected object Class => AdditionalAttributes?.GetValueOrDefault("class");
+        protected object Style => AdditionalAttributes?.GetValueOrDefault("style");
+        protected IEnumerable<KeyValuePair<string, object>> other_attributes => AdditionalAttributes == null ? null : AdditionalAttributes.Where(kv => kv.Key != "class" && kv.Key != "style");
         [CascadingParameter] public Links Links { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
