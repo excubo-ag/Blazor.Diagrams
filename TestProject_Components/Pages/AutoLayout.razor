@@ -11,6 +11,10 @@
         <a href="auto_layout/@nameof(Algorithm.Ranking)">@nameof(Algorithm.Ranking)</a>
         <br />
         <a href="auto_layout/@nameof(Algorithm.Sugiyama)">@nameof(Algorithm.Sugiyama)</a>
+        <br />
+        <a href="auto_layout/@nameof(Algorithm.TreeVertical)">@nameof(Algorithm.TreeVertical)</a>
+        <br />
+        <a href="auto_layout/@nameof(Algorithm.TreeHorizontal)">@nameof(Algorithm.TreeHorizontal)</a>
     </div>
 
     @code {
@@ -31,7 +35,7 @@
         <Links>
             @foreach (var (s,t) in sources.Zip(targets, (a, b) => (a, b)))
             {
-                <StraightLink Source="s" Target="t" />
+                <StraightLink Source="s" Target="t" Arrow="Arrow.Target" />
             }
         </Links>
         <AutoLayoutSettings Algorithm="Layout" />
@@ -45,7 +49,34 @@
         public double X { get; set; }
         public double Y { get; set; }
     }
-    private List<Node> nodes = Enumerable.Range(0, 10).Select(i => new Node { Id = i.ToString() }).ToList();
-    private List<NodeAnchor> sources = Enumerable.Range(1, 9).Select(_ => new NodeAnchor { NodeId = "0" }).ToList();
-    private List<NodeAnchor> targets = Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }).ToList();
+    private List<Node> nodes = Enumerable.Range(0, 50).Select(i => new Node { Id = i.ToString() }).ToList();
+    private List<NodeAnchor> sources = Enumerable.Empty<NodeAnchor>()
+        .Concat(Enumerable.Range(1, 9).Select(_ => new NodeAnchor { NodeId = "0" }))
+        .Concat(Enumerable.Range(1, 9).Select(_ => new NodeAnchor { NodeId = "19" }))
+        .Concat(Enumerable.Range(1, 4).Select(_ => new NodeAnchor { NodeId = "29" }))
+        .Concat(Enumerable.Range(1, 4).Select(_ => new NodeAnchor { NodeId = "39" }))
+        .Concat(Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(10, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(10, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(20, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(30, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(30, 4).Select(i => new NodeAnchor { NodeId = "33" }))
+        .Append(new NodeAnchor { NodeId = "17" })
+        .Append(new NodeAnchor { NodeId = "5" })
+        .ToList();
+    private static Random rnd = new Random();
+    private List<NodeAnchor> targets = Enumerable.Empty<NodeAnchor>()
+        .Concat(Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }).Reverse())
+        .Concat(Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(1, 4).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(5, 4).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(10, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(20, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(20, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }).OrderBy(_ => rnd.NextDouble()))
+        .Concat(Enumerable.Range(30, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(40, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Concat(Enumerable.Range(44, 4).Select(i => new NodeAnchor { NodeId = i.ToString() }))
+        .Append(new NodeAnchor { NodeId = "3" })
+        .Append(new NodeAnchor { NodeId = "6" })
+        .ToList();
 }
