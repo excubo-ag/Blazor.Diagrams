@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,6 +28,18 @@ namespace Excubo.Blazor.Diagrams
         /// Arrow settings for the link. For an arrow at the target, set Arrow.Target, for arrows on both ends, set Arrow.Both. Defaults to Arrow.None.
         /// </summary>
         [Parameter] public Arrow Arrow { get; set; }
+        /// <summary>
+        /// The color of link and arrows.
+        /// </summary>
+        [Parameter] public string Color { get; set; } = "black";
+        /// <summary>
+        /// The width of link.
+        /// </summary>
+        [Parameter] public double Width { get; set; } = 3;
+        /// <summary>
+        /// The size of the arrows. If null, then the size is determined in relation to the width of the link.
+        /// </summary>
+        [Parameter] public double? ArrowSize { get; set; }
         [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; }
         protected object Class => AdditionalAttributes?.GetValueOrDefault("class");
         protected object Style => AdditionalAttributes?.GetValueOrDefault("style");

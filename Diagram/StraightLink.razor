@@ -9,9 +9,13 @@
     <g transform="scale(@Zoom)">
         @if (ControlPoints.Count == 2)
         {
+            var arrow_size = ArrowSize ?? Width * 2;
+            var right_arrow_tip_coordinates = $"{arrow_size * 2 / 3},-{arrow_size}";
+            var left_arrow_tip_coordinates = " -" + right_arrow_tip_coordinates;
+            var arrow_shape = "0,0 " + right_arrow_tip_coordinates + left_arrow_tip_coordinates;
             var start_angle = Math.Atan2(ControlPoints[1].Y - ControlPoints[0].Y, ControlPoints[1].X - ControlPoints[0].X);
-            var start_x = Arrow == Arrow.Both ? 6 * Math.Cos(start_angle) : 0;
-            var start_y = Arrow == Arrow.Both ? 6 * Math.Sin(start_angle) : 0;
+            var start_x = Arrow == Arrow.Both ? arrow_size * Math.Cos(start_angle) : 0;
+            var start_y = Arrow == Arrow.Both ? arrow_size * Math.Sin(start_angle) : 0;
             var end_angle = start_angle + Math.PI;
             var end_x = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? 6 * Math.Cos(end_angle) : 0;
             var end_y = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? 6 * Math.Sin(end_angle) : 0;
@@ -19,13 +23,13 @@
                   y1="@(ControlPoints[0].Y + start_y)"
                   x2="@(ControlPoints[1].X + end_x)"
                   y2="@(ControlPoints[1].Y + end_y)"
-                  stroke="black"
-                  stroke-width="3"
+                  class="@Class"
+                  style="@Style"
+                  stroke="@Color"
+                  stroke-width="@Width"
                   cursor="pointer"
                   @onmouseover="OnLinkOver"
                   @onmouseout="OnLinkOut"
-                  class="@Class"
-                  style="@Style"
                   @attributes="other_attributes" />
             if (Arrow == Arrow.Both || Arrow == Arrow.Target)
             {
@@ -33,7 +37,7 @@
                 var other = ControlPoints.First();
                 var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI + 90;
                 <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
-                    <polygon points="0,0 4,-6 -4,-6" fill="black" />
+                    <polygon points="@arrow_shape" fill="@Color" />
                 </g>
             }
             if (Arrow == Arrow.Both)
@@ -42,14 +46,14 @@
                 var other = ControlPoints.Last();
                 var angle = Math.Atan2(other.Y - cp.Y, other.X - cp.X) * 180 / Math.PI + 90;
                 <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
-                    <polygon points="0,0 4,-6 -4,-6" fill="black" />
+                    <polygon points="@arrow_shape" fill="@Color" />
                 </g>
             }
             if (Selected)
             {
                 foreach (var cp in ControlPoints)
                 {
-                    <ellipse cx="@cp.X" cy="@cp.Y" rx="6" ry="6" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" cursor="move" />
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="@(Width * 2)" ry="@(Width * 2)" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" cursor="move" />
                 }
             }
         }
