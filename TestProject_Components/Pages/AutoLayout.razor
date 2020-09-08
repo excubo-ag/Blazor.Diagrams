@@ -22,6 +22,7 @@
         Algorithm Layout { get; set; }
     }
 
+    <button @onclick="Run">Run layout algorithm again</button>
 
     <Diagram style="grid-row: 2">
         <Nodes>
@@ -33,16 +34,21 @@
             }
         </Nodes>
         <Links>
-            @foreach (var (s,t) in sources.Zip(targets, (a, b) => (a, b)))
+            @foreach (var (s, t) in sources.Zip(targets, (a, b) => (a, b)))
             {
                 <StraightLink Source="s" Target="t" Arrow="Arrow.Target" />
             }
         </Links>
-        <AutoLayoutSettings Algorithm="Layout" />
+        <AutoLayoutSettings Algorithm="Layout" @ref="auto_layout" />
     </Diagram>
 </div>
 
 @code {
+    private AutoLayoutSettings auto_layout;
+    private void Run()
+    {
+        auto_layout.Run();
+    }
     private class Node
     {
         public string Id { get; set; }

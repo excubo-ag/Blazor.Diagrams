@@ -44,10 +44,14 @@ namespace Excubo.Blazor.Diagrams
                     return;
                 }
                 algorithm = value;
-                if (Diagram != null && Diagram.Nodes != null && Diagram.Links != null)
-                {
-                    Layout(Diagram.Nodes.all_nodes, Diagram.Links.all_links);
-                }
+                Run();
+            }
+        }
+        public void Run()
+        {
+            if (Diagram != null && Diagram.Nodes != null && Diagram.Links != null)
+            {
+                Layout(Diagram.Nodes.all_nodes, Diagram.Links.all_links);
             }
         }
         internal void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)
