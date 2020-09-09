@@ -77,11 +77,11 @@ namespace Excubo.Blazor.Diagrams
         protected bool OffCanvas { get; set; }
         internal void ReRenderIfOffCanvasChanged()
         {
-            var margins = GetDrawingMargins();
-            var left = X - margins.Left;
-            var right = X + Width + margins.Right;
-            var top = Y - margins.Top;
-            var bottom = Y + Height + margins.Bottom;
+            var (LeftMargin, TopMargin, RightMargin, BottomMargin) = GetDrawingMargins();
+            var left = X - LeftMargin;
+            var right = X + Width + RightMargin;
+            var top = Y - TopMargin;
+            var bottom = Y + Height + BottomMargin;
             var value = right < Diagram.NavigationSettings.Origin.X
                 || bottom < Diagram.NavigationSettings.Origin.Y
                 || left > Diagram.NavigationSettings.Origin.X + Diagram.CanvasWidth / Diagram.NavigationSettings.Zoom
@@ -109,8 +109,8 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
-            XChanged.InvokeAsync(X);
-            YChanged.InvokeAsync(y);
+            _ = XChanged.InvokeAsync(X);
+            _ = YChanged.InvokeAsync(y);
             ReRenderIfOffCanvasChanged();
             StateHasChanged();
         }
@@ -283,8 +283,8 @@ namespace Excubo.Blazor.Diagrams
         {
             X = x;
             Y = y;
-            XChanged.InvokeAsync(X);
-            YChanged.InvokeAsync(y);
+            _ = XChanged.InvokeAsync(X);
+            _ = YChanged.InvokeAsync(Y);
             StateHasChanged();
         }
     }
