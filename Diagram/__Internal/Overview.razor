@@ -2,42 +2,59 @@
 @using Excubo.Blazor.Diagrams.Extensions
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div style="position:relative; width: calc(@(Width)px + 2em); @(position) @(border) background-color: white; padding: 1em;">
-        <Canvas @ref="canvas1" width="@Width" height="@Height" />
-        <div style="position: absolute; top: 1em; display:@((canvas_2_visible ? "block" : "none"))">
-            <Canvas @ref="canvas2" width="@Width" height="@Height" />
-        </div>
-        <svg style="position:absolute; width: @(Width)px; height: @(Height)px; left: 1em; top: 1em" @onmousemove="OnMouseMove" @onmousemove:stopPropagation>
-            @{
-                var stroke_width = 4;
-                var half_stroke = stroke_width / 2;
-                <g transform="translate(@(ViewLeft + half_stroke) @(ViewTop + half_stroke))">
-                    <rect x="0" y="0" width="@(ViewWidth - stroke_width)" height="@(ViewHeight - stroke_width)" fill="transparent" stroke="deepskyblue" stroke-width="@stroke_width" style="cursor: move" />
-                    <line x1="0" y1="0" x2="@(ViewWidth - stroke_width)" y2="0" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
-                    <line x1="0" y1="0" x2="0" y2="@(ViewHeight - stroke_width)" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
-                    <line x1="0" y1="@(ViewHeight - stroke_width)" x2="@(ViewWidth - stroke_width)" y2="@(ViewHeight - stroke_width)" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
-                    <line x1="@(ViewWidth - stroke_width)" y1="0" x2="@(ViewWidth - stroke_width)" y2="@(ViewHeight - stroke_width)" fill="none" stroke="deepskyblue" stroke-width="@stroke_width" />
-                </g>
-            }
-        </svg>
-    </div>
+<div style="position:relative; width: calc(@(Width)px + 2em); @(position) @(border) background-color: @BackgroundColor; padding: 1em">
+    <svg style="position:relative; width: @(Width)px; height: @(Height)px; pointer-events: all" @onmousemove="OnMouseMove" @onmousemove:stopPropagation>
+        @{
+            var half_stroke = ViewableAreaBorderWidth / 2;
+            <g transform="translate(@(ViewLeft + half_stroke) @(ViewTop + half_stroke))">
+                <rect x="0" y="0" width="@(ViewWidth - ViewableAreaBorderWidth)" height="@(ViewHeight - ViewableAreaBorderWidth)" fill="@ViewableAreaFillColor" stroke="@ViewableAreaBorderColor" stroke-width="@ViewableAreaBorderWidth" style="cursor: move" />
+            </g>
+        }
+    </svg>
+    <style>
+        .overview-canvas {
+            pointer-events: none;
+            position: absolute;
+            top: 1em;
+        }
+    </style>
+    <Canvas @ref="canvas1" width="@Width" height="@Height" class="overview-canvas" style="" />
+    <Canvas @ref="canvas2" width="@Width" height="@Height" class="overview-canvas" style="@(canvas_2_visible ? "display: block" : "display: none")" />
+    @*<div style="position: absolute; top: 1em; width: @(Width)px; height: @(Height)px; pointer-events: all" @onmousemove="OnMouseMove" @onmousemove:stopPropagation></div>*@
+</div>
 }
 
 @code {
+    /// <summary>
+    /// The border color for the rectangle that marks the viewable area.
+    /// </summary>
+    [Parameter] public string ViewableAreaBorderColor { get; set; } = "deepskyblue";
+    /// <summary>
+    /// The fill color for the rectangle that marks the viewable area. Make sure to select a transparent color.
+    /// </summary>
+    [Parameter] public string ViewableAreaFillColor { get; set; } = "transparent";
+    /// <summary>
+    /// The thickness of the border for the rectangle that marks the viewable area.
+    /// </summary>
+    [Parameter] public double ViewableAreaBorderWidth { get; set; } = 4;
+    /// <summary>
+    /// Whether the overview area should have a visible black border all around it.
+    /// </summary>
+    [Parameter] public bool FullBorder { get; set; }
     [Parameter] public Position Position { get; set; }
     private string position => Position switch
     {
         Position.Top => "top: 0; margin-left: auto; margin-right: auto;",
         Position.TopRight => "top: 0; margin-left: auto;",
         Position.Right => $"margin-left: auto; top: calc(50% - {Height / 2}px);",
-        Position.BottomRight => $"margin-left: auto; top: calc(100% - {Height}px - 2em);",
-        Position.Bottom => $"top: calc(100% - {Height}px - 2em); margin-left: auto; margin-right: auto;",
-        Position.BottomLeft => $"top: calc(100% - {Height}px - 2em);",
+        Position.BottomRight => $"margin-left: auto; top: calc(100% - {Height}px - 2em - 12px);",
+        Position.Bottom => $"top: calc(100% - {Height}px - 2em - 12px); margin-left: auto; margin-right: auto;",
+        Position.BottomLeft => $"top: calc(100% - {Height}px - 2em - 12px);",
         Position.Left => $"top: calc(50% - {Height / 2}px);",
         Position.TopLeft => "",
         _ => ""
     };
-    private string border => Position switch
+    private string border => FullBorder ? "border: 2px solid black;" : Position switch
     {
         Position.Top => "border-bottom: 2px solid black; border-left: 2px solid black; border-right: 2px solid black;",
         Position.TopRight => "border-bottom: 2px solid black; border-left: 2px solid black;",

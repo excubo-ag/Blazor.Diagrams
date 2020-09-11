@@ -54,7 +54,13 @@
             }
             @if (OverviewSettings != null)
             {
-                <Overview @ref="Overview" Position="@OverviewSettings.Position" />
+                <Overview @ref="Overview"
+                          Position="@OverviewSettings.Position" 
+                          ViewableAreaBorderColor="@OverviewSettings.ViewableAreaBorderColor" 
+                          ViewableAreaFillColor="@OverviewSettings.ViewableAreaFillColor" 
+                          ViewableAreaBorderWidth="@OverviewSettings.ViewableAreaBorderWidth"
+                          BackgroundColor="@OverviewSettings.BackgroundColor"
+                          FullBorder="@OverviewSettings.FullBorder"/>
             }
         </CascadingValue>
     </div>

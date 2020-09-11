@@ -15,6 +15,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         }
         [CascadingParameter] public Diagram Diagram { get; set; }
         [Parameter] public double Width { get; set; } = 300;
+        [Parameter] public string BackgroundColor { get; set; } = "white";
         private double Height { get; set; } = 1;
         private double ViewLeft { get; set; }
         private double ViewTop { get; set; }
@@ -126,11 +127,10 @@ namespace Excubo.Blazor.Diagrams.__Internal
             old_max_y = max_y;
 
             var hidden_canvas = canvas_2_visible ? canvas1 : canvas2;
-            await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: false);
+            await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: true);
             await using var batch = await ctx.CreateBatchAsync();
             await batch.Transformations.SetTransformAsync(1, 0, 0, 1, 0, 0);
-            await batch.FillAndStrokeStyles.FillStyleAsync("white");
-            await batch.DrawingRectangles.FillRectAsync(0, 0, Width, Height);
+            await batch.DrawingRectangles.ClearRectAsync(0, 0, Width, Height);
             await batch.FillAndStrokeStyles.FillStyleAsync("#222222");
             await batch.Transformations.ScaleAsync(Scale, Scale);
             await batch.Transformations.TranslateAsync(-min_x, -min_y);
