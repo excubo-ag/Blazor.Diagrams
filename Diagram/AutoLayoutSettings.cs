@@ -171,7 +171,8 @@ namespace Excubo.Blazor.Diagrams
                 foreach (var node in layer)
                 {
                     node.MoveTo(x, y);
-                    y += node.Height + vertical_separation;
+                    var margins = node.GetDrawingMargins();
+                    y += node.Height + margins.Top + margins.Bottom + vertical_separation;
                 }
                 var maximum_width = layer.Max(n => n.Width + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right);
                 x += horizontal_separation + maximum_width;
@@ -186,7 +187,8 @@ namespace Excubo.Blazor.Diagrams
                 foreach (var node in layer)
                 {
                     node.MoveTo(x, y);
-                    x += node.Width + horizontal_separation;
+                    var margins = node.GetDrawingMargins();
+                    x += node.Width + margins.Left + margins.Right + horizontal_separation;
                 }
                 var maximum_height = layer.Max(n => n.Height + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom);
                 y += vertical_separation + maximum_height;
