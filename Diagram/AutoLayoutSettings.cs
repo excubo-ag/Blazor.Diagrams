@@ -80,7 +80,7 @@ namespace Excubo.Blazor.Diagrams
             // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
             ArrangeNodesWithinLayers(all_links, layers);
             // 3. Layout time!
-            ArrangeNodes(layers);
+            ArrangeNodes(all_links, layers);
             // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
             ArrangeLinks(all_links, layers);
         }
@@ -149,20 +149,20 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
-        private void ArrangeNodes(List<List<NodeBase>> layers)
+        private void ArrangeNodes(List<LinkBase> all_links, List<List<NodeBase>> layers)
         {
             const double vertical_separation = 50;
             const double horizontal_separation = 50;
             if (Algorithm == Algorithm.TreeVertical)
             {
-                ArrangeNodesInRows(layers, vertical_separation, horizontal_separation);
+                ArrangeNodesInRows(layers, all_links, vertical_separation, horizontal_separation);
             }
             else
             {
-                ArrangeNodesInColumns(layers, vertical_separation, horizontal_separation);
+                ArrangeNodesInColumns(layers, all_links, vertical_separation, horizontal_separation);
             }
         }
-        private static void ArrangeNodesInColumns(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
+        private static void ArrangeNodesInColumns(List<List<NodeBase>> layers, List<LinkBase> all_links, double vertical_separation, double horizontal_separation)
         {
             double x = 0;
             var heights = layers.Select(layer =>
@@ -183,17 +183,13 @@ namespace Excubo.Blazor.Diagrams
                 x += horizontal_separation + maximum_width;
             }
         }
-        private static void ArrangeNodesInRows(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
+        private static void ArrangeNodesInRows(List<List<NodeBase>> layers, List<LinkBase> all_links, double vertical_separation, double horizontal_separation)
         {
+            // Preliminary placement of items in first layer
             double y = 0;
-            var widths = layers.Select(layer =>
-                layer.Select(n => n.Width + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right).ToList())
-                .ToList();
-            var layer_widths = widths.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
-            var widest_layer_width = layer_widths.Max();
-            foreach (var (layer, width) in layers.Zip(layer_widths, (l, w) => (l, w)))
             {
-                double x = (widest_layer_width - width) / 2;
+                var layer = layers.First();
+                double x = 0;
                 foreach (var node in layer)
                 {
                     node.MoveTo(x, y);
@@ -203,6 +199,60 @@ namespace Excubo.Blazor.Diagrams
                 var maximum_height = layer.Max(n => n.Height + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom);
                 y += vertical_separation + maximum_height;
             }
+            // All subsequent layers: set position to average position of parents
+            for (int i = 0; i + 1 < layers.Count; ++i)
+            {
+                var top_layer = layers[i];
+                var layer = layers[i + 1];
+                var desired_positions = layer.Select(node =>
+                {
+                    var connected_nodes = all_links.Where(l => l.Target?.Node == node && top_layer.Contains(l.Source?.Node)).Select(l => l.Source?.Node).ToList();
+                    return connected_nodes.Any() ? connected_nodes.Average(n => n.X) : 0;
+                }).ToList();
+                // sort nodes by desired position
+                layers[i + 1] = layer.Zip(desired_positions, (n, dp) => (n, dp)).OrderBy(kv => kv.dp).Select(kv => kv.n).ToList();
+                desired_positions = desired_positions.OrderBy(v => v).ToList();
+                layer = layers[i + 1];
+                // ensure there's enough separation between all nodes. let's find the center first
+                var center = desired_positions.Average();
+                for (int j = 0; j + 1 < layer.Count; ++j)
+                {
+                    desired_positions[j + 1] = Math.Max(desired_positions[j + 1], desired_positions[j] + horizontal_separation + layer[j].Width + layer[j].GetDrawingMargins().Left + layer[j].GetDrawingMargins().Right);
+                }
+                // find how much off-center we are now
+                var new_center = desired_positions.Average();
+                for (int j = 0; j < layer.Count; ++j)
+                {
+                    layer[j].MoveTo(desired_positions[j] - (new_center - center) / 2, y);
+                }
+                var maximum_height = layer.Max(n => n.Height + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom);
+                y += vertical_separation + maximum_height;
+            }
+            // now we can fix the first layer
+            if (layers.Count > 1)
+            {
+                var desired_positions = layers[0].Select(node =>
+                {
+                    var connected_nodes = all_links.Where(l => l.Source?.Node == node && layers[1].Contains(l.Target?.Node)).Select(l => l.Target?.Node).ToList();
+                    return connected_nodes.Any() ? connected_nodes.Average(n => n.X) : 0;
+                }).ToList();
+                // sort nodes by desired position
+                layers[0] = layers[0].Zip(desired_positions, (n, dp) => (n, dp)).OrderBy(kv => kv.dp).Select(kv => kv.n).ToList();
+                desired_positions = desired_positions.OrderBy(v => v).ToList();
+                // ensure there's enough separation between all nodes. let's find the center first
+                var center = desired_positions.Average();
+                for (int j = 0; j + 1 < layers[0].Count; ++j)
+                {
+                    desired_positions[j + 1] = Math.Max(desired_positions[j + 1], desired_positions[j] + horizontal_separation + layers[0][j].Width + layers[0][j].GetDrawingMargins().Left + layers[0][j].GetDrawingMargins().Right);
+                }
+                // find how much off-center we are now
+                var new_center = desired_positions.Average();
+                for (int j = 0; j < layers[0].Count; ++j)
+                {
+                    layers[0][j].MoveTo(desired_positions[j] - (new_center - center) / 2, 0);
+                }
+            }
+
         }
         private static void ArrangeNodesWithinLayers(List<LinkBase> all_links, List<List<NodeBase>> layers)
         {
