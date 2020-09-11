@@ -155,14 +155,14 @@ namespace Excubo.Blazor.Diagrams
             const double horizontal_separation = 50;
             if (Algorithm == Algorithm.TreeVertical)
             {
-                ArrangeNodesVertically(layers, vertical_separation, horizontal_separation);
+                ArrangeNodesInRows(layers, vertical_separation, horizontal_separation);
             }
             else
             {
-                ArrangeNodesHorizontally(layers, vertical_separation, horizontal_separation);
+                ArrangeNodesInColumns(layers, vertical_separation, horizontal_separation);
             }
         }
-        private static void ArrangeNodesHorizontally(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
+        private static void ArrangeNodesInColumns(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
         {
             double x = 0;
             var heights = layers.Select(layer =>
@@ -183,7 +183,7 @@ namespace Excubo.Blazor.Diagrams
                 x += horizontal_separation + maximum_width;
             }
         }
-        private static void ArrangeNodesVertically(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
+        private static void ArrangeNodesInRows(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
         {
             double y = 0;
             var widths = layers.Select(layer =>
