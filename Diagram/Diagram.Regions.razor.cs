@@ -24,5 +24,9 @@
         internal LinkSelectorSettings LinkSelectorSettings { get; set; }
         internal OverviewSettings OverviewSettings { get; set; }
         internal AutoLayoutSettings AutoLayoutSettings { get; set; }
+        internal void UpdateOverview()
+        {
+            Overview?.TriggerUpdate();
+        }
     }
 }

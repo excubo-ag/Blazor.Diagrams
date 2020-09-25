@@ -55,6 +55,7 @@ namespace Excubo.Blazor.Diagrams
             if (!all_links.Contains(link))
             {
                 all_links.Add(link);
+                Diagram.UpdateOverview();
                 if (link.IsInternallyGenerated)
                 {
                     OnAdd?.Invoke(link);
