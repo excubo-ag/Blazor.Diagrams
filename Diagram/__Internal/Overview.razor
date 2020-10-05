@@ -18,7 +18,7 @@
             top: 1em;
         }
     </style>
-    <Canvas @ref="canvas1" width="@Width" height="@Height" class="overview-canvas" style="" />
+    <Canvas @ref="canvas1" width="@Width" height="@Height" class="overview-canvas" style="@(canvas_2_visible ? "display: none" : "display: block")" />
     <Canvas @ref="canvas2" width="@Width" height="@Height" class="overview-canvas" style="@(canvas_2_visible ? "display: block" : "display: none")" />
     @*<div style="position: absolute; top: 1em; width: @(Width)px; height: @(Height)px; pointer-events: all" @onmousemove="OnMouseMove" @onmousemove:stopPropagation></div>*@
 </div>
