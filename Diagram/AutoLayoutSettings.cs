@@ -49,7 +49,7 @@ namespace Excubo.Blazor.Diagrams
         }
         public void Run()
         {
-            if (Diagram != null && Diagram.Nodes != null && Diagram.Links != null)
+            if (Diagram != null && Diagram.Nodes != null && Diagram.Nodes.all_nodes.Any() && Diagram.Links != null)
             {
                 Layout(Diagram.Nodes.all_nodes, Diagram.Links.all_links);
                 Diagram.UpdateOverview();
