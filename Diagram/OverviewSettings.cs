@@ -22,6 +22,10 @@ namespace Excubo.Blazor.Diagrams
         /// Whether the overview area should have a visible black border all around it.
         /// </summary>
         [Parameter] public bool FullBorder { get; set; }
+        /// <summary>
+        /// The thickness of the border of the overview area.
+        /// </summary>
+        [Parameter] public double BorderWidth { get; set; } = 2;
         [Parameter] public Position Position { get; set; } = Position.BottomRight;
         [CascadingParameter] public Diagram Diagram { get; set; }
         protected override void OnParametersSet()

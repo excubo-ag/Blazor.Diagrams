@@ -41,30 +41,34 @@
     /// Whether the overview area should have a visible black border all around it.
     /// </summary>
     [Parameter] public bool FullBorder { get; set; }
+    /// <summary>
+    /// The thickness of the border of the overview area.
+    /// </summary>
+    [Parameter] public double BorderWidth { get; set; } = 2;
     [Parameter] public Position Position { get; set; }
     private string position => Position switch
     {
         Position.Top => "top: 0; margin-left: auto; margin-right: auto;",
         Position.TopRight => "top: 0; margin-left: auto;",
-        Position.Right => $"margin-left: auto; top: calc(50% - {Height / 2}px);",
-        Position.BottomRight => $"margin-left: auto; top: calc(100% - {Height}px - 2em - 12px);",
-        Position.Bottom => $"top: calc(100% - {Height}px - 2em - 12px); margin-left: auto; margin-right: auto;",
-        Position.BottomLeft => $"top: calc(100% - {Height}px - 2em - 12px);",
-        Position.Left => $"top: calc(50% - {Height / 2}px);",
+        Position.Right => $"margin-left: auto; top: calc(50% - {Height / 2 + BorderWidth}px);",
+        Position.BottomRight => $"margin-left: auto; top: calc(100% - {Height + 2 * BorderWidth}px - 2em - 8px);",
+        Position.Bottom => $"top: calc(100% - {Height + 2 * BorderWidth}px - 2em - 8px); margin-left: auto; margin-right: auto;",
+        Position.BottomLeft => $"top: calc(100% - {Height + 2 * BorderWidth}px - 2em - 8px);",
+        Position.Left => $"top: calc(50% - {Height / 2 + BorderWidth}px);",
         Position.TopLeft => "",
         _ => ""
     };
-    private string border => FullBorder ? "border: 2px solid black;" : Position switch
+    private string border => FullBorder ? $"border: {BorderWidth}px solid black;" : Position switch
     {
-        Position.Top => "border-bottom: 2px solid black; border-left: 2px solid black; border-right: 2px solid black;",
-        Position.TopRight => "border-bottom: 2px solid black; border-left: 2px solid black;",
-        Position.Right => "border-top: 2px solid black; border-bottom: 2px solid black; border-left: 2px solid black;",
-        Position.BottomRight => "border-top: 2px solid black; border-left: 2px solid black;",
-        Position.Bottom => "border-top: 2px solid black; border-left: 2px solid black; border-right: 2px solid black;",
-        Position.BottomLeft => "border-top: 2px solid black; border-right: 2px solid black;",
-        Position.Left => "border-top: 2px solid black; border-bottom: 2px solid black; border-right: 2px solid black;",
-        Position.TopLeft => "border-bottom: 2px solid black; border-right: 2px solid black;",
-        _ => "border-bottom: 2px solid black; border-right: 2px solid black;"
+        Position.Top => $"border-bottom: {BorderWidth}px solid black; border-left: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;",
+        Position.TopRight => $"border-bottom: {BorderWidth}px solid black; border-left: {BorderWidth}px solid black;",
+        Position.Right => $"border-top: {BorderWidth}px solid black; border-bottom: {BorderWidth}px solid black; border-left: {BorderWidth}px solid black;",
+        Position.BottomRight => $"border-top: {BorderWidth}px solid black; border-left: {BorderWidth}px solid black;",
+        Position.Bottom => $"border-top: {BorderWidth}px solid black; border-left: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;",
+        Position.BottomLeft => $"border-top: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;",
+        Position.Left => $"border-top: {BorderWidth}px solid black; border-bottom: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;",
+        Position.TopLeft => $"border-bottom: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;",
+        _ => $"border-bottom: {BorderWidth}px solid black; border-right: {BorderWidth}px solid black;"
     };
     private Canvas canvas1;
     private Canvas canvas2;
