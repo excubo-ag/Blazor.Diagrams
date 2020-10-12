@@ -55,7 +55,7 @@ namespace Excubo.Blazor.Diagrams
                 Diagram.UpdateOverview();
             }
         }
-        internal void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        private void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
             switch (Algorithm)
             {
