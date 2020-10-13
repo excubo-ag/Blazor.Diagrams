@@ -39,7 +39,7 @@ namespace Excubo.Blazor.Diagrams
         }
         internal readonly List<NodeBase> all_nodes = new List<NodeBase>();
         private readonly List<NodeData> internally_generated_nodes = new List<NodeData>();
-        public void Register(NodeBase node)
+        internal void Register(NodeBase node)
         {
             if (!all_nodes.Contains(node))
             {
@@ -48,6 +48,18 @@ namespace Excubo.Blazor.Diagrams
                 if (node.IsInternallyGenerated)
                 {
                     OnAdd?.Invoke(node);
+                }
+            }
+        }
+        internal void Deregister(NodeBase node)
+        {
+            if (all_nodes.Contains(node))
+            {
+                all_nodes.Remove(node);
+                Diagram.UpdateOverview();
+                if (node.IsInternallyGenerated)
+                {
+                    OnRemove?.Invoke(node);
                 }
             }
         }

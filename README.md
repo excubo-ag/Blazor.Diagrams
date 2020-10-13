@@ -89,11 +89,27 @@ The current payload is less than 100 bytes, and only gets loaded dynamically whe
 
 A complete example of how to design a custom node is available [here](https://github.com/excubo-ag/Blazor.Diagrams/blob/main/TestProject_Components/Pages/UserDefinedNode.razor).
 
-## Roadmap
+## Changelog
 
-There are more features to come! Goals include:
+### 1.11.X ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: low](https://img.shields.io/badge/impact-low-green)
 
-- More node types
-- auto-layout
+Starting with version 1.11.0, `NodeBase` now implements `IDisposable`. This means that any node implementation inheriting from `NodeBase` that previously implemented `IDisposable` now needs to override `void Dispose()`:
 
-If you want to contribute, simply get in touch, open an issue, or open a pull request!
+before:
+```cs
+@implements IDisposable
+public void Dispose()
+{
+    Resource.Dispose();
+}
+```
+
+after:
+
+```cs
+public override void Dispose()
+{
+    Resource.Dispose();
+    base.Dispose();
+}
+```

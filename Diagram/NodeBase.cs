@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public abstract class NodeBase : ComponentBase
+    public abstract class NodeBase : ComponentBase, IDisposable
     {
         #region properties
         private double x;
@@ -133,8 +133,14 @@ namespace Excubo.Blazor.Diagrams
         #region node content
         internal void RemoveBorderAndContent()
         {
-            Diagram.RemoveNodeBorderFragment(actual_border);
-            Diagram.RemoveNodeContentFragment(content);
+            if (actual_border != null)
+            {
+                Diagram.RemoveNodeBorderFragment(actual_border);
+            }
+            if (content != null)
+            {
+                Diagram.RemoveNodeContentFragment(content);
+            }
         }
         internal void AddBorderAndContent()
         {
@@ -286,6 +292,11 @@ namespace Excubo.Blazor.Diagrams
             _ = XChanged.InvokeAsync(X);
             _ = YChanged.InvokeAsync(Y);
             StateHasChanged();
+        }
+        public void Dispose()
+        {
+            Nodes?.Deregister(this);
+            RemoveBorderAndContent();
         }
     }
 }
