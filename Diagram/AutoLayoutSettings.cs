@@ -127,26 +127,33 @@ namespace Excubo.Blazor.Diagrams
         {
             foreach (var link in all_links)
             {
-                if (link.Source != null && link.Target != null)
+                if (link.Source == null || link.Target == null)
                 {
-                    var source_layer_index = layers.IndexOf(layers.First(l => l.Contains(link.Source.Node)));
-                    var target_layer_index = layers.IndexOf(layers.First(l => l.Contains(link.Target.Node)));
-                    if (source_layer_index < target_layer_index)
-                    {
-                        link.Source.Port = Position.Bottom;
-                        link.Target.Port = Position.Top;
-                    }
-                    else if (source_layer_index > target_layer_index)
-                    {
-                        link.Source.Port = Position.Top;
-                        link.Target.Port = Position.Bottom;
-                    }
-                    else
-                    {
-                        var ltr = link.Source.Node.X < link.Target.Node.X;
-                        link.Source.Port = ltr ? Position.Right : Position.Left;
-                        link.Target.Port = ltr ? Position.Left : Position.Right;
-                    }
+                    continue;
+                }
+                var source_layer = layers.FirstOrDefault(l => l.Contains(link.Source.Node));
+                var target_layer = layers.FirstOrDefault(l => l.Contains(link.Target.Node));
+                if (source_layer == null || target_layer == null)
+                {
+                    continue;
+                }
+                var source_layer_index = layers.IndexOf(source_layer);
+                var target_layer_index = layers.IndexOf(target_layer);
+                if (source_layer_index < target_layer_index)
+                {
+                    link.Source.Port = Position.Bottom;
+                    link.Target.Port = Position.Top;
+                }
+                else if (source_layer_index > target_layer_index)
+                {
+                    link.Source.Port = Position.Top;
+                    link.Target.Port = Position.Bottom;
+                }
+                else
+                {
+                    var ltr = link.Source.Node.X < link.Target.Node.X;
+                    link.Source.Port = ltr ? Position.Right : Position.Left;
+                    link.Target.Port = ltr ? Position.Left : Position.Right;
                 }
             }
         }

@@ -62,6 +62,18 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
+        internal void Deregister(LinkBase link)
+        {
+            if (all_links.Contains(link))
+            {
+                all_links.Remove(link);
+                Diagram.UpdateOverview();
+                if (link.IsInternallyGenerated)
+                {
+                    OnRemove?.Invoke(link);
+                }
+            }
+        }
         internal void Add(LinkBase link)
         {
             if (link.Deleted)

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public class LinkBase : ComponentBase
+    public class LinkBase : ComponentBase, IDisposable
     {
         /// <summary>
         /// The source anchor for the link.
@@ -61,6 +61,11 @@ namespace Excubo.Blazor.Diagrams
         internal void MarkUndeleted() => Deleted = false;
         protected override void OnParametersSet()
         {
+            if (GetType() != typeof(Link))
+            {
+                Links.Register(this);
+                OnCreate?.Invoke(this);
+            }
             if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
             {
                 if (Source.NodeId != null)
@@ -91,18 +96,6 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
             base.OnParametersSet();
-        }
-        protected override void OnAfterRender(bool first_render)
-        {
-            if (GetType() != typeof(Link))
-            {
-                if (first_render)
-                {
-                    Links.Register(this);
-                    OnCreate?.Invoke(this);
-                }
-            }
-            base.OnAfterRender(first_render);
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected double Zoom => Diagram.NavigationSettings.Zoom;
@@ -165,6 +158,10 @@ namespace Excubo.Blazor.Diagrams
             await ctx.Paths.MoveToAsync(ControlPoints.First().X, ControlPoints.First().Y);
             await ctx.Paths.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
             await ctx.DrawingPaths.StrokeAsync();
+        }
+        public void Dispose()
+        {
+            Links.Deregister(this);
         }
     }
 }
