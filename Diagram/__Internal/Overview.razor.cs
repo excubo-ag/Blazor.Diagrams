@@ -23,7 +23,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         private double ViewHeight { get; set; } = 4;
         private double Scale { get; set; } = 1;
         private long last_trigger;
-        private bool render_requested;
+        private volatile bool render_requested;
         private Task update_task;
         internal void TriggerUpdate(bool just_pan_or_zoom = false)
         {

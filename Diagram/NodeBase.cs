@@ -104,6 +104,7 @@ namespace Excubo.Blazor.Diagrams
         #endregion
         public void UpdatePosition(double x, double y)
         {
+            ReRenderIfOffCanvasChanged();
             if (!Movable)
             {
                 return;
@@ -112,7 +113,6 @@ namespace Excubo.Blazor.Diagrams
             Y = y;
             XChanged?.Invoke(X);
             YChanged?.Invoke(y);
-            ReRenderIfOffCanvasChanged();
             StateHasChanged();
         }
         internal void TriggerStateHasChanged() => StateHasChanged();
@@ -230,6 +230,7 @@ namespace Excubo.Blazor.Diagrams
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
             Hidden = false;
+            Diagram.UpdateOverview();
             SizeChanged?.Invoke(this, EventArgs.Empty);
             StateHasChanged();
         }

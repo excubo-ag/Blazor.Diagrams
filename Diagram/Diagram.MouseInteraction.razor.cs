@@ -154,6 +154,7 @@ namespace Excubo.Blazor.Diagrams
         private void OnMouseWheel(WheelEventArgs e)
         {
             NavigationSettings.OnMouseWheel(e);
+            Nodes.ReRenderIfOffCanvasChanged();
             Links.TriggerStateHasChanged();
             Overview?.TriggerUpdate(just_pan_or_zoom: true);
         }
