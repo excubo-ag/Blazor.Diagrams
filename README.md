@@ -117,6 +117,7 @@ private async Task RunFooAndBarAsync()
     await FooAsync();
     await BarAsync();
 }
+```
 
 ### 1.11.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: low](https://img.shields.io/badge/impact-low-green)
 
