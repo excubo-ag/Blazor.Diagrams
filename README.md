@@ -91,7 +91,7 @@ A complete example of how to design a custom node is available [here](https://gi
 
 ## Changelog
 
-### 2.0.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: medium](https://img.shields.io/badge/impact-low-green)
+### 2.0.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: medium](https://img.shields.io/badge/impact-medium-orange)
 
 Starting with 2.0.0, `EventCallback<T>`s have been replaced with `Action<T>`. In most situations, there should be nothing to change. If you previously used `await` in the callback method, you now have to move that into a separate method:
 
