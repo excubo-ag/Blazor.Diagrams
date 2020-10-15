@@ -18,6 +18,7 @@ namespace Excubo.Blazor.Diagrams
         [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         [Parameter] public Action<double> XChanged { get; set; }
         internal event EventHandler PositionChanged;
+        internal event EventHandler SizeChanged;
         /// <summary>
         /// Vertical position of the node
         /// </summary>
@@ -229,6 +230,7 @@ namespace Excubo.Blazor.Diagrams
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
             Hidden = false;
+            SizeChanged?.Invoke(this, EventArgs.Empty);
             StateHasChanged();
         }
         protected override void OnAfterRender(bool first_render)

@@ -6,7 +6,7 @@
         @foreach (var node in nodes)
         {
             <Node Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }" Type="@node.Type">
-                <div style="min-width:4em; min-height:1em">@node.Id.Substring(0, 6)</div>
+                <div style="min-width:4em; min-height:1em">@node.Id</div>
             </Node>
         }
     </Nodes>
@@ -21,13 +21,72 @@
                       BackgroundColor="#DDDDDD" ViewableAreaBorderWidth="1" FullBorder="true" />
 </Diagram>
 
-<button @onclick="() => { nodes.Add(new MyNode { Id = Guid.NewGuid().ToString(), X = 100, Y = 100, Type = NodeType.Rectangle }); run_auto_layout = true; }">Add rectangle</button>
-<button @onclick="() => { nodes.Add(new MyNode { Id = Guid.NewGuid().ToString(), X = 100, Y = 100, Type = NodeType.Ellipse }); run_auto_layout = true;}">Add ellipse</button>
-<button @onclick="() => { if (nodes.Any()) { nodes.RemoveAt(0); } run_auto_layout = true; }">Remove first node</button>
-<button @onclick="() => { if (nodes.Count < 2) { return; } var rnd = new Random(); var source = nodes.OrderBy(_ => rnd.NextDouble()).First(); var target = nodes.Except(new[] { source }).OrderBy(_ => rnd.NextDouble()).First(); links.Add(new LinkData { Source = new NodeAnchor { NodeId = source.Id }, Target = new NodeAnchor { NodeId = target.Id } }); run_auto_layout = true; }">Add random link</button>
-<button @onclick="() => { if (links.Any()) { links.RemoveAt(0); } run_auto_layout = true; }">Remove first link</button>
+<button @onclick="NewGraph">Random new graph</button>
+<button @onclick="NewRectangle">Add rectangle</button>
+<button @onclick="NewEllipse">Add ellipse</button>
+<button @onclick="RemoveFirstNode">Remove first node</button>
+<button @onclick="NewLink">Add random link</button>
+<button @onclick="RemoveFirstLink">Remove first link</button>
 
 @code {
+    private void NewGraph()
+    {
+        var rnd = new Random((int) DateTime.Now.Ticks);
+        nodes.Clear();
+        links.Clear();
+        nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(_ => new MyNode { Id = "N" + rnd.Next(0, 10000).ToString() }));
+        links.AddRange(Enumerable.Range(0, rnd.Next(10, 20))
+            .Select(_ =>
+            {
+                var selection = nodes.OrderBy(_ => rnd.NextDouble()).Take(2).ToList();
+                return new LinkData { Source = selection[0].Id, Target = selection[1].Id };
+            }));
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void NewRectangle()
+    {
+        nodes.Add(new MyNode { Id = Guid.NewGuid().ToString(), X = 100, Y = 100, Type = NodeType.Rectangle });
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void NewEllipse()
+    {
+        nodes.Add(new MyNode { Id = Guid.NewGuid().ToString(), X = 100, Y = 100, Type = NodeType.Ellipse });
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void RemoveFirstNode()
+    {
+        if (nodes.Any())
+        {
+            nodes.RemoveAt(0);
+        }
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void NewLink()
+    {
+        if (nodes.Count < 2)
+        {
+            return;
+        }
+        var rnd = new Random((int)DateTime.Now.Ticks);
+        var source = nodes.OrderBy(_ => rnd.NextDouble()).First();
+        var target = nodes.Except(new[] { source }).OrderBy(_ => rnd.NextDouble()).First();
+        links.Add(new LinkData { Source = source.Id, Target = target.Id });
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void RemoveFirstLink()
+    {
+        if (links.Any())
+        {
+            links.RemoveAt(0);
+        }
+        run_auto_layout = true;
+        StateHasChanged();
+    }
     private AutoLayoutSettings auto_layout;
     private bool run_auto_layout;
     class MyNode

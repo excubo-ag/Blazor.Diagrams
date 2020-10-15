@@ -71,6 +71,10 @@ namespace Excubo.Blazor.Diagrams
                 if (Source.NodeId != null)
                 {
                     Source.Node ??= Diagram.Nodes.Find(Source.NodeId);
+                    if (Source.Node != null)
+                    {
+                        Source.Node.SizeChanged += SizeChanged;
+                    }
                     if (Source.Port != Position.Any && Source.Node != null)
                     {
                         (Source.RelativeX, Source.RelativeY) = Source.Node.GetDefaultPort(Source.Port);
@@ -79,6 +83,10 @@ namespace Excubo.Blazor.Diagrams
                 if (Target.NodeId != null)
                 {
                     Target.Node ??= Diagram.Nodes.Find(Target.NodeId);
+                    if (Target.Node != null)
+                    {
+                        Target.Node.SizeChanged += SizeChanged;
+                    }
                     if (Target.Port != Position.Any && Target.Node != null)
                     {
                         (Target.RelativeX, Target.RelativeY) = Target.Node.GetDefaultPort(Target.Port);
@@ -159,8 +167,28 @@ namespace Excubo.Blazor.Diagrams
             await ctx.Paths.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
             await ctx.DrawingPaths.StrokeAsync();
         }
+        private void SizeChanged(object sender, EventArgs e)
+        {
+            if (!(sender is NodeBase node))
+            {
+                return;
+            }
+            var anchor = Source.Node == node ? Source : Target;
+            if (anchor.Port != Position.Any && anchor.Node != null)
+            {
+                (anchor.RelativeX, anchor.RelativeY) = anchor.Node.GetDefaultPort(anchor.Port);
+            }
+        }
         public void Dispose()
         {
+            if (Source.Node != null)
+            {
+                Source.Node.SizeChanged -= SizeChanged;
+            }
+            if (Target.Node != null)
+            {
+                Target.Node.SizeChanged -= SizeChanged;
+            }
             Links.Deregister(this);
         }
     }

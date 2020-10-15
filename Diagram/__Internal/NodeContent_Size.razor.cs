@@ -13,10 +13,8 @@ namespace Excubo.Blazor.Diagrams.__Internal
         {
             if (first_render)
             {
-                var result = await js.GetDimensionsAsync(element);
                 js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
                 await js.RegisterResizeObserverAsync(element, js_interop_reference_to_this);
-                SizeCallback?.Invoke(result);
             }
             await base.OnAfterRenderAsync(first_render);
         }
