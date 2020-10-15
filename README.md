@@ -91,7 +91,34 @@ A complete example of how to design a custom node is available [here](https://gi
 
 ## Changelog
 
-### 1.11.X ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: low](https://img.shields.io/badge/impact-low-green)
+### 2.0.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: medium](https://img.shields.io/badge/impact-low-green)
+
+Starting with 2.0.0, `EventCallback<T>`s have been replaced with `Action<T>`. In most situations, there should be nothing to change. If you previously used `await` in the callback method, you now have to move that into a separate method:
+
+before:
+```cs
+private async Task Callback(T value)
+{
+    Value = value;
+    await FooAsync();
+    await BarAsync();
+}
+```
+
+after:
+```cs
+private void Callback(T value)
+{
+    Value = value;
+    RunFooAndBarAsync();
+}
+private async Task RunFooAndBarAsync()
+{
+    await FooAsync();
+    await BarAsync();
+}
+
+### 1.11.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: low](https://img.shields.io/badge/impact-low-green)
 
 Starting with version 1.11.0, `NodeBase` now implements `IDisposable`. This means that any node implementation inheriting from `NodeBase` that previously implemented `IDisposable` now needs to override `void Dispose()`:
 

@@ -23,12 +23,12 @@ namespace Excubo.Blazor.Diagrams
         /// Default link type for links created as <Link />
         /// </summary>
         [Parameter] public LinkType DefaultType { get; set; } = LinkType.Straight;
-        [Parameter] public EventCallback<LinkType> DefaultTypeChanged { get; set; }
+        [Parameter] public Action<LinkType> DefaultTypeChanged { get; set; }
         /// <summary>
         /// Default arrow type for links created as <Link />
         /// </summary>
         [Parameter] public Arrow DefaultArrow { get; set; } = Arrow.None;
-        [Parameter] public EventCallback<Arrow> DefaultArrowChanged { get; set; }
+        [Parameter] public Action<Arrow> DefaultArrowChanged { get; set; }
         /// <summary>
         /// Callback for when a link is added.
         /// </summary>

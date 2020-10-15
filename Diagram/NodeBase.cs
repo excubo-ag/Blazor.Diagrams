@@ -16,17 +16,17 @@ namespace Excubo.Blazor.Diagrams
         /// Horizontal position of the node
         /// </summary>
         [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
-        [Parameter] public EventCallback<double> XChanged { get; set; }
+        [Parameter] public Action<double> XChanged { get; set; }
         internal event EventHandler PositionChanged;
         /// <summary>
         /// Vertical position of the node
         /// </summary>
         [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
-        [Parameter] public EventCallback<double> YChanged { get; set; }
+        [Parameter] public Action<double> YChanged { get; set; }
         protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
-        protected bool Movable => NodeLibrary != null || IsInternallyGenerated || (XChanged.HasDelegate && YChanged.HasDelegate);
+        [Parameter] public bool Movable { get; set; } = true;
         protected double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
         private double width = 100;
         private double height = 100;
@@ -109,8 +109,8 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
-            _ = XChanged.InvokeAsync(X);
-            _ = YChanged.InvokeAsync(y);
+            XChanged?.Invoke(X);
+            YChanged?.Invoke(y);
             ReRenderIfOffCanvasChanged();
             StateHasChanged();
         }
@@ -289,8 +289,8 @@ namespace Excubo.Blazor.Diagrams
         {
             X = x;
             Y = y;
-            _ = XChanged.InvokeAsync(X);
-            _ = YChanged.InvokeAsync(Y);
+            XChanged?.Invoke(X);
+            YChanged?.Invoke(Y);
             StateHasChanged();
         }
         public void Dispose()

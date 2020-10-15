@@ -1,6 +1,7 @@
 ﻿using Excubo.Blazor.Diagrams.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System;
 using System.Diagnostics;
 
 namespace Excubo.Blazor.Diagrams
@@ -22,7 +23,7 @@ namespace Excubo.Blazor.Diagrams
         /// The coordinates displayed in the top left corner of the diagram.
         /// </summary>
         [Parameter] public Point Origin { get; set; } = new Point();
-        [Parameter] public EventCallback<Point> OriginChanged { get; set; }
+        [Parameter] public Action<Point> OriginChanged { get; set; }
         /// <summary>
         /// The current zoom level
         /// </summary>
@@ -32,7 +33,7 @@ namespace Excubo.Blazor.Diagrams
             get => zoom;
             set => zoom = value <= 0 ? 1 : value;
         }
-        [Parameter] public EventCallback<double> ZoomChanged { get; set; }
+        [Parameter] public Action<double> ZoomChanged { get; set; }
         /// <summary>
         /// The minimum zoom level. Must be smaller than MaxZoom and greater than zero.
         /// </summary>
@@ -105,8 +106,8 @@ namespace Excubo.Blazor.Diagrams
             }
             Origin.X = canvas_x - e.RelativeXTo(Diagram);
             Origin.Y = canvas_y - e.RelativeYTo(Diagram);
-            _ = OriginChanged.InvokeAsync(Origin);
-            _ = ZoomChanged.InvokeAsync(Zoom);
+            OriginChanged?.Invoke(Origin);
+            ZoomChanged?.Invoke(Zoom);
         }
         protected override bool ShouldRender() => false;
 
@@ -118,7 +119,7 @@ namespace Excubo.Blazor.Diagrams
             }
             Origin.X += (InversedPanning ? 1 : -1) * offset_x / Zoom;
             Origin.Y += (InversedPanning ? 1 : -1) * offset_y / Zoom;
-            _ = OriginChanged.InvokeAsync(Origin);
+            OriginChanged?.Invoke(Origin);
         }
     }
 }
