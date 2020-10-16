@@ -21,7 +21,9 @@ namespace Excubo.Blazor.Diagrams
         MultiDimensionalScaling,
         Sugiyama,
         TreeVertical,
-        TreeHorizontal
+        TreeHorizontal,
+        TreeVerticalBottomUp,
+        TreeHorizontalBottomUp,
     }
     public class AutoLayoutSettings : ComponentBase
     {
@@ -61,6 +63,8 @@ namespace Excubo.Blazor.Diagrams
             {
                 case Algorithm.TreeVertical:
                 case Algorithm.TreeHorizontal:
+                case Algorithm.TreeVerticalBottomUp:
+                case Algorithm.TreeHorizontalBottomUp:
                     TreeAlgorithm(all_nodes, all_links);
                     break;
                 case Algorithm.Sugiyama:
@@ -77,7 +81,7 @@ namespace Excubo.Blazor.Diagrams
         private void TreeAlgorithm(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
             // 1. Establish hierarchy.
-            var layers = GetLayers(all_nodes, all_links);
+            var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, all_links) : GetLayersBottomUp(all_nodes, all_links);
             // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
             ArrangeNodesWithinLayers(all_links, layers);
             // 3. Layout time!
@@ -246,7 +250,7 @@ namespace Excubo.Blazor.Diagrams
                 }).ToList();
             }
         }
-        private static List<List<NodeBase>> GetLayers(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        private static List<List<NodeBase>> GetLayersTopDown(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
             // 1.1. We identify the nodes that have no incoming link
             var roots = all_nodes.Where(n => !all_links.Any(l => l.Target?.Node == n)).ToList();
@@ -257,6 +261,42 @@ namespace Excubo.Blazor.Diagrams
             // 1.4. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
             // We continue this until all nodes have been assigned to layers.
             var remaining_nodes = all_nodes.Except(roots).ToList();
+            while (remaining_nodes.Any())
+            {
+                // 1.4.1. we look at the last layer
+                var last_layer = layers.Last();
+                // 1.4.2. find all targets that nodes in the last layer point to
+                var targets_of_last_layer = all_links.Where(l => last_layer.Contains(l.Source?.Node)).Select(l => l.Target?.Node).ToList();
+                // 1.4.3. but only look at the ones that aren't assigned to layers yet
+                var targets_of_last_layer_among_remaining = targets_of_last_layer.Intersect(remaining_nodes).ToList();
+                if (!targets_of_last_layer_among_remaining.Any())
+                {
+                    // we have a problem: the last layer doesn't point to anything, but we haven't taken care of all nodes yet. That surely doesn't happen. does it?
+                    // Backup plan until we "know": simply create a dump layer.
+                    layers.Add(remaining_nodes);
+                    break;
+                }
+                // 1.4.4. create the new layer
+                layers.Add(targets_of_last_layer_among_remaining);
+                // 1.4.5. update the remaining node list
+                remaining_nodes = remaining_nodes.Except(targets_of_last_layer_among_remaining).ToList();
+            }
+
+            return layers;
+        }
+        private static List<List<NodeBase>> GetLayersBottomUp(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        {
+            // 1.1. We identify the nodes that have no outgoing link
+            var leaves = all_nodes.Where(n => !all_links.Any(l => l.Source?.Node == n)).ToList();
+            // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a leaf. That random choice is the first node. Chosen by a fair die, as legend has it.
+            leaves = leaves.Any() ? leaves : all_nodes.Take(1).ToList();
+
+
+            // 1.3. This makes our first layer. We'll later make that the last layer.
+            var layers = new List<List<NodeBase>> { leaves };
+            // 1.4. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
+            // We continue this until all nodes have been assigned to layers.
+            var remaining_nodes = all_nodes.Except(leaves).ToList();
             while (remaining_nodes.Any())
             {
                 // 1.4.1. we look at the last layer
