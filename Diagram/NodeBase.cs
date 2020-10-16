@@ -118,16 +118,13 @@ namespace Excubo.Blazor.Diagrams
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected override void OnParametersSet()
         {
-            if (GetType() != typeof(Node)) // Node type is just a wrapper for the actual node, so adding this would prevent the actual node from being recognised.
+            if (!Deleted)
             {
-                if (!Deleted)
-                {
-                    AddNodeContent();
-                }
-                if (Nodes != null)
-                {
-                    Nodes.Register(this);
-                }
+                AddNodeContent();
+            }
+            if (Nodes != null)
+            {
+                Nodes.Register(this);
             }
             base.OnParametersSet();
         }
@@ -156,10 +153,6 @@ namespace Excubo.Blazor.Diagrams
                 return;
             }
             content_added = true;
-            if (GetType() == typeof(Node))
-            {
-                return;
-            }
             content = GetChildContentWrapper();
             actual_border = GetBorderWrapper();
             if (NodeLibrary == null)
@@ -236,11 +229,6 @@ namespace Excubo.Blazor.Diagrams
         }
         protected override void OnAfterRender(bool first_render)
         {
-            if (GetType() == typeof(Node))
-            {
-                base.OnAfterRender(first_render);
-                return;
-            }
             if (first_render)
             {
                 OnCreate?.Invoke(this);

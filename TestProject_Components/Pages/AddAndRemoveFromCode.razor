@@ -5,9 +5,18 @@
     <Nodes>
         @foreach (var node in nodes)
         {
-            <RectangleNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
-                <div style="min-width:4em; min-height:1em">@node.Id</div>
-            </RectangleNode>
+            if (node.Type == NodeType.Rectangle)
+            {
+                <RectangleNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
+                    <div style="min-width:4em; min-height:1em">@node.Id</div>
+                </RectangleNode>
+            }
+            else
+            {
+                <EllipseNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
+                    <div style="min-width:4em; min-height:1em">@node.Id</div>
+                </EllipseNode>
+            }
         }
     </Nodes>
     <Links>
@@ -33,7 +42,7 @@
     {
         var rnd = new Random((int) DateTime.Now.Ticks);
         nodes.Clear();
-        nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(i => new MyNode { Id = "N" + rnd.Next(100 * i, 100 * (i + 1)).ToString() }));
+        nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(i => new MyNode { Id = "N" + rnd.Next(100 * i, 100 * (i + 1)).ToString(), Type = NodeType.Rectangle }));
         links.Clear();
         links.AddRange(Enumerable.Range(0, rnd.Next(10, 20))
         .Select(_ =>

@@ -4,8 +4,54 @@ using System;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public partial class Node : NodeBase
+    public partial class Node : ComponentBase
     {
+        #region properties
+        /// <summary>
+        /// Horizontal position of the node
+        /// </summary>
+        [Parameter] public double X { get; set; }
+        [Parameter] public Action<double> XChanged { get; set; }
+        /// <summary>
+        /// Vertical position of the node
+        /// </summary>
+        [Parameter] public double Y { get; set; }
+        [Parameter] public Action<double> YChanged { get; set; }
+        [Parameter] public bool Movable { get; set; } = true;
+        /// <summary>
+        /// Unique Id of the node
+        /// </summary>
+        [Parameter] public string Id { get; set; }
+        /// <summary>
+        /// The fill color of the node
+        /// </summary>
+        [Parameter] public string Fill { get; set; } = "#f5f5f5";
+        /// <summary>
+        /// The stroke color of the node
+        /// </summary>
+        [Parameter] public string Stroke { get; set; } = "#e8e8e8";
+        /// <summary>
+        /// Any child content of the node is placed inside a div. To apply CSS classes to that div, use this property.
+        /// </summary>
+        [Parameter] public string ContentClasses { get; set; }
+        /// <summary>
+        /// Any child content of the node is placed inside a div. To apply CSS style to that div, use this property.
+        /// </summary>
+        [Parameter] public string ContentStyle { get; set; }
+        /// <summary>
+        /// The minimum height the node should have. (Default: 0).
+        /// </summary>
+        [Parameter] public double MinHeight { get; set; }
+        /// <summary>
+        /// The minimum width the node should have. (Default: 0).
+        /// </summary>
+        [Parameter] public double MinWidth { get; set; }
+        /// <summary>
+        /// The node's content.
+        /// </summary>
+        [Parameter] public RenderFragment<NodeBase> ChildContent { get; set; }
+        [CascadingParameter] public Nodes Nodes { get; set; }
+        #endregion
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             switch (RenderType)
@@ -23,19 +69,19 @@ namespace Excubo.Blazor.Diagrams
                     System.Diagnostics.Debug.Assert(false, "RenderType is guaranteed to be non-default.");
                     break;
             }
-            builder.AddAttribute(1, nameof(X), X);
-            builder.AddAttribute(2, nameof(XChanged), XChanged);
-            builder.AddAttribute(3, nameof(Y), Y);
-            builder.AddAttribute(4, nameof(YChanged), YChanged);
-            builder.AddAttribute(5, nameof(Id), Id);
-            builder.AddAttribute(6, nameof(Fill), Fill);
-            builder.AddAttribute(7, nameof(Stroke), Stroke);
-            builder.AddAttribute(8, nameof(MinWidth), MinWidth);
-            builder.AddAttribute(9, nameof(MinHeight), MinHeight);
-            builder.AddAttribute(10, nameof(ChildContent), ChildContent);
-            builder.AddAttribute(11, nameof(ContentClasses), ContentClasses);
-            builder.AddAttribute(12, nameof(ContentStyle), ContentStyle);
-            builder.AddComponentReferenceCapture(13, (r) => actual_node = (NodeBase)r);
+            builder.AddAttribute(1, nameof(NodeBase.X), X);
+            builder.AddAttribute(2, nameof(NodeBase.XChanged), XChanged);
+            builder.AddAttribute(3, nameof(NodeBase.Y), Y);
+            builder.AddAttribute(4, nameof(NodeBase.YChanged), YChanged);
+            builder.AddAttribute(5, nameof(NodeBase.Id), Id);
+            builder.AddAttribute(6, nameof(NodeBase.Fill), Fill);
+            builder.AddAttribute(7, nameof(NodeBase.Stroke), Stroke);
+            builder.AddAttribute(8, nameof(NodeBase.MinWidth), MinWidth);
+            builder.AddAttribute(9, nameof(NodeBase.MinHeight), MinHeight);
+            builder.AddAttribute(10, nameof(NodeBase.ChildContent), ChildContent);
+            builder.AddAttribute(11, nameof(NodeBase.ContentClasses), ContentClasses);
+            builder.AddAttribute(12, nameof(NodeBase.ContentStyle), ContentStyle);
+            builder.AddAttribute(13, nameof(NodeBase.Movable), Movable);
             builder.CloseComponent();
         }
         internal Type GetImplicitType()
@@ -65,28 +111,5 @@ namespace Excubo.Blazor.Diagrams
                 return NodeType.Rectangle;
             }
         }
-        private NodeBase _actual_node;
-        private NodeBase actual_node
-        {
-            get => _actual_node;
-            set
-            {
-                _actual_node = value;
-                _actual_node.PositionChanged += (_, __) =>
-                {
-                    X = _actual_node.X;
-                    Y = _actual_node.Y;
-                };
-            }
-        }
-        public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
-        {
-            if (actual_node == null)
-            {
-                return base.GetDefaultPort(position);
-            }
-            return actual_node.GetDefaultPort(position);
-        }
-        public override RenderFragment border => actual_node?.border;
     }
 }
