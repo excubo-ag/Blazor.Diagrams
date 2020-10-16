@@ -5,15 +5,15 @@
     <Nodes>
         @foreach (var node in nodes)
         {
-            <Node Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }" Type="@node.Type">
+            <RectangleNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
                 <div style="min-width:4em; min-height:1em">@node.Id</div>
-            </Node>
+            </RectangleNode>
         }
     </Nodes>
     <Links>
         @foreach (var link in links)
         {
-            <Link Source="@link.Source" Target="@link.Target" />
+            <StraightLink Source="@link.Source" Target="@link.Target" />
         }
     </Links>
     <AutoLayoutSettings @ref="auto_layout" Algorithm="Algorithm.TreeVertical" />
@@ -33,14 +33,14 @@
     {
         var rnd = new Random((int) DateTime.Now.Ticks);
         nodes.Clear();
+        nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(i => new MyNode { Id = "N" + rnd.Next(100 * i, 100 * (i + 1)).ToString() }));
         links.Clear();
-        nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(_ => new MyNode { Id = "N" + rnd.Next(0, 10000).ToString() }));
         links.AddRange(Enumerable.Range(0, rnd.Next(10, 20))
-            .Select(_ =>
-            {
-                var selection = nodes.OrderBy(_ => rnd.NextDouble()).Take(2).ToList();
-                return new LinkData { Source = selection[0].Id, Target = selection[1].Id };
-            }));
+        .Select(_ =>
+        {
+            var selection = nodes.OrderBy(_ => rnd.NextDouble()).Take(2).OrderBy(v => v.Id).ToList();
+            return new LinkData { Source = selection[0].Id, Target = selection[1].Id };
+        }));
         run_auto_layout = true;
         StateHasChanged();
     }

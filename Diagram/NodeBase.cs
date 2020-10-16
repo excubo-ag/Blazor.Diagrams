@@ -128,8 +128,8 @@ namespace Excubo.Blazor.Diagrams
                 {
                     Nodes.Register(this);
                 }
-                base.OnParametersSet();
             }
+            base.OnParametersSet();
         }
         #region node content
         internal void RemoveBorderAndContent()
@@ -238,6 +238,7 @@ namespace Excubo.Blazor.Diagrams
         {
             if (GetType() == typeof(Node))
             {
+                base.OnAfterRender(first_render);
                 return;
             }
             if (first_render)

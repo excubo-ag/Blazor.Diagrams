@@ -42,6 +42,15 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public Action<LinkBase> OnModified { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }
+
+        internal void AttachAnchorsTo(NodeBase node)
+        {
+            foreach (var link in all_links)
+            {
+                link.AttachAnchorsTo(node);
+            }
+        }
+
         protected override void OnParametersSet()
         {
             System.Diagnostics.Debug.Assert(Diagram != null);

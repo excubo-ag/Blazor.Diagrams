@@ -41,6 +41,21 @@ namespace Excubo.Blazor.Diagrams
         /// </summary>
         [Parameter] public double? ArrowSize { get; set; }
         [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; }
+        internal void AttachAnchorsTo(NodeBase node)
+        {
+            if (Source.NodeId == node.Id)
+            {
+                Source.Node = node;
+                node.SizeChanged += SizeChanged;
+                FixAnchor(Source);
+            }
+            if (Target.NodeId == node.Id)
+            {
+                Target.Node = node;
+                node.SizeChanged += SizeChanged;
+                FixAnchor(Target);
+            }
+        }
         protected object Class => AdditionalAttributes?.GetValueOrDefault("class");
         protected object Style => AdditionalAttributes?.GetValueOrDefault("style");
         protected IEnumerable<KeyValuePair<string, object>> other_attributes => AdditionalAttributes == null ? null : AdditionalAttributes.Where(kv => kv.Key != "class" && kv.Key != "style");
@@ -61,36 +76,25 @@ namespace Excubo.Blazor.Diagrams
         internal void MarkUndeleted() => Deleted = false;
         protected override void OnParametersSet()
         {
-            if (GetType() != typeof(Link))
-            {
-                Links.Register(this);
-                OnCreate?.Invoke(this);
-            }
             if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
             {
                 if (Source.NodeId != null)
                 {
-                    Source.Node ??= Diagram.Nodes.Find(Source.NodeId);
+                    Source.Node = Diagram.Nodes.Find(Source.NodeId);
                     if (Source.Node != null)
                     {
                         Source.Node.SizeChanged += SizeChanged;
                     }
-                    if (Source.Port != Position.Any && Source.Node != null)
-                    {
-                        (Source.RelativeX, Source.RelativeY) = Source.Node.GetDefaultPort(Source.Port);
-                    }
+                    FixAnchor(Source);
                 }
                 if (Target.NodeId != null)
                 {
-                    Target.Node ??= Diagram.Nodes.Find(Target.NodeId);
+                    Target.Node = Diagram.Nodes.Find(Target.NodeId);
                     if (Target.Node != null)
                     {
                         Target.Node.SizeChanged += SizeChanged;
                     }
-                    if (Target.Port != Position.Any && Target.Node != null)
-                    {
-                        (Target.RelativeX, Target.RelativeY) = Target.Node.GetDefaultPort(Target.Port);
-                    }
+                    FixAnchor(Target);
                 }
                 Source.CoordinatesChanged = UpdateControlPoints;
                 Target.CoordinatesChanged = UpdateControlPoints;
@@ -102,6 +106,11 @@ namespace Excubo.Blazor.Diagrams
                 {
                     UpdateControlPoints();
                 }
+            }
+            if (GetType() != typeof(Link))
+            {
+                Links.Register(this);
+                OnCreate?.Invoke(this);
             }
             base.OnParametersSet();
         }
@@ -174,6 +183,10 @@ namespace Excubo.Blazor.Diagrams
                 return;
             }
             var anchor = Source.Node == node ? Source : Target;
+            FixAnchor(anchor);
+        }
+        private static void FixAnchor(NodeAnchor anchor)
+        {
             if (anchor.Port != Position.Any && anchor.Node != null)
             {
                 (anchor.RelativeX, anchor.RelativeY) = anchor.Node.GetDefaultPort(anchor.Port);

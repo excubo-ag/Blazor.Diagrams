@@ -44,6 +44,7 @@ namespace Excubo.Blazor.Diagrams
             if (!all_nodes.Contains(node))
             {
                 all_nodes.Add(node);
+                Diagram.Links.AttachAnchorsTo(node);
                 Diagram.UpdateOverview();
                 if (node.IsInternallyGenerated)
                 {
