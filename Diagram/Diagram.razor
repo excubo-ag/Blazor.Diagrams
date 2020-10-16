@@ -20,48 +20,51 @@
          @onmousewheel="OnMouseWheel"
          @onmousewheel:preventDefault>
         <CascadingValue Value="@this" IsFixed="true">
-            <!-- area for nodes and links -->
-            <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
-                <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+            @using (var temporary_culture2 = new CultureSwapper())
+            {
+                <!-- area for nodes and links -->
+                <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
+                    <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
-                    @using (var suspension = temporary_culture.Suspend())
-                    {
-                        @ChildContent
-                    }
-                </g>
-            </svg>
-            <!-- area for node contents -->
-            <div style="position: absolute;
+                        @using (var suspension = temporary_culture2.Suspend())
+                        {
+                            @ChildContent
+                        }
+                    </g>
+                </svg>
+                <!-- area for node contents -->
+                <div style="position: absolute;
                     left: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)px;
                     top: @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y)px;
                     right: -200px;
                     bottom: -200px;
                     pointer-events: none;">
-                <Renderer @ref="node_content_renderer" />
-            </div>
-            <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none">
-                <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
+                    <Renderer @ref="node_content_renderer" />
+                </div>
+                <svg style=" width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none">
+                    <g transform="translate(@(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.X)
                                     @(-1 * NavigationSettings.Zoom * NavigationSettings.Origin.Y))">
-                    <Renderer @ref="node_border_renderer" />
-                    <SelectRegion @ref="select_region" />
-                </g>
-            </svg>
-            <!-- area for nodes in the node library -->
-            <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper" />
-            @if (LinkSelectorSettings != null)
-            {
-                <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
-            }
-            @if (OverviewSettings != null)
-            {
-                <Overview @ref="Overview"
-                          Position="@OverviewSettings.Position" 
-                          ViewableAreaBorderColor="@OverviewSettings.ViewableAreaBorderColor" 
-                          ViewableAreaFillColor="@OverviewSettings.ViewableAreaFillColor" 
-                          ViewableAreaBorderWidth="@OverviewSettings.ViewableAreaBorderWidth"
-                          BackgroundColor="@OverviewSettings.BackgroundColor"
-                          FullBorder="@OverviewSettings.FullBorder"
-                          BorderWidth="@OverviewSettings.BorderWidth" />
+                        <Renderer @ref="node_border_renderer" />
+                        <SelectRegion @ref="select_region" />
+                    </g>
+                </svg>
+                <!-- area for nodes in the node library -->
+                <NodeLibraryWrapper NodeLibrary="NodeLibrary" @ref="node_library_wrapper" />
+                @if (LinkSelectorSettings != null)
+                {
+                    <DefaultLinkSelector Position="LinkSelectorSettings.Position" Type="Links.DefaultType" TypeChanged="Links.DefaultTypeChanged" Arrow="Links.DefaultArrow" ArrowChanged="Links.DefaultArrowChanged" />
+                }
+                @if (OverviewSettings != null)
+                {
+                    <Overview @ref="Overview"
+                              Position="@OverviewSettings.Position"
+                              ViewableAreaBorderColor="@OverviewSettings.ViewableAreaBorderColor"
+                              ViewableAreaFillColor="@OverviewSettings.ViewableAreaFillColor"
+                              ViewableAreaBorderWidth="@OverviewSettings.ViewableAreaBorderWidth"
+                              BackgroundColor="@OverviewSettings.BackgroundColor"
+                              FullBorder="@OverviewSettings.FullBorder"
+                              BorderWidth="@OverviewSettings.BorderWidth" />
+                }
             }
         </CascadingValue>
     </div>
