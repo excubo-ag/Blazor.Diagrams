@@ -351,23 +351,17 @@ namespace Excubo.Blazor.Diagrams
             var leaves = all_nodes.Where(n => !all_links.Any(l => l.Source?.Node == n)).ToList();
             // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a leaf. That random choice is the first node. Chosen by a fair die, as legend has it.
             leaves = leaves.Any() ? leaves : all_nodes.Take(1).ToList();
-            // 1.3: we put each node in a group eventually, so far, we simply assign -1 to all nodes, except the leaves which get an actual index >= 0
-            var independent_groups = all_nodes.ToDictionary(n => n, _ => -1);
-            foreach (var (node, index) in leaves.Select((n, i) => (n, i)))
-            {
-                independent_groups[node] = index;
-            }
-            // 1.4. This makes our first layer. We'll later make that the last layer.
+            // 1.3. This makes our first layer. We'll later make that the last layer.
             var layers = new List<List<NodeBase>> { leaves };
-            // 1.5. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
+            // 1.4. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
             // We continue this until all nodes have been assigned to layers.
             var links_by_target = all_links.GroupBy(l => l.Target?.Node).ToNullAllowingDictionary();
             var remaining_nodes = all_nodes.Except(leaves).ToList();
             while (remaining_nodes.Any())
             {
-                // 1.5.1. we look at the last layer
+                // 1.4.1. we look at the last layer
                 var last_layer = layers.Last();
-                // 1.5.2. find all sources that point to a node in the last layer
+                // 1.4.2. find all sources that point to a node in the last layer
                 var sources_of_last_layer = new List<NodeBase>();
                 foreach (var node in last_layer)
                 {
@@ -376,20 +370,9 @@ namespace Excubo.Blazor.Diagrams
                         continue;
                     }
                     var relevant_links = links_by_target[node];
-                    var sources = relevant_links.Select(l => l.Source?.Node).ToList();
-                    if (!sources.Any())
-                    {
-                        continue;
-                    }
-                    var group = Math.Max(independent_groups[node], sources.Select(s => independent_groups[s]).Max());
-                    independent_groups[node] = group;
-                    foreach (var source in sources)
-                    {
-                        independent_groups[source] = group;
-                    }
-                    sources_of_last_layer.AddRange(sources);
+                    sources_of_last_layer.AddRange(relevant_links.Select(l => l.Source?.Node));
                 }
-                // 1.5.3. but only look at the ones that aren't assigned to layers yet
+                // 1.4.3. but only look at the ones that aren't assigned to layers yet
                 var sources_of_last_layer_among_remaining = sources_of_last_layer.Where(n => n != null).Intersect(remaining_nodes).ToList();
                 if (!sources_of_last_layer_among_remaining.Any())
                 {
@@ -398,7 +381,6 @@ namespace Excubo.Blazor.Diagrams
                     var other_tree_layers = GetLayersBottomUp(remaining_nodes, all_links);
                     
                     // we finalize the nodes we were able to take care of here
-                    //RearrangeNodes(independent_groups, layers);
                     layers.Reverse();
 
                     // we merge the layers
@@ -416,42 +398,14 @@ namespace Excubo.Blazor.Diagrams
 
                     return layers;
                 }
-                // 1.5.4. create the new layer
+                // 1.4.4. create the new layer
                 layers.Add(sources_of_last_layer_among_remaining);
-                // 1.5.5. update the remaining node list
+                // 1.4.5. update the remaining node list
                 remaining_nodes = remaining_nodes.Except(sources_of_last_layer_among_remaining).ToList();
             }
-
-            // 1.6. now this looks a bit silly if any tree starts fairly low. All roots should be in the top layer after all...
-            // for each group, we find the highest layer
-            //RearrangeNodes(independent_groups, layers);
+            // 1.5. reverse the layers.
             layers.Reverse();
             return layers;
-        }
-
-        private static void RearrangeNodes(Dictionary<NodeBase, int> independent_groups, List<List<NodeBase>> layers)
-        {
-            foreach (var group in independent_groups.Values)
-            {
-                if (group == -1)
-                {
-                    continue;
-                }
-                var nodes_in_group = independent_groups.Where(n => n.Value == group).Select(n => n.Key).ToList();
-                var highest_layer = nodes_in_group.Max(n => layers.IndexOf(layers.First(l => l.Contains(n))));
-                var move_up_by = layers.Count - 1 - highest_layer;
-                if (move_up_by > 0)
-                {
-                    // move all nodes in this group up
-                    foreach (var node in nodes_in_group)
-                    {
-                        var current_layer = layers.First(l => l.Contains(node));
-                        var target_layer = layers[layers.IndexOf(current_layer) + move_up_by];
-                        target_layer.Add(node);
-                        current_layer.Remove(node);
-                    }
-                }
-            }
         }
         #endregion
         #region msagl
