@@ -1,5 +1,11 @@
 name: .NET Core deploy to GitHub pages
 
+env:
+  dotnet_version: 5.0.100-rc.2.20479.15
+  project_name: "TestProject_ClientSide/TestProject_ClientSide.csproj"
+  base_href: /Blazor.Diagrams/
+  target_framework: netstandard2.1
+
 on:
   push:
     branches: [ main ]
@@ -16,18 +22,18 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: ${{ env.dotnet_version }}
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Publish
-      run: dotnet publish "TestProject_ClientSide/TestProject_ClientSide.csproj" -c Release -o app/publish
+      run: dotnet publish ${{ env.project_name }} -f ${{ env.target_framework }} -c Release -o app/publish
     - name: Rewrite base href
       uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
       with:
         html_path: app/publish/wwwroot/index.html
-        base_href: /Blazor.Diagrams/
+        base_href: ${{ env.base_href }}
     - name: add .nojekyll
       run: touch app/publish/wwwroot/.nojekyll
     - name: write git commit id
