@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Excubo.Blazor.Diagrams.__Internal;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Msagl.Core;
 using Microsoft.Msagl.Core.Geometry;
 using Microsoft.Msagl.Core.Geometry.Curves;
@@ -14,65 +15,6 @@ using MNode = Microsoft.Msagl.Core.Layout.Node;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public class NullAllowingDictionary<TKey, TValue> : Dictionary<TKey, TValue>
-    {
-        private bool has_null;
-        private TValue value;
-        public new void Add(TKey key, TValue value)
-        {
-            if (key == null)
-            {
-                has_null = true;
-                this.value = value;
-            }
-            else
-            {
-                base.Add(key, value);
-            }
-        }
-        public new TValue this[TKey key]
-        {
-            get
-            {
-                if (key == null)
-                {
-                    if (has_null)
-                    {
-                        return value;
-                    }
-                    throw new KeyNotFoundException();
-                }
-                else
-                {
-                    return base[key];
-                }
-            }
-            set
-            {
-                if (key == null)
-                {
-                    has_null = true;
-                    this.value = value;
-                }
-                else
-                {
-                    base[key] = value;
-                }
-            }
-        }
-    }
-    public static class NullAllowingDictionaryExtension
-    {
-        public static NullAllowingDictionary<TKey, List<TValue>> ToNullAllowingDictionary<TKey, TValue>(this IEnumerable<IGrouping<TKey, TValue>> groups)
-        {
-            var result = new NullAllowingDictionary<TKey, List<TValue>>();
-            foreach (var group in groups)
-            {
-                result.Add(group.Key, group.ToList());
-            }
-            return result;
-        }
-    }
     public enum Algorithm
     {
         Ranking,
@@ -245,6 +187,10 @@ namespace Excubo.Blazor.Diagrams
             var highest_layer_height = layer_heights.Max();
             foreach (var (layer, height) in layers.Zip(layer_heights, (l, h) => (l, h)))
             {
+                if (!layer.Any())
+                {
+                    continue;
+                }
                 double y = (highest_layer_height - height) / 2;
                 foreach (var node in layer)
                 {
@@ -256,6 +202,7 @@ namespace Excubo.Blazor.Diagrams
                 x += horizontal_separation + maximum_width;
             }
         }
+
         private static void ArrangeNodesInRows(List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
         {
             double y = 0;
@@ -266,6 +213,10 @@ namespace Excubo.Blazor.Diagrams
             var widest_layer_width = layer_widths.Max();
             foreach (var (layer, width) in layers.Zip(layer_widths, (l, w) => (l, w)))
             {
+                if (!layer.Any())
+                {
+                    continue;
+                }
                 double x = (widest_layer_width - width) / 2;
                 foreach (var node in layer)
                 {
@@ -311,101 +262,188 @@ namespace Excubo.Blazor.Diagrams
                 }).ToList();
             }
         }
+
         private static List<List<NodeBase>> GetLayersTopDown(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
+            // 1.0 if we don't have nodes, we have no layers
+            if (!all_nodes.Any())
+            {
+                return new List<List<NodeBase>>();
+            }
             // 1.1. We identify the nodes that have no incoming link
             var roots = all_nodes.Where(n => !all_links.Any(l => l.Target?.Node == n)).ToList();
-            // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a root. That random choice is the first node. Chosen by a fair die, as legend has it.
+            // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a root.
+            // That random choice is the first node. Chosen by a fair die, as legend has it.
             roots = roots.Any() ? roots : all_nodes.Take(1).ToList();
-            // 1.3. This makes our first layer.
-            var layers = new List<List<NodeBase>> { roots };
-            // 1.4. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
-            // We continue this until all nodes have been assigned to layers.
-            var remaining_nodes = all_nodes.Except(roots).ToList();
-            while (remaining_nodes.Any())
+
+            var targets_by_source = all_links
+                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
+                .Select(l => (Source: l.Source.Node, Target: l.Target.Node))
+                .GroupBy(e => e.Source, e => e.Target)
+                .ToNullAllowingDictionary();
+            var (layer_assignments, max_layer) = PushNodesUp(roots, targets_by_source);
+            var layers = new List<List<NodeBase>>(max_layer + 1);
+            for (int i = 0; i <= max_layer; ++i)
             {
-                // 1.4.1. we look at the last layer
-                var last_layer = layers.Last();
-                // 1.4.2. find all targets that nodes in the last layer point to
-                var targets_of_last_layer = all_links.Where(l => last_layer.Contains(l.Source?.Node)).Select(l => l.Target?.Node).ToList();
-                // 1.4.3. but only look at the ones that aren't assigned to layers yet
-                var targets_of_last_layer_among_remaining = targets_of_last_layer.Intersect(remaining_nodes).ToList();
-                if (!targets_of_last_layer_among_remaining.Any())
-                {
-                    // we have a problem: the last layer doesn't point to anything, but we haven't taken care of all nodes yet. That surely doesn't happen. does it?
-                    // Backup plan until we "know": simply create a dump layer.
-                    layers.Add(remaining_nodes);
-                    break;
-                }
-                // 1.4.4. create the new layer
-                layers.Add(targets_of_last_layer_among_remaining);
-                // 1.4.5. update the remaining node list
-                remaining_nodes = remaining_nodes.Except(targets_of_last_layer_among_remaining).ToList();
+                layers.Add(new List<NodeBase>());
             }
+            foreach (var kv in layer_assignments)
+            {
+                var node = kv.Key;
+                var layer = kv.Value;
+                layers[layer].Add(node);
+            }
+
+            // 1.5. we might have remaining remaining nodes. We calculate the layout for those too, and merge it afterwards
+            var rest_in_layers = GetLayersTopDown(all_nodes.Except(layers.SelectMany(n => n)).ToList(), all_links);
+            layers.Merge(rest_in_layers);
 
             return layers;
         }
         private static List<List<NodeBase>> GetLayersBottomUp(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
+            // 1.0 if we don't have nodes, we have no layers
+            if (!all_nodes.Any())
+            {
+                return new List<List<NodeBase>>();
+            }
             // 1.1. We identify the nodes that have no outgoing link
             var leaves = all_nodes.Where(n => !all_links.Any(l => l.Source?.Node == n)).ToList();
-            // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a leaf. That random choice is the first node. Chosen by a fair die, as legend has it.
+            // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a leaf.
+            // That random choice is the first node. Chosen by a fair die, as legend has it.
             leaves = leaves.Any() ? leaves : all_nodes.Take(1).ToList();
-            // 1.3. This makes our first layer. We'll later make that the last layer.
-            var layers = new List<List<NodeBase>> { leaves };
-            // 1.4. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
-            // We continue this until all nodes have been assigned to layers.
-            var links_by_target = all_links.GroupBy(l => l.Target?.Node).ToNullAllowingDictionary();
-            var remaining_nodes = all_nodes.Except(leaves).ToList();
-            while (remaining_nodes.Any())
+
+            var sources_by_target = all_links
+                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
+                .Select(l => (Source: l.Source.Node, Target: l.Target.Node))
+                .GroupBy(e => e.Target, e => e.Source)
+                .ToNullAllowingDictionary();
+            var (layer_assignments, max_layer) = PushNodesUp(leaves, sources_by_target);
+            var layers = new List<List<NodeBase>>(max_layer + 1);
+            for (int i = 0; i <= max_layer; ++i)
             {
-                // 1.4.1. we look at the last layer
-                var last_layer = layers.Last();
-                // 1.4.2. find all sources that point to a node in the last layer
-                var sources_of_last_layer = new List<NodeBase>();
-                foreach (var node in last_layer)
+                layers.Add(new List<NodeBase>());
+            }
+            foreach (var kv in layer_assignments)
+            {
+                var node = kv.Key;
+                var layer = kv.Value;
+                layers[layer].Add(node);
+            }
+            layers.Reverse();
+
+            // 1.5. we might have remaining remaining nodes. We calculate the layout for those too, and merge it afterwards
+            var rest_in_layers = GetLayersBottomUp(all_nodes.Except(layers.SelectMany(n => n)).ToList(), all_links);
+            layers.Merge(rest_in_layers);
+
+            return layers;
+        }
+
+        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesUp(List<NodeBase> leaves, NullAllowingDictionary<NodeBase, List<NodeBase>> sources_by_target)
+        {
+            var layer_assignments = leaves.ToDictionary(leaf => leaf, _ => 0);
+            var nodes_pushing_up = leaves.ToDictionary(leaf => leaf, _ => new List<NodeBase>());
+
+            // 1.3. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
+            // We continue this until all nodes have been assigned to layers.
+
+            var look_at = leaves.ToList();
+            var max_layer = 0;
+
+            // 1.4. we use the notion of nodes pushing "up" other nodes. Ignoring cycles, a node is pushed just above the highest node below it.
+            while (look_at.Any())
+            {
+                var new_look_at = new List<NodeBase>();
+                foreach (var target in look_at)
                 {
-                    if (!links_by_target.ContainsKey(node))
+                    if (!sources_by_target.ContainsKey(target))
                     {
                         continue;
                     }
-                    var relevant_links = links_by_target[node];
-                    sources_of_last_layer.AddRange(relevant_links.Select(l => l.Source?.Node));
-                }
-                // 1.4.3. but only look at the ones that aren't assigned to layers yet
-                var sources_of_last_layer_among_remaining = sources_of_last_layer.Where(n => n != null).Intersect(remaining_nodes).ToList();
-                if (!sources_of_last_layer_among_remaining.Any())
-                {
-                    // we have a problem: the last layer isn't pointed to from anything, but we haven't taken care of all nodes yet. That surely doesn't happen. does it?
-                    // we create a separate tree!
-                    var other_tree_layers = GetLayersBottomUp(remaining_nodes, all_links);
-                    
-                    // we finalize the nodes we were able to take care of here
-                    layers.Reverse();
-
-                    // we merge the layers
-                    for (int i = 0; i < layers.Count || i < other_tree_layers.Count; ++i)
+                    var sources = sources_by_target[target];
+                    foreach (var source in sources)
                     {
-                        if (i < layers.Count)
+                        if (nodes_pushing_up.ContainsKey(target) && nodes_pushing_up[target].Contains(source))
                         {
-                            layers[i].AddRange(other_tree_layers[i]);
+                            continue; // cycle detected
+                        }
+                        var known = layer_assignments.ContainsKey(source);
+                        var assigned_layer = known
+                            ? Math.Max(layer_assignments[source], layer_assignments[target] + 1)
+                            : layer_assignments[target] + 1;
+                        layer_assignments[source] = assigned_layer;
+                        max_layer = Math.Max(assigned_layer, max_layer);
+                        if (!known)
+                        {
+                            new_look_at.Add(source);
+                        }
+                        if (nodes_pushing_up.ContainsKey(source))
+                        {
+                            nodes_pushing_up[source].Add(target);
                         }
                         else
                         {
-                            layers.Add(other_tree_layers[i]);
+                            nodes_pushing_up.Add(source, nodes_pushing_up[target].Append(target).ToList());
                         }
                     }
-
-                    return layers;
                 }
-                // 1.4.4. create the new layer
-                layers.Add(sources_of_last_layer_among_remaining);
-                // 1.4.5. update the remaining node list
-                remaining_nodes = remaining_nodes.Except(sources_of_last_layer_among_remaining).ToList();
+                look_at = new_look_at;
             }
-            // 1.5. reverse the layers.
-            layers.Reverse();
-            return layers;
+
+            return (layer_assignments, max_layer);
+        }
+        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesDown(List<NodeBase> roots, NullAllowingDictionary<NodeBase, List<NodeBase>> targets_by_source)
+        {
+            var layer_assignments = roots.ToDictionary(root => root, _ => 0);
+            var nodes_pushing_down = roots.ToDictionary(root => root, _ => new List<NodeBase>());
+
+            // 1.3. Now we identify all nodes that have an incoming link from this node and put those into the second layer.
+            // We continue this until all nodes have been assigned to layers.
+
+            var look_at = roots.ToList();
+            var max_layer = 0;
+
+            // 1.4. we use the notion of nodes pushing "up" other nodes. Ignoring cycles, a node is pushed just above the highest node below it.
+            while (look_at.Any())
+            {
+                var new_look_at = new List<NodeBase>();
+                foreach (var source in look_at)
+                {
+                    if (!targets_by_source.ContainsKey(source))
+                    {
+                        continue;
+                    }
+                    var targets = targets_by_source[source];
+                    foreach (var target in targets)
+                    {
+                        if (nodes_pushing_down.ContainsKey(source) && nodes_pushing_down[source].Contains(target))
+                        {
+                            continue; // cycle detected
+                        }
+                        var known = layer_assignments.ContainsKey(target);
+                        var assigned_layer = known
+                            ? Math.Max(layer_assignments[target], layer_assignments[source] + 1)
+                            : layer_assignments[source] + 1;
+                        layer_assignments[target] = assigned_layer;
+                        max_layer = Math.Max(assigned_layer, max_layer);
+                        if (!known)
+                        {
+                            new_look_at.Add(target);
+                        }
+                        if (nodes_pushing_down.ContainsKey(target))
+                        {
+                            nodes_pushing_down[target].Add(source);
+                        }
+                        else
+                        {
+                            nodes_pushing_down.Add(target, nodes_pushing_down[source].Append(source).ToList());
+                        }
+                    }
+                }
+                look_at = new_look_at;
+            }
+
+            return (layer_assignments, max_layer);
         }
         #endregion
         #region msagl
