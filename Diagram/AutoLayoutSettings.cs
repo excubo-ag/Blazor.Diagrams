@@ -196,9 +196,9 @@ namespace Excubo.Blazor.Diagrams
                 {
                     node.MoveTo(x, y);
                     var margins = node.GetDrawingMargins();
-                    y += node.Height + margins.Top + margins.Bottom + vertical_separation;
+                    y += node.Height + margins.Bottom + vertical_separation;
                 }
-                var maximum_width = layer.Max(n => n.Width + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right);
+                var maximum_width = layer.Max(n => n.Width + n.GetDrawingMargins().Right);
                 x += horizontal_separation + maximum_width;
             }
         }
@@ -222,9 +222,9 @@ namespace Excubo.Blazor.Diagrams
                 {
                     node.MoveTo(x, y);
                     var margins = node.GetDrawingMargins();
-                    x += node.Width + margins.Left + margins.Right + horizontal_separation;
+                    x += node.Width + margins.Right + horizontal_separation;
                 }
-                var maximum_height = layer.Max(n => n.Height + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom);
+                var maximum_height = layer.Max(n => n.Height + n.GetDrawingMargins().Bottom);
                 y += vertical_separation + maximum_height;
             }
         }

@@ -30,11 +30,24 @@
 
     <Diagram style="grid-row: 2">
         <Nodes>
+            @{
+                bool odd = false;
+            }
             @foreach (var node in nodes)
             {
-                <RectangleNode Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
-                    <div>Hello @node.Id</div>
-                </RectangleNode>
+                if (odd)
+                {
+                    <RectangleNode Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
+                        <div>Hello @node.Id</div>
+                    </RectangleNode>
+                }
+                else
+                {
+                    <EllipseNode Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
+                        <div>Hello @node.Id</div>
+                    </EllipseNode>
+                }
+                odd = !odd;
             }
         </Nodes>
         <Links>
