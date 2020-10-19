@@ -281,7 +281,7 @@ namespace Excubo.Blazor.Diagrams
                 .Select(l => (Source: l.Source.Node, Target: l.Target.Node))
                 .GroupBy(e => e.Source, e => e.Target)
                 .ToNullAllowingDictionary();
-            var (layer_assignments, max_layer) = PushNodesUp(roots, targets_by_source);
+            var (layer_assignments, max_layer) = PushNodesDown(roots, targets_by_source);
             var layers = new List<List<NodeBase>>(max_layer + 1);
             for (int i = 0; i <= max_layer; ++i)
             {
@@ -367,16 +367,11 @@ namespace Excubo.Blazor.Diagrams
                         {
                             continue; // cycle detected
                         }
-                        var known = layer_assignments.ContainsKey(source);
-                        var assigned_layer = known
+                        var assigned_layer = layer_assignments.ContainsKey(source)
                             ? Math.Max(layer_assignments[source], layer_assignments[target] + 1)
                             : layer_assignments[target] + 1;
                         layer_assignments[source] = assigned_layer;
                         max_layer = Math.Max(assigned_layer, max_layer);
-                        if (!known)
-                        {
-                            new_look_at.Add(source);
-                        }
                         if (nodes_pushing_up.ContainsKey(source))
                         {
                             nodes_pushing_up[source].Add(target);
@@ -385,6 +380,7 @@ namespace Excubo.Blazor.Diagrams
                         {
                             nodes_pushing_up.Add(source, nodes_pushing_up[target].Append(target).ToList());
                         }
+                        new_look_at.Add(source);
                     }
                 }
                 look_at = new_look_at;
@@ -420,16 +416,11 @@ namespace Excubo.Blazor.Diagrams
                         {
                             continue; // cycle detected
                         }
-                        var known = layer_assignments.ContainsKey(target);
-                        var assigned_layer = known
+                        var assigned_layer = layer_assignments.ContainsKey(target)
                             ? Math.Max(layer_assignments[target], layer_assignments[source] + 1)
                             : layer_assignments[source] + 1;
                         layer_assignments[target] = assigned_layer;
                         max_layer = Math.Max(assigned_layer, max_layer);
-                        if (!known)
-                        {
-                            new_look_at.Add(target);
-                        }
                         if (nodes_pushing_down.ContainsKey(target))
                         {
                             nodes_pushing_down[target].Add(source);
@@ -438,6 +429,7 @@ namespace Excubo.Blazor.Diagrams
                         {
                             nodes_pushing_down.Add(target, nodes_pushing_down[source].Append(source).ToList());
                         }
+                        new_look_at.Add(target);
                     }
                 }
                 look_at = new_look_at;
