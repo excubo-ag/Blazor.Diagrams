@@ -2,13 +2,13 @@
 
 @using (var temporary_culture = new CultureSwapper())
 {
-    <div class="@ContentClasses"
-         style="@ContentStyle;
+    <div class="@Node.ContentClasses"
+         style="@Node.ContentStyle;
                 position: absolute;
-                left: @(X)px;
-                top: @(Y)px;
+                left: @(Node.X)px;
+                top: @(Node.Y)px;
                 pointer-events: none;
-                transform: scale(@Zoom);
+                transform: scale(@Node.Zoom);
                 transform-origin: 0 0;"
          @ref="element">
         @using (var suspension = temporary_culture.Suspend())

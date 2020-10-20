@@ -26,7 +26,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         [JSInvokable]
         public void OnResize(Dimensions dimensions)
         {
-            SizeCallback?.Invoke((dimensions.Width, dimensions.Height));
+            Node.GetSize((dimensions.Width, dimensions.Height));
         }
         public void Dispose()
         {

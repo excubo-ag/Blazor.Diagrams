@@ -28,7 +28,7 @@ namespace Excubo.Blazor.Diagrams
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
         [Parameter] public bool Movable { get; set; } = true;
-        protected double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
+        protected internal double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
         private double width = 100;
         private double height = 100;
         /// <summary>
@@ -75,7 +75,7 @@ namespace Excubo.Blazor.Diagrams
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }
-        protected bool OffCanvas { get; set; }
+        protected internal bool OffCanvas { get; set; }
         internal void ReRenderIfOffCanvasChanged()
         {
             var (LeftMargin, TopMargin, RightMargin, BottomMargin) = GetDrawingMargins();
@@ -91,13 +91,8 @@ namespace Excubo.Blazor.Diagrams
             {
                 OffCanvas = value;
                 StateHasChanged();
-                content_reference?.TriggerRender(
-                    Zoom * X,
-                    Zoom * Y,
-                    Width,
-                    Height,
-                    Diagram.NavigationSettings.Zoom,
-                    OffCanvas);
+                node_border_reference?.TriggerStateHasChanged();
+                content_reference?.TriggerStateHasChanged();
             }
         }
         #endregion
@@ -163,13 +158,10 @@ namespace Excubo.Blazor.Diagrams
         {
             return (key) => (builder) =>
             {
-                if (OffCanvas)
-                {
-                    return;
-                }
                 builder.OpenComponent<NodeBorder>(0);
                 builder.AddAttribute(1, nameof(NodeBorder.ChildContent), border);
-                builder.AddComponentReferenceCapture(2, (reference) => node_border_reference = (NodeBorder)reference);
+                builder.AddAttribute(2, nameof(NodeBorder.Node), this);
+                builder.AddComponentReferenceCapture(3, (reference) => node_border_reference = (NodeBorder)reference);
                 builder.SetKey(key);
                 builder.CloseComponent();
             };
@@ -179,26 +171,12 @@ namespace Excubo.Blazor.Diagrams
             return (key) => (builder) =>
             {
                 builder.OpenComponent<NodeContent>(0);
-                builder.AddAttribute(1, nameof(NodeContent.X), X);
-                builder.AddAttribute(2, nameof(NodeContent.Y), Y);
-                builder.AddAttribute(3, nameof(NodeContent.Width), Width);
-                builder.AddAttribute(4, nameof(NodeContent.Height), Height);
-                builder.AddAttribute(5, nameof(NodeContent.Zoom), Zoom);
+                builder.AddAttribute(1, nameof(NodeContent.Node), this);
                 if (ChildContent != null)
                 {
-                    builder.AddAttribute(6, nameof(NodeContent.ChildContent), ChildContent(this));
+                    builder.AddAttribute(2, nameof(NodeContent.ChildContent), ChildContent(this));
                 }
-                if (ContentClasses != null)
-                {
-                    builder.AddAttribute(7, nameof(NodeContent.ContentClasses), ContentClasses);
-                }
-                if (ContentStyle != null)
-                {
-                    builder.AddAttribute(8, nameof(NodeContent.ContentStyle), ContentStyle);
-                }
-                builder.AddAttribute(9, nameof(NodeContent.SizeCallback), (Action<(double Width, double Height)>)GetSize);
-                builder.AddAttribute(10, nameof(NodeContent.OffCanvas), OffCanvas);
-                builder.AddComponentReferenceCapture(10, (reference) => content_reference = (NodeContent)reference);
+                builder.AddComponentReferenceCapture(3, (reference) => content_reference = (NodeContent)reference);
                 builder.SetKey(key);
                 builder.CloseComponent();
             };
@@ -206,7 +184,7 @@ namespace Excubo.Blazor.Diagrams
         internal void Select() { Selected = true; }
         internal void Deselect() { Selected = false; }
         protected bool Hidden { get; set; } = true;
-        protected void GetSize((double Width, double Height) result)
+        protected internal void GetSize((double Width, double Height) result)
         {
             (Width, Height) = result;
             if (NodeLibrary != null)
@@ -232,23 +210,11 @@ namespace Excubo.Blazor.Diagrams
             }
             if (NodeLibrary != null)
             {
-                content_reference?.TriggerRender(
-                    X,
-                    Y,
-                    Width,
-                    Height,
-                    1,
-                    OffCanvas);
+                content_reference?.TriggerStateHasChanged();
             }
             else
             {
-                content_reference?.TriggerRender(
-                    Zoom * X,
-                    Zoom * Y,
-                    Width,
-                    Height,
-                    Diagram.NavigationSettings.Zoom,
-                    OffCanvas);
+                content_reference?.TriggerStateHasChanged();
                 node_border_reference?.TriggerStateHasChanged();
             }
             base.OnAfterRender(first_render);
@@ -273,12 +239,12 @@ namespace Excubo.Blazor.Diagrams
         protected NodeBorder node_border_reference;
         internal void MoveTo(double x, double y)
         {
-            ReRenderIfOffCanvasChanged();
             X = x;
             Y = y;
             XChanged?.Invoke(X);
             YChanged?.Invoke(Y);
             StateHasChanged();
+            ReRenderIfOffCanvasChanged();
         }
         public void Dispose()
         {
