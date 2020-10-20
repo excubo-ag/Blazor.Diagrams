@@ -3,7 +3,7 @@
 
 <Diagram>
     <Nodes>
-        <RectangleNode X="200" Y="200">
+        <RectangleNode X="200" Y="200" Movable="false">
             Hello fixed node
         </RectangleNode>
         <RectangleNode @bind-X="p.X" @bind-Y="p.Y">
@@ -13,5 +13,5 @@
     <Links />
 </Diagram>
 @code {
-    private Point p = new Point(400, 200);
+    private Point p = new Point(-400, -200);
 }

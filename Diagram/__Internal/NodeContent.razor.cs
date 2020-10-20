@@ -44,13 +44,18 @@ namespace Excubo.Blazor.Diagrams.__Internal
         /// Additional style for the node content container
         /// </summary>
         [Parameter] public string ContentStyle { get; set; }
-        public void TriggerRender(double x, double y, double width, double height, double zoom)
+        /// <summary>
+        /// Whether the node is currently off-canvas
+        /// </summary>
+        [Parameter] public bool OffCanvas { get; set; }
+        public void TriggerRender(double x, double y, double width, double height, double zoom, bool off_canvas)
         {
             X = x;
             Y = y;
             Width = width;
             Height = height;
             Zoom = zoom;
+            OffCanvas = off_canvas;
             StateHasChanged();
         }
     }

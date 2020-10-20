@@ -385,7 +385,7 @@ namespace Excubo.Blazor.Diagrams
                 var delta_y = e.RelativeYTo(ActionObject.Point) / NavigationSettings.Zoom;
                 foreach (var node in Group.Nodes)
                 {
-                    node.UpdatePosition(node.X + delta_x, node.Y + delta_y);
+                    node.MoveTo(node.X + delta_x, node.Y + delta_y);
                 }
                 (ActionObject.Point.X, ActionObject.Point.Y) = (e.ClientX, e.ClientY);
             }

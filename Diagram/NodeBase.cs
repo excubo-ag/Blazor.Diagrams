@@ -91,6 +91,13 @@ namespace Excubo.Blazor.Diagrams
             {
                 OffCanvas = value;
                 StateHasChanged();
+                content_reference?.TriggerRender(
+                    Zoom * X,
+                    Zoom * Y,
+                    Width,
+                    Height,
+                    Diagram.NavigationSettings.Zoom,
+                    OffCanvas);
             }
         }
         #endregion
@@ -102,19 +109,6 @@ namespace Excubo.Blazor.Diagrams
         protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, HoverType.Border); }
         protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
         #endregion
-        public void UpdatePosition(double x, double y)
-        {
-            ReRenderIfOffCanvasChanged();
-            if (!Movable)
-            {
-                return;
-            }
-            X = x;
-            Y = y;
-            XChanged?.Invoke(X);
-            YChanged?.Invoke(y);
-            StateHasChanged();
-        }
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected override void OnParametersSet()
         {
@@ -184,10 +178,6 @@ namespace Excubo.Blazor.Diagrams
         {
             return (key) => (builder) =>
             {
-                if (OffCanvas)
-                {
-                    return;
-                }
                 builder.OpenComponent<NodeContent>(0);
                 builder.AddAttribute(1, nameof(NodeContent.X), X);
                 builder.AddAttribute(2, nameof(NodeContent.Y), Y);
@@ -207,6 +197,7 @@ namespace Excubo.Blazor.Diagrams
                     builder.AddAttribute(8, nameof(NodeContent.ContentStyle), ContentStyle);
                 }
                 builder.AddAttribute(9, nameof(NodeContent.SizeCallback), (Action<(double Width, double Height)>)GetSize);
+                builder.AddAttribute(10, nameof(NodeContent.OffCanvas), OffCanvas);
                 builder.AddComponentReferenceCapture(10, (reference) => content_reference = (NodeContent)reference);
                 builder.SetKey(key);
                 builder.CloseComponent();
@@ -222,6 +213,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
+            ReRenderIfOffCanvasChanged();
             Hidden = false;
             Diagram.UpdateOverview();
             SizeChanged?.Invoke(this, EventArgs.Empty);
@@ -245,7 +237,8 @@ namespace Excubo.Blazor.Diagrams
                     Y,
                     Width,
                     Height,
-                    1);
+                    1,
+                    OffCanvas);
             }
             else
             {
@@ -254,7 +247,8 @@ namespace Excubo.Blazor.Diagrams
                     Zoom * Y,
                     Width,
                     Height,
-                    Diagram.NavigationSettings.Zoom);
+                    Diagram.NavigationSettings.Zoom,
+                    OffCanvas);
                 node_border_reference?.TriggerStateHasChanged();
             }
             base.OnAfterRender(first_render);
@@ -279,6 +273,7 @@ namespace Excubo.Blazor.Diagrams
         protected NodeBorder node_border_reference;
         internal void MoveTo(double x, double y)
         {
+            ReRenderIfOffCanvasChanged();
             X = x;
             Y = y;
             XChanged?.Invoke(X);
