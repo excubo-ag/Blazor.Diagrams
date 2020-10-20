@@ -363,7 +363,7 @@ namespace Excubo.Blazor.Diagrams
                     var sources = sources_by_target[target];
                     foreach (var source in sources)
                     {
-                        if (nodes_pushing_up.ContainsKey(target) && nodes_pushing_up[target].Contains(source))
+                        if (nodes_pushing_up.ContainsKey(source) && nodes_pushing_up[source].Contains(target))
                         {
                             continue; // cycle detected
                         }
@@ -380,7 +380,10 @@ namespace Excubo.Blazor.Diagrams
                         {
                             nodes_pushing_up.Add(source, nodes_pushing_up[target].Append(target).ToList());
                         }
-                        new_look_at.Add(source);
+                        if (!new_look_at.Contains(source))
+                        {
+                            new_look_at.Add(source);
+                        }
                     }
                 }
                 look_at = new_look_at;
@@ -412,7 +415,7 @@ namespace Excubo.Blazor.Diagrams
                     var targets = targets_by_source[source];
                     foreach (var target in targets)
                     {
-                        if (nodes_pushing_down.ContainsKey(source) && nodes_pushing_down[source].Contains(target))
+                        if (nodes_pushing_down.ContainsKey(target) && nodes_pushing_down[target].Contains(source))
                         {
                             continue; // cycle detected
                         }
@@ -429,7 +432,10 @@ namespace Excubo.Blazor.Diagrams
                         {
                             nodes_pushing_down.Add(target, nodes_pushing_down[source].Append(source).ToList());
                         }
-                        new_look_at.Add(target);
+                        if (!new_look_at.Contains(target))
+                        {
+                            new_look_at.Add(target);
+                        }
                     }
                 }
                 look_at = new_look_at;
