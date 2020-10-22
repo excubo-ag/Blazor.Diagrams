@@ -61,7 +61,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
             else
             {
                 fragments.Add(render_fragment, Guid.NewGuid().ToString());
-                StateHasChanged();
+                TryStateHasChanged();
             }
         }
         internal void Remove(RenderFragment<string> render_fragment)
@@ -77,7 +77,17 @@ namespace Excubo.Blazor.Diagrams.__Internal
             else
             {
                 _ = fragments.Remove(render_fragment);
+                TryStateHasChanged();
+            }
+        }
+        private void TryStateHasChanged()
+        {
+            try
+            {
                 StateHasChanged();
+            }
+            catch
+            {
             }
         }
         private bool disposed;

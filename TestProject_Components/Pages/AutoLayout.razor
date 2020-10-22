@@ -37,13 +37,13 @@
             {
                 if (odd)
                 {
-                    <RectangleNode Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
+                    <RectangleNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
                         <div>Hello @node.Id</div>
                     </RectangleNode>
                 }
                 else
                 {
-                    <EllipseNode Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
+                    <EllipseNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
                         <div>Hello @node.Id</div>
                     </EllipseNode>
                 }
@@ -53,7 +53,7 @@
         <Links>
             @foreach (var (s, t) in sources.Zip(targets, (a, b) => (a, b)))
             {
-                <StraightLink Source="s" Target="t" Arrow="Arrow.Target" />
+                <StraightLink @key="@((s, t))" Source="s" Target="t" Arrow="Arrow.Target" />
             }
         </Links>
         <AutoLayoutSettings Algorithm="Layout" @ref="auto_layout" />

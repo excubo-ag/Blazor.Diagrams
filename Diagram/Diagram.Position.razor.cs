@@ -18,6 +18,7 @@ namespace Excubo.Blazor.Diagrams
         {
             (CanvasLeft, CanvasTop) = await js.GetPositionAsync(canvas);
             (CanvasWidth, CanvasHeight) = await js.GetDimensionsAsync(canvas);
+            Nodes.ReRenderIfOffCanvasChanged();
             js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
             await js.RegisterMoveObserverAsync(canvas, js_interop_reference_to_this);
         }
@@ -32,6 +33,7 @@ namespace Excubo.Blazor.Diagrams
         public void OnMove(Rect rect)
         {
             (CanvasLeft, CanvasTop, CanvasWidth, CanvasHeight) = (rect.Left, rect.Top, rect.Width, rect.Height);
+            Nodes.ReRenderIfOffCanvasChanged();
         }
         public void Dispose()
         {

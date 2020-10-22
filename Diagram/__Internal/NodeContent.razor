@@ -5,8 +5,8 @@
     <div class="@Node.ContentClasses"
          style="@Node.ContentStyle;
                 position: absolute;
-                left: @(Node.X)px;
-                top: @(Node.Y)px;
+                left: @(Node.Zoom * Node.X)px;
+                top: @(Node.Zoom * Node.Y)px;
                 pointer-events: none;
                 transform: scale(@Node.Zoom);
                 transform-origin: 0 0;"

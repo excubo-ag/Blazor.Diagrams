@@ -7,13 +7,13 @@
         {
             if (node.Type == NodeType.Rectangle)
             {
-                <RectangleNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
+                <RectangleNode @key="@node.Id" Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
                     <div style="min-width:4em; min-height:1em">@node.Id</div>
                 </RectangleNode>
             }
             else
             {
-                <EllipseNode Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
+                <EllipseNode @key="@node.Id" Id="@node.Id" X="node.X" XChanged="(x) => { node.X = x; no_implicit_render = true; }" Y="node.Y" YChanged="(y) => { node.Y = y; no_implicit_render = true; }">
                     <div style="min-width:4em; min-height:1em">@node.Id</div>
                 </EllipseNode>
             }
@@ -22,7 +22,7 @@
     <Links>
         @foreach (var link in links)
         {
-            <StraightLink Source="@link.Source" Target="@link.Target" />
+            <StraightLink @key="@((link.Source, link.Target))" Source="@link.Source" Target="@link.Target" />
         }
     </Links>
     <AutoLayoutSettings @ref="auto_layout" Algorithm="Algorithm.TreeVertical" />

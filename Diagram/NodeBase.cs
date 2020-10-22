@@ -75,7 +75,7 @@ namespace Excubo.Blazor.Diagrams
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }
-        protected internal bool OffCanvas { get; set; }
+        protected internal bool OffCanvas { get; set; } = true;
         internal void ReRenderIfOffCanvasChanged()
         {
             var (LeftMargin, TopMargin, RightMargin, BottomMargin) = GetDrawingMargins();
@@ -187,14 +187,15 @@ namespace Excubo.Blazor.Diagrams
         protected internal void GetSize((double Width, double Height) result)
         {
             (Width, Height) = result;
+            ReRenderIfOffCanvasChanged();
             if (NodeLibrary != null)
             {
                 (X, Y, _, _) = NodeLibrary.GetPosition(this);
             }
-            ReRenderIfOffCanvasChanged();
             Hidden = false;
             Diagram.UpdateOverview();
             SizeChanged?.Invoke(this, EventArgs.Empty);
+            node_border_reference?.TriggerStateHasChanged();
             StateHasChanged();
         }
         protected override void OnAfterRender(bool first_render)
@@ -243,8 +244,8 @@ namespace Excubo.Blazor.Diagrams
             Y = y;
             XChanged?.Invoke(X);
             YChanged?.Invoke(Y);
-            StateHasChanged();
             ReRenderIfOffCanvasChanged();
+            StateHasChanged();
         }
         public void Dispose()
         {
