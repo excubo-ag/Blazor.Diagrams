@@ -232,7 +232,7 @@ namespace Excubo.Blazor.Diagrams
         public abstract RenderFragment border { get; }
         protected internal virtual (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
         {
-            return (0, 0, 0, 0);
+            return (0, 0, 0, 0); 
         }
         private RenderFragment<string> actual_border;
         private RenderFragment<string> content;
@@ -240,6 +240,10 @@ namespace Excubo.Blazor.Diagrams
         protected NodeBorder node_border_reference;
         internal void MoveTo(double x, double y)
         {
+            if (!Movable)
+            {
+                return;
+            }
             X = x;
             Y = y;
             XChanged?.Invoke(X);
