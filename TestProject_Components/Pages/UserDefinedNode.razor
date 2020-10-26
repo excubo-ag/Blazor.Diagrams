@@ -1,4 +1,9 @@
-﻿@inherits NodeBase
+﻿<!--
+Either inherit from ContentSizedNodeBase or FixedSizeNodeBase.
+When choosing fixed size, the node will have parameters for explicitly setting width and height.
+Otherwise, the width and height will be determined by the size of the content.
+-->
+@inherits ContentSizedNodeBase
 <!--This is important to prohibit rendering of deleted, user-provided nodes.-->
 @if (Deleted || OffCanvas)
 {

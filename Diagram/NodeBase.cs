@@ -3,34 +3,18 @@ using Excubo.Blazor.Diagrams.__Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public abstract class NodeBase : ComponentBase, IDisposable
+    public abstract class NodeBase : ComponentBase
     {
-        #region properties
-        private double x;
-        private double y;
-        /// <summary>
-        /// Horizontal position of the node
-        /// </summary>
-        [Parameter] public double X { get => x; set { if (value == x) { return; } x = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         [Parameter] public Action<double> XChanged { get; set; }
-        internal event EventHandler PositionChanged;
-        internal event EventHandler SizeChanged;
-        /// <summary>
-        /// Vertical position of the node
-        /// </summary>
-        [Parameter] public double Y { get => y; set { if (value == y) { return; } y = value; PositionChanged?.Invoke(this, EventArgs.Empty); } }
         [Parameter] public Action<double> YChanged { get; set; }
-        protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
         [CascadingParameter] public Diagram Diagram { get; set; }
         [CascadingParameter] public NodeLibrary NodeLibrary { get; set; }
         [Parameter] public bool Movable { get; set; } = true;
-        protected internal double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
-        private double width = 100;
-        private double height = 100;
         /// <summary>
         /// Unique Id of the node
         /// </summary>
@@ -63,23 +47,37 @@ namespace Excubo.Blazor.Diagrams
         /// The node's content.
         /// </summary>
         [Parameter] public RenderFragment<NodeBase> ChildContent { get; set; }
-        /// <summary>
-        /// NOT INTENDED FOR USE BY USERS.
-        /// Callback for when the node has been created. This is only invoked for nodes that are created during interactive usage of the diagram, not for nodes that are provided declaratively.
-        /// </summary>
-        [Parameter] public Action<NodeBase> OnCreate { get; set; }
         [CascadingParameter] public Nodes Nodes { get; set; }
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
-        public double Width { get => width; set { if (value == width) { return; } width = Math.Max(MinWidth, value); } }
-        public double Height { get => height; set { if (value == height) { return; } height = Math.Max(MinHeight, value); } }
-        [Parameter] public double? HintWidth { get; set; }
-        [Parameter] public double? HintHeight { get; set; }
-        protected internal double UsableHeight => HasSize ? Height : (HintHeight ?? Height);
-        protected internal double UsableWidth => HasSize ? Width : (HintWidth ?? Width);
-        protected bool Selected { get; private set; }
-        protected bool Hovered { get; private set; }
-        public bool Deleted { get; private set; }
+        /// <summary>
+        /// Horizontal position of the node
+        /// </summary>
+        [Parameter] public double X { get; set; }
+        /// <summary>
+        /// Vertical position of the node
+        /// </summary>
+        [Parameter] public double Y { get; set; }
+        public abstract RenderFragment border { get; }
+        public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
+        {
+            return (0, 0);
+        }
+        protected internal double Zoom => (NodeLibrary == null) ? Diagram.NavigationSettings.Zoom : 1; // if we are in the node library, we do not want the nodes to be zoomed.
         protected internal bool OffCanvas { get; set; } = true;
+        protected internal virtual (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+        {
+            return (0, 0, 0, 0);
+        }
+        internal abstract double GetWidth();
+        internal abstract double GetHeight();
+        protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
+        public abstract double Width { get; set; }
+        public abstract double Height { get; set; }
+        internal event Action PositionChanged;
+        internal event Action<NodeBase> SizeChanged;
+        internal void TriggerPositionChanged() => PositionChanged?.Invoke();
+        internal void TriggerSizeChanged() => SizeChanged?.Invoke(this);
+        internal void TriggerStateHasChanged() => StateHasChanged();
         internal void ReRenderIfOffCanvasChanged()
         {
             var (LeftMargin, TopMargin, RightMargin, BottomMargin) = GetDrawingMargins();
@@ -99,29 +97,10 @@ namespace Excubo.Blazor.Diagrams
                 content_reference?.TriggerStateHasChanged();
             }
         }
-        #endregion
-        #region hover
-        internal void MarkDeleted() { Deleted = true; }
-        internal void MarkUndeleted() { Deleted = false; }
-        protected void OnNodeOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, (NodeLibrary == null) ? HoverType.Node : HoverType.NewNode); }
-        protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
-        protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, HoverType.Border); }
-        protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
-        #endregion
-        internal void TriggerStateHasChanged() => StateHasChanged();
-        protected override void OnParametersSet()
-        {
-            if (!Deleted)
-            {
-                AddNodeContent();
-            }
-            if (Nodes != null)
-            {
-                Nodes.Register(this);
-            }
-            base.OnParametersSet();
-        }
-        #region node content
+        protected RenderFragment<string> actual_border;
+        protected RenderFragment<string> content;
+        protected NodeContent content_reference;
+        protected NodeBorder node_border_reference;
         internal void RemoveBorderAndContent()
         {
             if (actual_border != null)
@@ -139,7 +118,7 @@ namespace Excubo.Blazor.Diagrams
             Diagram.AddNodeBorderFragment(actual_border);
         }
         private bool content_added;
-        private void AddNodeContent()
+        protected void AddNodeContent()
         {
             if (content_added)
             {
@@ -170,86 +149,6 @@ namespace Excubo.Blazor.Diagrams
                 builder.CloseComponent();
             };
         }
-        private RenderFragment<string> GetChildContentWrapper()
-        {
-            return (key) => (builder) =>
-            {
-                builder.OpenComponent<NodeContent>(0);
-                builder.AddAttribute(1, nameof(NodeContent.Node), this);
-                if (ChildContent != null)
-                {
-                    builder.AddAttribute(2, nameof(NodeContent.ChildContent), ChildContent(this));
-                }
-                builder.AddComponentReferenceCapture(3, (reference) => content_reference = (NodeContent)reference);
-                builder.SetKey(key);
-                builder.CloseComponent();
-            };
-        }
-        internal void Select() { Selected = true; }
-        internal void Deselect() { Selected = false; }
-        protected bool Hidden { get; set; } = true;
-        internal bool HasSize { get; private set; }
-        protected internal void GetSize((double Width, double Height) result)
-        {
-            HasSize = true;
-            if (HintHeight == null || HintWidth == null) 
-            {
-                // the layout algorithm runs as soon as all nodes either have a size or have a hinted size. 
-                // So if we already had a hinted size for this and now have a real size, we shouldn't immediately re-render
-                Diagram.AutoLayoutSettings?.Run();
-            }
-            (Width, Height) = result;
-            ReRenderIfOffCanvasChanged();
-            if (NodeLibrary != null)
-            {
-                (X, Y, _, _) = NodeLibrary.GetPosition(this);
-            }
-            Hidden = false;
-            Diagram.UpdateOverview();
-            SizeChanged?.Invoke(this, EventArgs.Empty);
-            node_border_reference?.TriggerStateHasChanged();
-            StateHasChanged();
-        }
-        protected override void OnAfterRender(bool first_render)
-        {
-            if (first_render)
-            {
-                OnCreate?.Invoke(this);
-            }
-            if (Deleted)
-            {
-                Diagram.RemoveNodeBorderFragment(actual_border);
-                Diagram.RemoveNodeContentFragment(content);
-            }
-            if (NodeLibrary != null)
-            {
-                content_reference?.TriggerStateHasChanged();
-            }
-            else
-            {
-                content_reference?.TriggerStateHasChanged();
-                node_border_reference?.TriggerStateHasChanged();
-            }
-            base.OnAfterRender(first_render);
-        }
-        #endregion
-        protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
-        {
-            await context.DrawingRectangles.FillRectAsync(X, Y, UsableWidth, UsableHeight);
-        }
-        public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
-        {
-            return (0, 0);
-        }
-        public abstract RenderFragment border { get; }
-        protected internal virtual (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
-        {
-            return (0, 0, 0, 0); 
-        }
-        private RenderFragment<string> actual_border;
-        private RenderFragment<string> content;
-        protected NodeContent content_reference;
-        protected NodeBorder node_border_reference;
         internal void MoveTo(double x, double y)
         {
             if (!Movable)
@@ -258,15 +157,40 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
+            TriggerPositionChanged();
             XChanged?.Invoke(X);
             YChanged?.Invoke(Y);
             ReRenderIfOffCanvasChanged();
             StateHasChanged();
         }
-        public void Dispose()
+        protected bool Selected { get; private set; }
+        protected bool Hovered { get; private set; }
+        public bool Deleted { get; private set; }
+        internal void MarkDeleted() { Deleted = true; }
+        internal void MarkUndeleted() { Deleted = false; }
+        protected void OnNodeOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, (NodeLibrary == null) ? HoverType.Node : HoverType.NewNode); }
+        protected void OnNodeOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
+        protected void OnBorderOver(MouseEventArgs _) { Hovered = true; Diagram.SetActiveElement(this, HoverType.Border); }
+        protected void OnBorderOut(MouseEventArgs _) { Hovered = false; Diagram.DeactivateElement(); }
+        protected override void OnParametersSet()
         {
-            Nodes?.Deregister(this);
-            RemoveBorderAndContent();
+            if (!Deleted)
+            {
+                AddNodeContent();
+            }
+            if (Nodes != null)
+            {
+                Nodes.Register(this);
+            }
+            base.OnParametersSet();
         }
+        internal void Select() { Selected = true; }
+        internal void Deselect() { Selected = false; }
+        internal abstract bool HasSize { get; }
+        protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
+        {
+            await context.DrawingRectangles.FillRectAsync(X, Y, GetWidth(), GetHeight());
+        }
+        protected abstract RenderFragment<string> GetChildContentWrapper();
     }
 }

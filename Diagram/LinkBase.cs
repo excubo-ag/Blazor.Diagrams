@@ -176,12 +176,8 @@ namespace Excubo.Blazor.Diagrams
             await ctx.Paths.LineToAsync(ControlPoints.Last().X, ControlPoints.Last().Y);
             await ctx.DrawingPaths.StrokeAsync();
         }
-        private void SizeChanged(object sender, EventArgs e)
+        private void SizeChanged(NodeBase node)
         {
-            if (!(sender is NodeBase node))
-            {
-                return;
-            }
             var anchor = Source.Node == node ? Source : Target;
             FixAnchor(anchor);
         }

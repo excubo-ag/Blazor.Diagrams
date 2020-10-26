@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using System;
 using System.Collections.Generic;
 
 namespace Excubo.Blazor.Diagrams.__Internal
@@ -23,7 +22,6 @@ namespace Excubo.Blazor.Diagrams.__Internal
                     builder.OpenComponent(1, node.Type);
                     builder.AddAttribute(2, nameof(NodeBase.Id), node.Id);
                     builder.AddAttribute(3, nameof(NodeBase.ChildContent), node.ChildContent);
-                    builder.AddAttribute(4, nameof(NodeBase.OnCreate), node.OnCreate);
                     builder.AddAttribute(5, nameof(NodeBase.X), node.X);
                     builder.AddAttribute(6, nameof(NodeBase.Y), node.Y);
                     var i = 8;
@@ -33,7 +31,6 @@ namespace Excubo.Blazor.Diagrams.__Internal
                         {
                             if (key == nameof(NodeBase.Id)
                             || key == nameof(NodeBase.ChildContent)
-                            || key == nameof(NodeBase.OnCreate)
                             || key == nameof(NodeBase.X)
                             || key == nameof(NodeBase.Y))
                             {
@@ -50,7 +47,9 @@ namespace Excubo.Blazor.Diagrams.__Internal
                         {
                             return;
                         }
-                        references.Add(node, (NodeBase)reference);
+                        var created_node = (NodeBase)reference;
+                        node.OnCreate?.Invoke(created_node);
+                        references.Add(node, created_node);
                     });
                     builder.CloseComponent();
                 }

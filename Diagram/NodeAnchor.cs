@@ -14,7 +14,7 @@ namespace Excubo.Blazor.Diagrams
                 node = value;
                 if (node != null && CoordinatesChanged != null)
                 {
-                    node.PositionChanged += (_, __) => CoordinatesChanged();
+                    node.PositionChanged += CoordinatesChanged;
                 }
             }
         }

@@ -13,8 +13,11 @@ namespace Excubo.Blazor.Diagrams.__Internal
         {
             if (first_render)
             {
-                js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
-                await js.RegisterResizeObserverAsync(element, js_interop_reference_to_this);
+                if (Node is ContentSizedNodeBase)
+                {
+                    js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
+                    await js.RegisterResizeObserverAsync(element, js_interop_reference_to_this);
+                }
             }
             await base.OnAfterRenderAsync(first_render);
         }
@@ -26,7 +29,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         [JSInvokable]
         public void OnResize(Dimensions dimensions)
         {
-            Node.GetSize((dimensions.Width, dimensions.Height));
+            (Node as ContentSizedNodeBase).GetSize((dimensions.Width, dimensions.Height));
         }
         public void Dispose()
         {

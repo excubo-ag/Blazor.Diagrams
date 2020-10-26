@@ -5,18 +5,18 @@
     <Nodes>
 
         <!-- Builtin node, node-type (i.e. shape) specified by Type property -->
-        <Node Id="n1" @bind-X="n1p.X" @bind-Y="n1p.Y" Type="NodeType.Rectangle">
+        <FixedSizeNode Id="n1" @bind-X="n1p.X" @bind-Y="n1p.Y" Type="NodeType.Rectangle" Width="60" Height="40">
             <div style="width:4em; height:3em"></div>
-        </Node>
-        <Node Id="n2" @bind-X="n2p.X" @bind-Y="n2p.Y" Type="NodeType.Rectangle">
+        </FixedSizeNode>
+        <FixedSizeNode Id="n2" @bind-X="n2p.X" @bind-Y="n2p.Y" Type="NodeType.Ellipse" Width="40" Height="24">
             <div style="width:4em; height:3em"></div>
-        </Node>
-        <Node Id="n3" @bind-X="n3p.X" @bind-Y="n3p.Y" Type="NodeType.Rectangle">
+        </FixedSizeNode>
+        <FixedSizeNode Id="n3" @bind-X="n3p.X" @bind-Y="n3p.Y" Type="NodeType.Diamond" Width="40" Height="24">
             <div style="width:4em; height:3em"></div>
-        </Node>
-        <Node Id="n4" @bind-X="n4p.X" @bind-Y="n4p.Y" Type="NodeType.Rectangle">
+        </FixedSizeNode>
+        <FixedSizeNode Id="n4" @bind-X="n4p.X" @bind-Y="n4p.Y" Type="NodeType.Rectangle" Width="60" Height="40">
             <div style="width:4em; height:3em"></div>
-        </Node>
+        </FixedSizeNode>
     </Nodes>
     <!-- side note: maybe rename link to connector, as link seems to be a special tag, so auto-correct corrects Link to link all the time. -->
     <Links OnRemove="LinkRemoved" OnAdd="LinkAdded" @bind-DefaultType="link_type" @bind-DefaultArrow="arrows">

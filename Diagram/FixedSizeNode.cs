@@ -4,7 +4,7 @@ using System;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public partial class Node : ComponentBase
+    public partial class FixedSizeNode : ComponentBase
     {
         #region properties
         /// <summary>
@@ -41,11 +41,11 @@ namespace Excubo.Blazor.Diagrams
         /// <summary>
         /// The minimum height the node should have. (Default: 0).
         /// </summary>
-        [Parameter] public double MinHeight { get; set; }
+        [Parameter] public double Height { get; set; }
         /// <summary>
         /// The minimum width the node should have. (Default: 0).
         /// </summary>
-        [Parameter] public double MinWidth { get; set; }
+        [Parameter] public double Width { get; set; }
         /// <summary>
         /// The node's content.
         /// </summary>
@@ -57,13 +57,13 @@ namespace Excubo.Blazor.Diagrams
             switch (RenderType)
             {
                 case NodeType.Diamond:
-                    builder.OpenComponent<DiamondNode>(0);
+                    builder.OpenComponent<FixedSizeDiamondNode>(0);
                     break;
                 case NodeType.Rectangle:
-                    builder.OpenComponent<RectangleNode>(0);
+                    builder.OpenComponent<FixedSizeRectangleNode>(0);
                     break;
                 case NodeType.Ellipse:
-                    builder.OpenComponent<EllipseNode>(0);
+                    builder.OpenComponent<FixedSizeEllipseNode>(0);
                     break;
                 case NodeType.Default:
                     System.Diagnostics.Debug.Assert(false, "RenderType is guaranteed to be non-default.");
@@ -76,8 +76,8 @@ namespace Excubo.Blazor.Diagrams
             builder.AddAttribute(5, nameof(NodeBase.Id), Id);
             builder.AddAttribute(6, nameof(NodeBase.Fill), Fill);
             builder.AddAttribute(7, nameof(NodeBase.Stroke), Stroke);
-            builder.AddAttribute(8, nameof(ContentSizedNodeBase.MinWidth), MinWidth);
-            builder.AddAttribute(9, nameof(ContentSizedNodeBase.MinHeight), MinHeight);
+            builder.AddAttribute(8, nameof(FixedSizeNodeBase.Width), Width);
+            builder.AddAttribute(9, nameof(FixedSizeNodeBase.Height), Height);
             builder.AddAttribute(10, nameof(NodeBase.ChildContent), ChildContent);
             builder.AddAttribute(11, nameof(NodeBase.ContentClasses), ContentClasses);
             builder.AddAttribute(12, nameof(NodeBase.ContentStyle), ContentStyle);

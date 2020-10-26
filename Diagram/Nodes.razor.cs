@@ -74,7 +74,7 @@ namespace Excubo.Blazor.Diagrams
             }
             else
             {
-                internally_generated_nodes.Add(new NodeData { Id = node.Id, X = node.X, Y = node.Y, ChildContent = node.ChildContent, Type = node.GetType(), OnCreate = (_) => { } });
+                internally_generated_nodes.Add(new NodeData { Id = node.Id, X = node.X, Y = node.Y, ChildContent = node.ChildContent, Type = node.GetType() });
                 generated_nodes_ref.TriggerStateHasChanged();
             }
             OnAdd?.Invoke(node);
@@ -120,17 +120,16 @@ namespace Excubo.Blazor.Diagrams
             {
                 Type = node.GetType(),
                 ChildContent = node.ChildContent,
-                OnCreate = on_create,
                 X = Diagram.NavigationSettings.Origin.X + node.X / Diagram.NavigationSettings.Zoom,
                 Y = Diagram.NavigationSettings.Origin.Y + node.Y / Diagram.NavigationSettings.Zoom,
                 Attributes = node.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.GetCustomAttribute<ParameterAttribute>() != null)
                 .Where(p => p.Name != nameof(NodeBase.ChildContent))
                 .Where(p => p.Name != nameof(NodeBase.Id))
-                .Where(p => p.Name != nameof(NodeBase.OnCreate))
                 .Where(p => p.Name != nameof(NodeBase.X))
                 .Where(p => p.Name != nameof(NodeBase.Y))
-                .ToDictionary(p => p.Name, p => p.GetValue(node))
+                .ToDictionary(p => p.Name, p => p.GetValue(node)),
+                OnCreate = on_create
             });
             generated_nodes_ref.TriggerStateHasChanged();
         }

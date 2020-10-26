@@ -35,7 +35,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 if (!positions.Any())
                 {
-                    positions.Add(node, (X: Padding + margins.Left, Y: Padding + margins.Top, Width: node.Width + margins.Right, Height: node.Height + margins.Bottom));
+                    positions.Add(node, (X: Padding + margins.Left, Y: Padding + margins.Top, Width: node.GetWidth() + margins.Right, Height: node.GetHeight() + margins.Bottom));
                 }
                 else
                 {
@@ -43,7 +43,7 @@ namespace Excubo.Blazor.Diagrams
                     var (pX, pY, pWidth, pHeight) = positions.Values.First(p => (Orientation == Orientation.Horizontal ? p.X : p.Y) == outermost_value);
                     var x = Orientation == Orientation.Horizontal ? (pX + pWidth + Separation) : Padding;
                     var y = Orientation == Orientation.Horizontal ? Padding : (pY + pHeight + Separation);
-                    positions.Add(node, (X: x + margins.Left, Y: y + margins.Top, Width: node.Width + margins.Right, Height: node.Height + margins.Bottom));
+                    positions.Add(node, (X: x + margins.Left, Y: y + margins.Top, Width: node.GetWidth() + margins.Right, Height: node.GetHeight() + margins.Bottom));
                 }
             }
             return positions[node];

@@ -267,14 +267,14 @@ namespace Excubo.Blazor.Diagrams
             {
                 foreach (var (node, position) in nodes.Zip(positions, (n, p) => (n, p)))
                 {
-                    (node.X, node.Y) = (position.X, position.Y);
+                    node.MoveTo(position.X, position.Y);
                     node.TriggerStateHasChanged();
                 }
             }, () =>
             {
                 foreach (var (node, position) in nodes.Zip(old_positions, (n, p) => (n, p)))
                 {
-                    (node.X, node.Y) = (position.X, position.Y);
+                    node.MoveTo(position.X, position.Y);
                     node.TriggerStateHasChanged();
                 }
             }));
