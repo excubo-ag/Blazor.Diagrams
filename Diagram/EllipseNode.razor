@@ -57,12 +57,12 @@
     }
     protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
     {
-        return ((Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2, (Math.Sqrt(2) - 1) * Width / 2, (Math.Sqrt(2) - 1) * Height / 2);
+        return ((Math.Sqrt(2) - 1) * UsableWidth / 2, (Math.Sqrt(2) - 1) * UsableHeight / 2, (Math.Sqrt(2) - 1) * UsableWidth / 2, (Math.Sqrt(2) - 1) * UsableHeight / 2);
     }
     protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
     {
         await context.Paths.BeginPathAsync();
-        await context.Paths.EllipseAsync(X + Width / 2, Y + Height / 2, Width / 2 * Math.Sqrt(2), Height / 2 * Math.Sqrt(2), 0, 0, 360);
+        await context.Paths.EllipseAsync(X + UsableWidth / 2, Y + UsableHeight / 2, UsableWidth / 2 * Math.Sqrt(2), UsableHeight / 2 * Math.Sqrt(2), 0, 0, 360);
         await context.DrawingPaths.FillAsync(Canvas.FillRule.NonZero);
     }
 }

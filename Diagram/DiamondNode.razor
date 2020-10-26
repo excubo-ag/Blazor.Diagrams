@@ -64,15 +64,15 @@
     }
     protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
     {
-        return (Width / 2, Height / 2, Width / 2, Height / 2);
+        return (UsableWidth / 2, UsableHeight / 2, UsableWidth / 2, UsableHeight / 2);
     }
     protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
     {
         await context.Paths.BeginPathAsync();
-        await context.Paths.MoveToAsync(X + Width * 0.5, Y - Height * 0.5);
-        await context.Paths.LineToAsync(X + Width * 1.5, Y + Height * 0.5);
-        await context.Paths.LineToAsync(X + Width * 0.5, Y + Height * 1.5);
-        await context.Paths.LineToAsync(X - Width * 0.5, Y + Height * 0.5);
+        await context.Paths.MoveToAsync(X + UsableWidth * 0.5, Y - UsableHeight * 0.5);
+        await context.Paths.LineToAsync(X + UsableWidth * 1.5, Y + UsableHeight * 0.5);
+        await context.Paths.LineToAsync(X + UsableWidth * 0.5, Y + UsableHeight * 1.5);
+        await context.Paths.LineToAsync(X - UsableWidth * 0.5, Y + UsableHeight * 0.5);
         await context.DrawingPaths.FillAsync(Canvas.FillRule.NonZero);
     }
 }

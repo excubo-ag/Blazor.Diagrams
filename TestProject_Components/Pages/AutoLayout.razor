@@ -37,14 +37,14 @@
             {
                 if (odd)
                 {
-                    <RectangleNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
-                        <div>Hello @node.Id</div>
+                    <RectangleNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y" HintHeight="24" HintWidth="60">
+                        <div style="height: 24px; width: 60px;">Hello @node.Id</div>
                     </RectangleNode>
                 }
                 else
                 {
-                    <EllipseNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y">
-                        <div>Hello @node.Id</div>
+                    <EllipseNode @key="@node.Id" Id="@node.Id" @bind-X="@node.X" @bind-Y="@node.Y" HintHeight="24" HintWidth="60">
+                        <div style="height: 24px; width: 60px;">Hello @node.Id</div>
                     </EllipseNode>
                 }
                 odd = !odd;

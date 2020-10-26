@@ -72,6 +72,10 @@ namespace Excubo.Blazor.Diagrams
         [CascadingParameter(Name = nameof(IsInternallyGenerated))] public bool IsInternallyGenerated { get; set; }
         public double Width { get => width; set { if (value == width) { return; } width = Math.Max(MinWidth, value); } }
         public double Height { get => height; set { if (value == height) { return; } height = Math.Max(MinHeight, value); } }
+        [Parameter] public double? HintWidth { get; set; }
+        [Parameter] public double? HintHeight { get; set; }
+        protected internal double UsableHeight => HasSize ? Height : (HintHeight ?? Height);
+        protected internal double UsableWidth => HasSize ? Width : (HintWidth ?? Width);
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }
@@ -184,8 +188,16 @@ namespace Excubo.Blazor.Diagrams
         internal void Select() { Selected = true; }
         internal void Deselect() { Selected = false; }
         protected bool Hidden { get; set; } = true;
+        internal bool HasSize { get; private set; }
         protected internal void GetSize((double Width, double Height) result)
         {
+            HasSize = true;
+            if (HintHeight == null || HintWidth == null) 
+            {
+                // the layout algorithm runs as soon as all nodes either have a size or have a hinted size. 
+                // So if we already had a hinted size for this and now have a real size, we shouldn't immediately re-render
+                Diagram.AutoLayoutSettings?.Run();
+            }
             (Width, Height) = result;
             ReRenderIfOffCanvasChanged();
             if (NodeLibrary != null)
@@ -223,7 +235,7 @@ namespace Excubo.Blazor.Diagrams
         #endregion
         protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
         {
-            await context.DrawingRectangles.FillRectAsync(X, Y, Width, Height);
+            await context.DrawingRectangles.FillRectAsync(X, Y, UsableWidth, UsableHeight);
         }
         public virtual (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
         {
