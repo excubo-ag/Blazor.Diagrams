@@ -113,15 +113,9 @@ namespace Excubo.Blazor.Diagrams
                 render_necessary = true;
                 return false;
             }
-            if (!render_necessary_second_time)
-            {
-                render_necessary_second_time = true;
-                return false;
-            }
             return base.ShouldRender();
         }
         private bool render_necessary = true;
-        private bool render_necessary_second_time = true;
         private void OnMouseMove(MouseEventArgs e)
         {
             render_necessary = false;
@@ -380,7 +374,6 @@ namespace Excubo.Blazor.Diagrams
         {
             if (ActionObject.Point != null)
             {
-                render_necessary_second_time = false;
                 var delta_x = e.RelativeXTo(ActionObject.Point) / NavigationSettings.Zoom;
                 var delta_y = e.RelativeYTo(ActionObject.Point) / NavigationSettings.Zoom;
                 foreach (var node in Group.Nodes)
