@@ -57,6 +57,7 @@ namespace Excubo.Blazor.Diagrams
             if (canvas.Id != null)
             {
                 js.UnobserveMovesAsync(canvas);
+                js.UnobserveResizesAsync(canvas);
             }
             js_interop_reference_to_this.Dispose();
         }
