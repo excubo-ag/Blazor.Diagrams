@@ -17,8 +17,8 @@
          @onmousemove:preventDefault
          @onmousedown="OnMouseDown"
          @onmouseup="OnMouseUp"
-         @onmousewheel="OnMouseWheel"
-         @onmousewheel:preventDefault>
+         @onwheel="OnMouseWheel"
+         @onwheel:preventDefault>
         <CascadingValue Value="@this" IsFixed="true">
             @using (var temporary_culture2 = new CultureSwapper())
             {
