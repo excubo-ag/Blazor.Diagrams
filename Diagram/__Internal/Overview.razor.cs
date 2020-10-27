@@ -81,10 +81,7 @@ namespace Excubo.Blazor.Diagrams.__Internal
         private double old_max_y = double.MinValue;
         private async Task CreateImgAsync(bool just_pan_or_zoom)
         {
-            if (Height == 0 || double.IsNaN(Height))
-            {
-                Height = Width * Diagram.CanvasHeight / Diagram.CanvasWidth;
-            }
+            Height = Width * Diagram.CanvasHeight / Diagram.CanvasWidth;
             var min_x = Diagram.NavigationSettings.Origin.X;
             var max_x = Diagram.NavigationSettings.Origin.X + Diagram.CanvasWidth / Diagram.NavigationSettings.Zoom;
             var min_y = Diagram.NavigationSettings.Origin.Y;

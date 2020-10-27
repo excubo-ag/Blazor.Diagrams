@@ -20,6 +20,7 @@ namespace Excubo.Blazor.Diagrams
             (CanvasWidth, CanvasHeight) = await js.GetDimensionsAsync(canvas);
             Nodes.ReRenderIfOffCanvasChanged();
             js_interop_reference_to_this ??= DotNetObjectReference.Create(this);
+            await js.RegisterResizeObserverAsync(canvas, js_interop_reference_to_this);
             await js.RegisterMoveObserverAsync(canvas, js_interop_reference_to_this);
         }
         public class Rect
@@ -34,6 +35,18 @@ namespace Excubo.Blazor.Diagrams
         {
             (CanvasLeft, CanvasTop, CanvasWidth, CanvasHeight) = (rect.Left, rect.Top, rect.Width, rect.Height);
             Nodes.ReRenderIfOffCanvasChanged();
+            UpdateOverview();
+        }
+        public class Dimensions
+        {
+            public double Width { get; set; }
+            public double Height { get; set; }
+        }
+        [JSInvokable]
+        public void OnResize(Dimensions dimensions)
+        {
+            (CanvasWidth, CanvasHeight) = (dimensions.Width, dimensions.Height);
+            UpdateOverview();
         }
         public void Dispose()
         {
