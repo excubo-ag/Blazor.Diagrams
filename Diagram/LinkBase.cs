@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -76,7 +75,7 @@ namespace Excubo.Blazor.Diagrams
         internal void MarkUndeleted() => Deleted = false;
         protected override void OnParametersSet()
         {
-            if (GetType() != typeof(Link) && Source != null && Target != null && ControlPointMethods != null)
+            if (Source != null && Target != null && ControlPointMethods != null)
             {
                 if (Source.NodeId != null)
                 {
@@ -107,12 +106,9 @@ namespace Excubo.Blazor.Diagrams
                     UpdateControlPoints();
                 }
             }
-            if (GetType() != typeof(Link))
+            if (Links.Register(this))
             {
-                if (Links.Register(this))
-                {
-                    OnCreate?.Invoke(this);
-                }
+                OnCreate?.Invoke(this);
             }
             base.OnParametersSet();
         }
