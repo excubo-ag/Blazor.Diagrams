@@ -109,8 +109,10 @@ namespace Excubo.Blazor.Diagrams
             }
             if (GetType() != typeof(Link))
             {
-                Links.Register(this);
-                OnCreate?.Invoke(this);
+                if (Links.Register(this))
+                {
+                    OnCreate?.Invoke(this);
+                }
             }
             base.OnParametersSet();
         }

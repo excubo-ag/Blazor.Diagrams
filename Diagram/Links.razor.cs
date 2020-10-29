@@ -59,17 +59,19 @@ namespace Excubo.Blazor.Diagrams
         }
         internal readonly List<LinkBase> all_links = new List<LinkBase>();
         private readonly List<LinkData> internally_generated_links = new List<LinkData>();
-        internal void Register(LinkBase link)
+        internal bool Register(LinkBase link)
         {
-            if (!all_links.Contains(link))
+            if (all_links.Contains(link))
             {
-                all_links.Add(link);
-                Diagram.UpdateOverview();
-                if (link.IsInternallyGenerated)
-                {
-                    OnAdd?.Invoke(link);
-                }
+                return false;
             }
+            all_links.Add(link);
+            Diagram.UpdateOverview();
+            if (link.IsInternallyGenerated)
+            {
+                OnAdd?.Invoke(link);
+            }
+            return true;
         }
         internal void Deregister(LinkBase link)
         {

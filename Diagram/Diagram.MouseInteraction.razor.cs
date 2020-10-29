@@ -418,16 +418,17 @@ namespace Excubo.Blazor.Diagrams
                 link.Target.Node = node;
                 link.Target.RelativeX = e.RelativeXTo(node);
                 link.Target.RelativeY = e.RelativeYTo(node);
-                link.Deselect();
             }
             else
             {
                 link.Target.RelativeX = e.RelativeXToOrigin(this);
                 link.Target.RelativeY = e.RelativeYToOrigin(this);
             }
+            link.Deselect();
             link.Links.OnModified?.Invoke(link);
             Overview?.TriggerUpdate();
             Changes.New(new ChangeAction(() => { Links.Add(link); }, () => { Links.Remove(link); }));
+            ActionObject.Clear();
             ActionType = ActionType.None;
         }
         private void StartAction(MouseEventArgs e)
