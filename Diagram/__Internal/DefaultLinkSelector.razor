@@ -1,14 +1,16 @@
 ﻿<div style="position:relative; @(position) @(border) background-color: white; width: max-content;">
+    @{#pragma warning disable BL0005}
     <div>
-        <button @onclick="() => { Type = LinkType.Angled; TypeChanged?.Invoke(Type); }" style="padding: 0; border:none; background-color: @(Type == LinkType.Angled ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 L 8 4 L 8 12 L 16 12" fill="none" stroke="black" /></svg></button>
-        <button @onclick="() => { Type = LinkType.Straight; TypeChanged?.Invoke(Type); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Type == LinkType.Straight ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 L 16 12" fill="none" stroke="black" /></svg></button>
-        <button @onclick="() => { Type = LinkType.Curved; TypeChanged?.Invoke(Type); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Type == LinkType.Curved ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 C 8 4 8 12 16 12" fill="none" stroke="black" /></svg></button>
+        <button @onclick="() => { Type = LinkType.Angled; Diagram.Links.DefaultType = Type; TypeChanged?.Invoke(Type); }" style="padding: 0; border:none; background-color: @(Type == LinkType.Angled ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 L 8 4 L 8 12 L 16 12" fill="none" stroke="black" /></svg></button>
+        <button @onclick="() => { Type = LinkType.Straight; Diagram.Links.DefaultType = Type; TypeChanged?.Invoke(Type); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Type == LinkType.Straight ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 L 16 12" fill="none" stroke="black" /></svg></button>
+        <button @onclick="() => { Type = LinkType.Curved; Diagram.Links.DefaultType = Type; TypeChanged?.Invoke(Type); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Type == LinkType.Curved ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 0 4 C 8 4 8 12 16 12" fill="none" stroke="black" /></svg></button>
     </div>
     <div>
-        <button @onclick="() => { Arrow = Arrow.None; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; background-color: @(Arrow == Arrow.None ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /></svg></button>
-        <button @onclick="() => { Arrow = Arrow.Target; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Arrow == Arrow.Target ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
-        <button @onclick="() => { Arrow = Arrow.Both; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Arrow == Arrow.Both ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><polygon points="0,8 3,6 3,10" fill="black" /><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
+        <button @onclick="() => { Arrow = Arrow.None; Diagram.Links.DefaultArrow = Arrow; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; background-color: @(Arrow == Arrow.None ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /></svg></button>
+        <button @onclick="() => { Arrow = Arrow.Target; Diagram.Links.DefaultArrow = Arrow; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Arrow == Arrow.Target ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
+        <button @onclick="() => { Arrow = Arrow.Both; Diagram.Links.DefaultArrow = Arrow; ArrowChanged?.Invoke(Arrow); }" style="padding: 0; border: none; margin-left: -5px; background-color: @(Arrow == Arrow.Both ? "lightgray" : "white")"><svg viewBox="0 0 16 16" style="height:2em; width:2.5em;"><polygon points="0,8 3,6 3,10" fill="black" /><path d="M 4 8 12 8" fill="none" stroke="black" stroke-dasharray="2 1" /><polygon points="16,8 13,6 13,10" fill="black" /></svg></button>
     </div>
+    @{#pragma warning restore BL0005}
 </div>
 
 @code {
@@ -37,36 +39,9 @@
         Position.TopLeft => "border-bottom: 1px solid black; border-right: 1px solid black;",
         _ => "border-bottom: 1px solid black; border-right: 1px solid black;"
     };
+    [CascadingParameter] private Diagram Diagram { get; set; }
     [Parameter] public LinkType Type { get; set; }
     [Parameter] public Action<LinkType> TypeChanged { get; set; }
     [Parameter] public Arrow Arrow { get; set; }
     [Parameter] public Action<Arrow> ArrowChanged { get; set; }
-    private LinkType Next(LinkType type)
-    {
-        switch (type)
-        {
-            case LinkType.Angled:
-                return LinkType.Curved;
-            case LinkType.Curved:
-                return LinkType.Straight;
-            case LinkType.Straight:
-                return LinkType.Angled;
-            default:
-                return LinkType.Angled;
-        }
-    }
-    private Arrow Next(Arrow arrow)
-    {
-        switch (arrow)
-        {
-            case Arrow.Both:
-                return Arrow.None;
-            case Arrow.None:
-                return Arrow.Target;
-            case Arrow.Target:
-                return Arrow.Both;
-            default:
-                return Arrow.Both;
-        }
-    }
 }
