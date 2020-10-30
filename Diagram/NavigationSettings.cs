@@ -75,6 +75,10 @@ namespace Excubo.Blazor.Diagrams
         [Parameter]
         public bool DisableZooming { get; set; }
         /// <summary>
+        /// Invert zoom direction.
+        /// </summary>
+        [Parameter] public bool InversedZoom { get; set; }
+        /// <summary>
         /// When true, panning by user interaction is disabled (default: false). Note that changing the origin parameter still affects the diagram area.
         /// </summary>
         [Parameter]
@@ -88,7 +92,7 @@ namespace Excubo.Blazor.Diagrams
             // this point should remain where it is right now (the cursor is the stable zoom point), hence if we adjust zoom, we need to adjust origin as well.
             var canvas_x = Origin.X + e.RelativeXTo(Diagram);
             var canvas_y = Origin.Y + e.RelativeYTo(Diagram);
-            if (e.DeltaY > 0)
+            if (!InversedZoom && e.DeltaY > 0 || InversedZoom && e.DeltaY < 0)
             {
                 Zoom *= 1.05;
                 if (Zoom > MaxZoom)
