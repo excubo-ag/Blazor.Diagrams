@@ -14,6 +14,12 @@ namespace Excubo.Blazor.Diagrams
         internal double CanvasTop { get; private set; }
         internal double CanvasWidth { get; private set; }
         internal double CanvasHeight { get; private set; }
+        public void ZoomToFit()
+        {
+            NavigationSettings.ZoomToFit();
+            Nodes.ReRenderIfOffCanvasChanged();
+            UpdateOverview(just_pan_or_zoom: true);
+        }
         private async Task GetPositionAsync()
         {
             (CanvasLeft, CanvasTop) = await js.GetPositionAsync(canvas);

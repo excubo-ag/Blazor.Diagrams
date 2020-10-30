@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -15,6 +16,7 @@ namespace Excubo.Blazor.Diagrams
             Diagram.NavigationSettings = this;
             base.OnParametersSet();
         }
+
         /// <summary>
         /// Whether panning feels like dragging the canvas or dragging all elements.
         /// </summary>
@@ -124,6 +126,45 @@ namespace Excubo.Blazor.Diagrams
             Origin.X += (InversedPanning ? 1 : -1) * offset_x / Zoom;
             Origin.Y += (InversedPanning ? 1 : -1) * offset_y / Zoom;
             OriginChanged?.Invoke(Origin);
+        }
+
+        internal void ZoomToFit()
+        {
+            var non_deleted_nodes = Diagram.Nodes.all_nodes.Where(n => !n.Deleted).ToList();
+            if (non_deleted_nodes.Any())
+            {
+                var min_x = non_deleted_nodes.Min(n => n.X);
+                var max_x = non_deleted_nodes.Max(n => n.X);
+                var max_x_node = non_deleted_nodes.FirstOrDefault(n => n.X == max_x);
+                if (max_x_node == null)
+                {
+                    // this is not a normal situation, abort!
+                    return;
+                }
+                max_x += max_x_node.GetWidth();
+                var min_y = non_deleted_nodes.Min(n => n.Y);
+                var max_y = non_deleted_nodes.Max(n => n.Y);
+                var max_y_node = non_deleted_nodes.FirstOrDefault(n => n.Y == max_y);
+                if (max_y_node == null)
+                {
+                    // this is not a normal situation, abort!
+                    return;
+                }
+                max_y += max_y_node.GetHeight();
+                var zoom_x = (min_x == max_x) ? double.MaxValue : .9 * Diagram.CanvasWidth / (max_x - min_x);
+                var zoom_y = (min_y == max_y) ? double.MaxValue : .9 * Diagram.CanvasHeight / (max_y - min_y);
+                var zoom = Math.Min(zoom_x, zoom_y);
+                zoom = Math.Max(MinZoom, Math.Min(zoom, MaxZoom));
+                if (zoom == double.MaxValue)
+                {
+                    // this is not a normal situation, abort!
+                    return;
+                }
+                (Origin.X, Origin.Y) = (min_x - 0.05 * (max_x - min_x), min_y - 0.05 * (max_y - min_y));
+                OriginChanged?.Invoke(Origin);
+                Zoom = zoom;
+                ZoomChanged?.Invoke(Zoom);
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿@page "/zooming_disabled"
-<SourceCodeLink Repository="Blazor.Diagrams" Page="@(nameof(ZoomingDisabled))" />
-<div style="display:grid; grid-template-rows: auto auto 1fr; height: 100%;">
+﻿@page "/zooming"
+<SourceCodeLink Repository="Blazor.Diagrams" Page="@(nameof(Zooming))" />
+<div style="display:grid; grid-template-rows: auto auto auto 1fr; height: 100%;">
     <div style="grid-row: 1">Disabled: <input type="checkbox" @bind-value="disabled" /></div>
     <div style="grid-row: 2">Inverted: <input type="checkbox" @bind-value="inversed" /></div>
+    <div style="grid-row: 3"><button @onclick="(_) => diagram?.ZoomToFit()">Zoom to fit</button></div>
 
-    <Diagram style="grid-row: 3">
+    <Diagram @ref="diagram" style="grid-row: 4">
         <Nodes>
             <RectangleNode Id="n1" @bind-X="n1p.X" @bind-Y="n1p.Y">
                 <div style="width:4em; height:3em; text-align: center;"></div>
@@ -35,6 +36,7 @@
     </Diagram>
 </div>
 @code {
+    private Diagram diagram;
     private bool disabled {get;set;}
     private bool inversed {get;set;}
     private Point n1p = new Point(100, 100);

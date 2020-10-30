@@ -24,9 +24,9 @@
         internal LinkSelectorSettings LinkSelectorSettings { get; set; }
         internal OverviewSettings OverviewSettings { get; set; }
         internal AutoLayoutSettings AutoLayoutSettings { get; set; }
-        internal void UpdateOverview()
+        internal void UpdateOverview(bool just_pan_or_zoom = false)
         {
-            Overview?.TriggerUpdate();
+            Overview?.TriggerUpdate(just_pan_or_zoom);
         }
     }
 }
