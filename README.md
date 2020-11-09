@@ -53,7 +53,7 @@ dotnet add package Excubo.Blazor.Diagrams
 ```html
 @using Excubo.Blazor.Diagrams
 
-<Diagram @ref="Diagram">
+<Diagram>
     <Nodes>
         <Node Id="abc" X="500" Y="500">
             Hello node @context.Id
@@ -69,6 +69,12 @@ dotnet add package Excubo.Blazor.Diagrams
 
 This is of course only a minimalistic example.
 For more examples, have a look at [the sample project](https://github.com/excubo-ag/Blazor.Diagrams/tree/main/TestProject_Components), which is the basis for the [demo application](https://excubo-ag.github.io/Blazor.Diagrams/).
+
+:information:
+Should you get a blank screen instead of the expected diagram, make sure that the diagram has a non-zero height.
+The diagram takes 100% of the height of the parent DOM node.
+To see whether this is the issue you're experiencing, try wrapping the diagram in a `div` with a fixed size,
+e.g. `<div style="height: 1000px; width: 1000px;"><Diagram>...</Diagram></div>`.
 
 ## Design principles
 
