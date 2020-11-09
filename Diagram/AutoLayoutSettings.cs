@@ -191,7 +191,7 @@ namespace Excubo.Blazor.Diagrams
                 {
                     continue;
                 }
-                double y = highest_layer_height - height / 2;
+                double y = highest_layer_height / 2 - height / 2;
                 foreach (var node in layer)
                 {
                     var margins = node.GetDrawingMargins();
@@ -217,7 +217,7 @@ namespace Excubo.Blazor.Diagrams
                 {
                     continue;
                 }
-                double x = widest_layer_width - width / 2;
+                double x = widest_layer_width / 2 - width / 2;
                 foreach (var node in layer)
                 {
                     var margins = node.GetDrawingMargins();
