@@ -181,7 +181,7 @@ namespace Excubo.Blazor.Diagrams
         {
             double x = 0;
             var heights = layers.Select(layer =>
-                layer.Select(n => n.GetHeight() + n.GetDrawingMargins().Bottom).ToList())
+                layer.Select(n => n.GetHeight() + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom).ToList())
                 .ToList();
             var layer_heights = heights.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
             var highest_layer_height = layer_heights.Max();
@@ -191,12 +191,12 @@ namespace Excubo.Blazor.Diagrams
                 {
                     continue;
                 }
-                double y = (highest_layer_height - height) / 2;
+                double y = highest_layer_height - height / 2;
                 foreach (var node in layer)
                 {
-                    node.MoveTo(x, y);
                     var margins = node.GetDrawingMargins();
-                    y += node.GetHeight() + margins.Bottom + vertical_separation;
+                    node.MoveTo(x, y + margins.Top);
+                    y += node.GetHeight() + margins.Top + margins.Bottom + vertical_separation;
                 }
                 var maximum_width = layer.Max(n => n.GetWidth() + n.GetDrawingMargins().Right);
                 x += horizontal_separation + maximum_width;
@@ -207,7 +207,7 @@ namespace Excubo.Blazor.Diagrams
         {
             double y = 0;
             var widths = layers.Select(layer =>
-                layer.Select(n => n.GetWidth() + n.GetDrawingMargins().Right).ToList())
+                layer.Select(n => n.GetWidth() + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right).ToList())
                 .ToList();
             var layer_widths = widths.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
             var widest_layer_width = layer_widths.Max();
@@ -217,12 +217,12 @@ namespace Excubo.Blazor.Diagrams
                 {
                     continue;
                 }
-                double x = (widest_layer_width - width) / 2;
+                double x = widest_layer_width - width / 2;
                 foreach (var node in layer)
                 {
-                    node.MoveTo(x, y);
                     var margins = node.GetDrawingMargins();
-                    x += node.GetWidth() + margins.Right + horizontal_separation;
+                    node.MoveTo(x + margins.Left, y);
+                    x += node.GetWidth() + margins.Left + margins.Right + horizontal_separation;
                 }
                 var maximum_height = layer.Max(n => n.GetHeight() + n.GetDrawingMargins().Bottom);
                 y += vertical_separation + maximum_height;
