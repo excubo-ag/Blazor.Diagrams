@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutomaticGraphLayout" Version="1.1.9" />
+    <PackageReference Include="AutomaticGraphLayout" Version="1.1.11" />
     <PackageReference Include="Excubo.Blazor.Canvas" Version="2.3.19" />
 	<PackageReference Include="Excubo.Generators.Blazor" Version="1.11.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.9" Condition= " '$(TargetFramework)' == 'netstandard2.1' " />
