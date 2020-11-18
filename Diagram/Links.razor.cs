@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
-    public partial class Links
+    public partial class Links : ComponentBase
     {
         internal bool render_not_necessary;
         protected override bool ShouldRender()
@@ -41,6 +41,7 @@ namespace Excubo.Blazor.Diagrams
         /// Callback for when a link source or target is changed.
         /// </summary>
         [Parameter] public Action<LinkBase> OnModified { get; set; }
+        [Parameter] public bool AllowFreeFloatingLinks { get; set; } = true;
         [CascadingParameter] public Diagram Diagram { get; set; }
 
         internal void AttachAnchorsTo(NodeBase node)

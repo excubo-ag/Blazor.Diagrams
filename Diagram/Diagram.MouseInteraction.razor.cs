@@ -393,6 +393,11 @@ namespace Excubo.Blazor.Diagrams
         {
             var (anchor, old_node, old_x, old_y) = (ActionObject.Anchor, ActionObject.Node, ActionObject.X, ActionObject.Y);
             var node = ActiveElement.Node;
+            if (node == null && !ActionObject.Link.Links.AllowFreeFloatingLinks)
+            {
+                // free-floating links are not allowed and this action would not attach the link to a node
+                return;
+            }
             var (x, y) = (node != null) ? e.RelativeTo(node) : e.RelativeToOrigin(this);
             Changes.NewAndDo(new ChangeAction(() =>
             {
@@ -406,13 +411,20 @@ namespace Excubo.Blazor.Diagrams
                 anchor.RelativeY = old_y;
             }));
             Overview?.TriggerUpdate();
-            ActionObject.Set(ActionObject.Link);
-            ActionType = ActionType.ModifyLink;
+            ActionObject.Link.Deselect();
+            ActionObject.Link.Links.OnModified?.Invoke(ActionObject.Link);
+            ActionObject.Clear();
+            ActionType = ActionType.None;
         }
         private void EndLink(MouseEventArgs e)
         {
             var link = ActionObject.Link;
             var node = ActiveElement.Node;
+            if (node == null && !link.Links.AllowFreeFloatingLinks)
+            {
+                // free-floating links are not allowed and this action would not attach the link to a node
+                return;
+            }
             if (node != null)
             {
                 link.Target.Node = node;
