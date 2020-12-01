@@ -298,8 +298,82 @@ namespace Excubo.Blazor.Diagrams
             var rest_in_layers = GetLayersTopDown(all_nodes.Except(layers.SelectMany(n => n)).ToList(), all_links);
             layers.Merge(rest_in_layers);
 
+            OptimizeNodePositions(all_nodes, all_links, layers);
+
             return layers;
         }
+
+        private static void OptimizeNodePositions(List<NodeBase> all_nodes, List<LinkBase> all_links, List<List<NodeBase>> layers)
+        {
+            while (true)
+            {
+                // helper method to find the highest-index layer containing any of the candidate nodes
+                static int GetHighestLevel(List<List<NodeBase>> layers, List<NodeBase> candidates)
+                {
+                    foreach (var i in Enumerable.Range(0, layers.Count).Reverse())
+                    {
+                        foreach (var ntc in candidates)
+                        {
+                            if (layers[i].Contains(ntc))
+                            {
+                                return i;
+                            }
+                        }
+                    }
+                    return 0;
+                }
+
+                var another_round_required = false;
+                // SINK I 
+                // For all nodes 
+                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Target.Node == nd))) // look at all nodes without incoming links 
+                {
+                    var nodes_to_check = all_links
+                        .Where(x => x.Source.Node == node) // get links leaving node 
+                        .Select(x => x.Target.Node)        // get target nodes from links
+                        .ToList();
+
+                    var highest_target_level = GetHighestLevel(layers, nodes_to_check);
+                    var current_layer = layers.IndexOf(layers.First(layer => layer.Contains(node)));
+                    // if own level < highest - 1 -> move own to highest - 1 
+                    if (highest_target_level - 1 > current_layer)
+                    {
+                        // reposition node 
+                        layers[highest_target_level - 1].Add(node);
+                        layers[current_layer].Remove(node);
+                    }
+                }
+                // SINK II 
+                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Source.Node == nd))) // look at all nodes without outgoing links 
+                {
+                    var nodes_to_check = all_links
+                        .Where(x => x.Target.Node == node) // get links targeting node
+                        .Select(x => x.Source.Node)        // get source nodes from links
+                        .ToList();
+
+                    var highest_target_level = GetHighestLevel(layers, nodes_to_check);
+                    var current_layer = layers.IndexOf(layers.First(layer => layer.Contains(node)));
+                    // if own level < highest + 1 -> move own to highest + 1 
+                    if (highest_target_level + 1 > current_layer)
+                    {
+                        // check if layer needs adding 
+                        if (highest_target_level + 2 > layers.Count)
+                        {
+                            layers.Add(new List<NodeBase>());
+                        }
+                        // reposition node
+                        layers[highest_target_level + 1].Add(node);
+                        layers[current_layer].Remove(node);
+                        another_round_required = true;
+                    }
+                }
+                if (!another_round_required)
+                {
+                    break;
+                }
+            }
+        }
+
         private static List<List<NodeBase>> GetLayersBottomUp(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
             // 1.0 if we don't have nodes, we have no layers
