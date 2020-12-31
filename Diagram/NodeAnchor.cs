@@ -54,20 +54,20 @@ namespace Excubo.Blazor.Diagrams
         /// The relative horizontal position of the anchor in reference to the node. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// Only used if Port is not used.
         /// </summary>
-        public double RelativeX { internal get => relative_x; set { relative_x = value; CoordinatesChanged?.Invoke(); } }
+        public double RelativeX { get => relative_x; set { relative_x = value; CoordinatesChanged?.Invoke(); } }
         /// <summary>
         /// The relative vertical position of the anchor in reference to the node. If Node is null, the anchor is free-floating and refers to a point on the canvas.
         /// Only used if Port is not used.
         /// </summary>
-        public double RelativeY { internal get => relative_y; set { relative_y = value; CoordinatesChanged?.Invoke(); } }
+        public double RelativeY { get => relative_y; set { relative_y = value; CoordinatesChanged?.Invoke(); } }
         /// <summary>
         /// The absolute horizontal position of the anchor.
         /// </summary>
-        internal double X => RelativeX + (Node?.X ?? 0);
+        public double X => RelativeX + (Node?.X ?? 0);
         /// <summary>
         /// The absolute vertical position of the anchor.
         /// </summary>
-        internal double Y => RelativeY + (Node?.Y ?? 0);
+        public double Y => RelativeY + (Node?.Y ?? 0);
         private NodeBase node;
         private double relative_x;
         private double relative_y;
