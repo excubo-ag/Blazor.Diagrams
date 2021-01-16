@@ -184,8 +184,8 @@ namespace Excubo.Blazor.Diagrams
             }
             base.OnParametersSet();
         }
-        internal void Select() { Selected = true; }
-        internal void Deselect() { Selected = false; }
+        internal void Select() { Selected = true; StateHasChanged(); }
+        internal void Deselect() { Selected = false; StateHasChanged(); }
         internal abstract bool HasSize { get; }
         protected internal virtual async Task DrawShapeAsync(IContext2DWithoutGetters context)
         {
