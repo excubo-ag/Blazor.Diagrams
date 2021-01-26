@@ -307,6 +307,21 @@ namespace Excubo.Blazor.Diagrams
         {
             while (true)
             {
+                // helper method to find the lowest-index layer containing any of the candidate nodes
+                static int GetLowestLevel(List<List<NodeBase>> layers, List<NodeBase> candidates)
+                {
+                    foreach (var i in Enumerable.Range(0, layers.Count))
+                    {
+                        foreach (var ntc in candidates)
+                        {
+                            if (layers[i].Contains(ntc))
+                            {
+                                return i;
+                            }
+                        }
+                    }
+                    return layers.Count;
+                }
                 // helper method to find the highest-index layer containing any of the candidate nodes
                 static int GetHighestLevel(List<List<NodeBase>> layers, List<NodeBase> candidates)
                 {
@@ -333,7 +348,7 @@ namespace Excubo.Blazor.Diagrams
                         .Select(x => x.Target.Node)        // get target nodes from links
                         .ToList();
 
-                    var highest_target_level = GetHighestLevel(layers, nodes_to_check);
+                    var highest_target_level = GetLowestLevel(layers, nodes_to_check);
                     var current_layer = layers.IndexOf(layers.First(layer => layer.Contains(node)));
                     // if own level < highest - 1 -> move own to highest - 1 
                     if (highest_target_level - 1 > current_layer)
@@ -341,6 +356,7 @@ namespace Excubo.Blazor.Diagrams
                         // reposition node 
                         layers[highest_target_level - 1].Add(node);
                         layers[current_layer].Remove(node);
+                        another_round_required = true;
                     }
                 }
                 // SINK II 
