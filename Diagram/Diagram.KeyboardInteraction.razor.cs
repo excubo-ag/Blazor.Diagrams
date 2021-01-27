@@ -17,7 +17,7 @@ namespace Excubo.Blazor.Diagrams
                 {
                     node.Deselect();
                 }
-                Group = new Group();
+                Group.Clear();
             }
             else if (e.Key == "z" && e.CtrlKey && !e.ShiftKey)
             {
@@ -54,7 +54,7 @@ namespace Excubo.Blazor.Diagrams
                         }
                     }));
                     OnRemove?.Invoke(Group);
-                    Group = new Group();
+                    Group.Clear();
                 }
                 Overview?.TriggerUpdate();
             }

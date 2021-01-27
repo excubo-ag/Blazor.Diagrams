@@ -20,6 +20,7 @@ namespace Excubo.Blazor.Diagrams
         internal void Remove(NodeBase node)
         {
             _ = Nodes.Remove(node);
+            ContentChanged?.Invoke(this, EventArgs.Empty);
         }
         internal void Clear()
         {
@@ -28,6 +29,7 @@ namespace Excubo.Blazor.Diagrams
                 node.Deselect();
             }
             Nodes.Clear();
+            ContentChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
