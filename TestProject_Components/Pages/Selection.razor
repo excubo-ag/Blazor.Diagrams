@@ -1,0 +1,59 @@
+﻿@page "/selection"
+<SourceCodeLink Repository="Blazor.Diagrams" Page="@(nameof(Selection))" />
+
+<div style="position: relative; height: 100%">
+    <Diagram SelectionChanged="SelectionChanged">
+        <Nodes>
+            <FixedSizeRectangleNode Id="N1" @bind-X="@X1" @bind-Y="@Y1" Width="50" Height="20">Node 1</FixedSizeRectangleNode>
+            <FixedSizeRectangleNode Id="N2" @bind-X="@X2" @bind-Y="@Y2" Width="50" Height="20">Node 2</FixedSizeRectangleNode>
+            <FixedSizeRectangleNode Id="N3" @bind-X="@X3" @bind-Y="@Y3" Width="50" Height="20">Node 3</FixedSizeRectangleNode>
+            <FixedSizeRectangleNode Id="N4" @bind-X="@X4" @bind-Y="@Y4" Width="50" Height="20">Node 4</FixedSizeRectangleNode>
+            <FixedSizeRectangleNode Id="N5" @bind-X="@X5" @bind-Y="@Y5" Width="50" Height="20">Node 5</FixedSizeRectangleNode>
+            <FixedSizeRectangleNode Id="N6" @bind-X="@X6" @bind-Y="@Y6" Width="50" Height="20">Node 6</FixedSizeRectangleNode>
+        </Nodes>
+        <Links />
+    </Diagram>
+    <div style="position: absolute; top: 0; right: 0; ">
+        These are the last five events that occured:
+        <ul>
+            @foreach (var (ev, index) in events.Reverse<string>().Take(5).Select((e, i) => (e, i)))
+            {
+                <li @key="index">@ev</li>
+            }
+        </ul>
+    </div>
+</div>
+@code {
+    private void SelectionChanged(Group group)
+    {
+        if (group.Nodes.Any())
+        {
+            if (group.Nodes.Count == 1)
+            {
+                events.Add($"The node {group.Nodes[0].Id} is selected");
+            }
+            else
+            {
+                events.Add($"The nodes {string.Join(", ", group.Nodes.Select(n => n.Id))} are selected");
+            }
+        }
+        else
+        {
+            events.Add("No nodes are selected");
+        }
+        StateHasChanged();
+    }
+    private double X1 { get; set; } = 300;
+    private double Y1 { get; set; } = 300;
+    private double X2 { get; set; } = 400;
+    private double Y2 { get; set; } = 300;
+    private double X3 { get; set; } = 500;
+    private double Y3 { get; set; } = 300;
+    private double X4 { get; set; } = 300;
+    private double Y4 { get; set; } = 500;
+    private double X5 { get; set; } = 400;
+    private double Y5 { get; set; } = 500;
+    private double X6 { get; set; } = 500;
+    private double Y6 { get; set; } = 500;
+    private List<string> events = new List<string>();
+}

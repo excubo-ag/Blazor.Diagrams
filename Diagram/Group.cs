@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Excubo.Blazor.Diagrams
 {
@@ -20,14 +21,19 @@ namespace Excubo.Blazor.Diagrams
         internal void Remove(NodeBase node)
         {
             _ = Nodes.Remove(node);
+            ContentChanged?.Invoke(this, EventArgs.Empty);
         }
         internal void Clear()
         {
-            foreach (var node in Nodes)
+            if (Nodes.Any())
             {
-                node.Deselect();
+                foreach (var node in Nodes)
+                {
+                    node.Deselect();
+                }
+                Nodes.Clear();
+                ContentChanged?.Invoke(this, EventArgs.Empty);
             }
-            Nodes.Clear();
         }
     }
 }

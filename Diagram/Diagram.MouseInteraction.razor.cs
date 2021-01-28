@@ -276,7 +276,7 @@ namespace Excubo.Blazor.Diagrams
             ActionType = ActionType.None;
             if (Group.Nodes.Count == 1)
             {
-                Group.Nodes[0].Deselect();
+                Group.Clear();
             }
             node_library_wrapper.NewNodeAddingInProgress = false;
             Overview?.TriggerUpdate();
@@ -521,7 +521,6 @@ namespace Excubo.Blazor.Diagrams
             {
                 Changes.New(new ChangeAction(() => Nodes.Add(new_node), () => Nodes.Remove(new_node)));
                 Group.Clear();
-                Group = new Group();
                 Group.Add(new_node);
                 new_node.Select();
                 ActionObject.Set(new_node);
