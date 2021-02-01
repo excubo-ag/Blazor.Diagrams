@@ -18,6 +18,8 @@ Otherwise, the width and height will be determined by the size of the content.
         <!--Beginning of the customizable part-->
         <!--This defines the area which can be interacted with to select/move the node. -->
         <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
+        <!--ContentSizedNodeBase only: use style="@(Hidden? "display:none" : "") ..." to hide the node until the correct size has been determined-->
+        <!--FixedSizeNodeBase: remove @(Hidden? "display:none" : "") from the style-->
         <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
               @onmouseover="OnNodeOver"
               @onmouseout="OnNodeOut"
@@ -39,6 +41,8 @@ Otherwise, the width and height will be determined by the size of the content.
                 <!--Beginning of the customizable part-->
                 <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
                 <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
+                <!--ContentSizedNodeBase only: use style="@(Hidden? "display:none" : "")" to hide the border until the correct size has been determined-->
+                <!--FixedSizeNodeBase: remove @(Hidden? "display:none" : "") from the style-->
                 <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
                       style="@(Hidden? "display:none" : "")"
                       stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
