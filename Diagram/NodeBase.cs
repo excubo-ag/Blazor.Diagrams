@@ -3,7 +3,6 @@ using Excubo.Blazor.Diagrams.__Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
@@ -149,7 +148,7 @@ namespace Excubo.Blazor.Diagrams
                 builder.CloseComponent();
             };
         }
-        internal void MoveTo(double x, double y)
+        internal virtual void MoveTo(double x, double y)
         {
             if (!Movable)
             {

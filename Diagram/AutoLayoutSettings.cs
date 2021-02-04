@@ -60,7 +60,7 @@ namespace Excubo.Blazor.Diagrams
                 Diagram.UpdateOverview();
             }
         }
-        private void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        internal void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
             switch (Algorithm)
             {
@@ -348,13 +348,13 @@ namespace Excubo.Blazor.Diagrams
                         .Select(x => x.Target.Node)        // get target nodes from links
                         .ToList();
 
-                    var highest_target_level = GetLowestLevel(layers, nodes_to_check);
+                    var lowest_target_level = GetLowestLevel(layers, nodes_to_check);
                     var current_layer = layers.IndexOf(layers.First(layer => layer.Contains(node)));
-                    // if own level < highest - 1 -> move own to highest - 1 
-                    if (highest_target_level - 1 > current_layer)
+                    // if own level < lowest_target_level - 1 -> move own to lowest_target_level - 1 
+                    if (lowest_target_level - 1 > current_layer)
                     {
                         // reposition node 
-                        layers[highest_target_level - 1].Add(node);
+                        layers[lowest_target_level - 1].Add(node);
                         layers[current_layer].Remove(node);
                         another_round_required = true;
                     }
@@ -453,7 +453,7 @@ namespace Excubo.Blazor.Diagrams
                     var sources = sources_by_target[target];
                     foreach (var source in sources)
                     {
-                        if (nodes_pushing_up.ContainsKey(source) && nodes_pushing_up[source].Contains(target))
+                        if (nodes_pushing_up.ContainsKey(target) && nodes_pushing_up[target].Contains(source))
                         {
                             continue; // cycle detected
                         }
@@ -505,7 +505,7 @@ namespace Excubo.Blazor.Diagrams
                     var targets = targets_by_source[source];
                     foreach (var target in targets)
                     {
-                        if (nodes_pushing_down.ContainsKey(target) && nodes_pushing_down[target].Contains(source))
+                        if (nodes_pushing_down.ContainsKey(source) && nodes_pushing_down[source].Contains(target))
                         {
                             continue; // cycle detected
                         }
