@@ -8,14 +8,20 @@
         </UserDefinedNode>
     </NodeLibrary>
     <Nodes>
-        <UserDefinedNode @bind-X="@X" @bind-Y="@Y">
+        <UserDefinedNode @bind-X="@X1" @bind-Y="@Y1">
             Hello custom node.
         </UserDefinedNode>
+        <RectangleNodeNoLinks @bind-X="@X2" @bind-Y="@Y2">
+            <p>This is a rectangle node, which can't be linked</p>
+            <p>This is for <a style="pointer-events: all" href="https://github.com/excubo-ag/Blazor.Diagrams/issues/79">Blazor.Diagrams#79</a></p>
+        </RectangleNodeNoLinks>
     </Nodes>
     <Links />
     <OverviewSettings />
 </Diagram>
 @code {
-    private double X { get; set; } = 300;
-    private double Y { get; set; } = 300;
+    private double X1 { get; set; } = 300;
+    private double Y1 { get; set; } = 300;
+    private double X2 { get; set; } = 500;
+    private double Y2 { get; set; } = 300;
 }
