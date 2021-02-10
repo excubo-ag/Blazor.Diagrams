@@ -38,6 +38,9 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     rs: {},
     // function callable from C# to start observing resizes. Captures a reference to an element and a C# object.
     observeResizes: (el, id, r) => {
+        if (el == undefined) {
+            return;
+        }
         const d = window.Excubo.Diagrams;
         const br = el.getBoundingClientRect();
         d.rs[id] = { Element: el, Ref: r, Width: br.width, Height: br.height };
@@ -45,12 +48,18 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     },
     // function callable from C# to stop observing resizes. Frees the references.
     unobserveResizes: (el, id) => {
+        if (el == undefined) {
+            return;
+        }
         const d = window.Excubo.Diagrams;
         delete d.rs[id];
         d.ro.unobserve(el)
     },
     // function callable from C# to start observing moves. Captures a reference to all the parents of an element, and a C# object.
     observeMoves: (el, id, r) => {
+        if (el == undefined) {
+            return;
+        }
         const d = window.Excubo.Diagrams;
         const br = el.getBoundingClientRect();
         d.rs[id] = { Element: el, Ref: r, Left: br.left, Top: br.top, Width: br.width, Height: br.height, Parents: [] };
@@ -62,6 +71,9 @@ window.Excubo.Diagrams = window.Excubo.Diagrams || {
     },
     // function callable from C# to stop observing moves. Frees the references.
     unobserveMoves: (el, id) => {
+        if (el == undefined) {
+            return;
+        }
         const d = window.Excubo.Diagrams;
         const parents = d.rs[id].Parents;
         delete d.rs[id];
