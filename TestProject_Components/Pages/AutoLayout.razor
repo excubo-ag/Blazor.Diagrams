@@ -87,7 +87,7 @@
         .Append(new NodeAnchor { NodeId = "17" })
         .Append(new NodeAnchor { NodeId = "5" })
         .ToList();
-    private static Random rnd = new Random();
+    private static Random rnd = new Random(1);
     private List<NodeAnchor> targets = Enumerable.Empty<NodeAnchor>()
         .Concat(Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }).Reverse())
         .Concat(Enumerable.Range(1, 9).Select(i => new NodeAnchor { NodeId = i.ToString() }))
