@@ -182,101 +182,103 @@ namespace Excubo.Blazor.Diagrams
             const double horizontal_separation = 50;
             if (Algorithm == Algorithm.TreeVerticalTopDown || Algorithm == Algorithm.TreeVerticalBottomUp)
             {
-                ArrangeNodesInRows(all_links, layers, vertical_separation, horizontal_separation);
+                Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Left;
+                Func<NodeBase, double> position = (node) => node.X;
+                Func<NodeBase, double> space = (node) => node.GetWidth();
+                Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
+                Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
+                Func<double, Action<NodeBase, double>> move_generator = (y) => (node, x) => node.MoveTo(x, y);
+                ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
+                    move_generator, orthogonal_space_with_margins, position,
+                    top_or_left_margin, space, bottom_or_right_margin);
             }
             else
             {
-                ArrangeNodesInColumns(all_links, layers, vertical_separation, horizontal_separation);
+                Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Top;
+                Func<NodeBase, double> position = (node) => node.Y;
+                Func<NodeBase, double> space = (node) => node.GetHeight();
+                Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
+                Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
+                Func<double, Action<NodeBase, double>> move_generator = (x) => (node, y) => node.MoveTo(x, y);
+                ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
+                    move_generator, orthogonal_space_with_margins, position,
+                    top_or_left_margin, space, bottom_or_right_margin);
             }
         }
-        private static void ArrangeNodesInColumns(List<LinkBase> all_links, List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
+        private static void ArrangeNodes(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation,
+            Func<double, Action<NodeBase, double>> move_generator,
+            Func<NodeBase, double> orthogonal_space_with_margins,
+            Func<NodeBase, double> position,
+            Func<NodeBase, double> top_or_left_margin,
+            Func<NodeBase, double> space,
+            Func<NodeBase, double> bottom_or_right_margin)
         {
-            // TODO replicate what's in ArrangeNodesInRows
-            double x = 0;
-            var heights = layers.Select(layer =>
-                layer.Select(n => n.GetHeight() + n.GetDrawingMargins().Top + n.GetDrawingMargins().Bottom).ToList())
-                .ToList();
-            var layer_heights = heights.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
-            var highest_layer_height = layer_heights.Max();
-            foreach (var (layer, height) in layers.Zip(layer_heights, (l, h) => (l, h)))
-            {
-                if (!layer.Any())
-                {
-                    continue;
-                }
-                double y = highest_layer_height / 2 - height / 2;
-                foreach (var node in layer)
-                {
-                    var margins = node.GetDrawingMargins();
-                    node.MoveTo(x, y + margins.Top);
-                    y += node.GetHeight() + margins.Top + margins.Bottom + vertical_separation;
-                }
-                var maximum_width = layer.Max(n => n.GetWidth() + n.GetDrawingMargins().Right);
-                x += horizontal_separation + maximum_width;
-            }
-        }
-
-        private static void ArrangeNodesInRows(List<LinkBase> all_links, List<List<NodeBase>> layers, double vertical_separation, double horizontal_separation)
-        {
-
-            //double y = 0;
-            //var widths = layers.Select(layer =>
-            //    layer.Select(n => n.GetWidth() + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right).ToList())
-            //    .ToList();
-            //var layer_widths = widths.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
-            //var widest_layer_width = layer_widths.Max();
-            //foreach (var (layer, width) in layers.Zip(layer_widths, (l, w) => (l, w)))
-            //{
-            //    if (!layer.Any())
-            //    {
-            //        continue;
-            //    }
-            //    double x = widest_layer_width / 2 - width / 2;
-            //    foreach (var node in layer)
-            //    {
-            //        var margins = node.GetDrawingMargins();
-            //        node.MoveTo(x + margins.Left, y);
-            //        x += node.GetWidth() + margins.Left + margins.Right + horizontal_separation;
-            //    }
-            //    var maximum_height = layer.Max(n => n.GetHeight() + n.GetDrawingMargins().Bottom);
-            //    y += vertical_separation + maximum_height;
-            //}
-            //return;
             var widths = layers.Select(layer =>
-                layer.Select(n => n.GetWidth() + n.GetDrawingMargins().Left + n.GetDrawingMargins().Right).ToList())
+                layer.Select(n => space(n) + top_or_left_margin(n) + bottom_or_right_margin(n)).ToList())
                 .ToList();
-            var layer_heights = layers.Select(layer => layer.Max(n => n.GetHeight() + n.GetDrawingMargins().Bottom)).ToList();
-            var layer_widths = widths.Select(layer => horizontal_separation * (layer.Count - 1) + layer.Sum()).ToList();
+            var layer_heights = layers.Select(layer => layer.Max(n => orthogonal_space_with_margins(n))).ToList();
+            var layer_widths = widths.Select(layer => in_layer_separation * (layer.Count - 1) + layer.Sum()).ToList();
             var widest_layer_width = layer_widths.Max();
             var widest_layer_index = layer_widths.IndexOf(widest_layer_width);
             var widest_layer = layers[widest_layer_index];
 
-            // TODO arrange items in the widest layer
+            // Provisionally arrange the widest layer
             {
                 double x = 0;
-                var y = layer_heights.Take(widest_layer_index).Sum() + vertical_separation * widest_layer_index;
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var move = move_generator(y);
                 foreach (var node in widest_layer)
                 {
-                    var margins = node.GetDrawingMargins();
-                    node.MoveTo(x + margins.Left, y);
-                    x += node.GetWidth() + margins.Left + margins.Right + horizontal_separation;
+                    move(node, x + top_or_left_margin(node));
+                    x += space(node) + top_or_left_margin(node) + bottom_or_right_margin(node) + in_layer_separation;
                 }
             }
-            for (int i = widest_layer_index; i + 1 < layers.Count; ++i)
+            OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, position, top_or_left_margin, space, bottom_or_right_margin);
+            if (widest_layer_index > 0)
             {
-                // going through the layers _below_ the widest layer
-                var active_layer = layers[i + 1];
+                // optimize the widest layer by the layers above
+                var active_layer = layers[widest_layer_index];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
                     var relevant_links = all_links.Where(l => l.Source.Node != null && l.Target.Node == n).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => l.Source.Node.X + l.Source.Node.GetWidth() / 2) : double.MaxValue;
+                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Source.Node) + space(l.Source.Node) / 2) : double.MaxValue;
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureHorizontalSeparation(horizontal_separation, wish_positions);
+                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, position, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(i + 1).Sum() + vertical_separation * (i + 1);
-                PlaceNodesHorizontallyInLayer(horizontal_separation, wish_positions, y);
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var move = move_generator(y);
+                PlaceNodesInLayer(in_layer_separation, wish_positions, move, position, top_or_left_margin, space, bottom_or_right_margin);
             }
+            else
+            {
+                // optimize the widest layer by the layers below
+                var active_layer = layers[widest_layer_index];
+                var wish_positions = active_layer.Zip(active_layer.Select(n =>
+                {
+                    var relevant_links = all_links.Where(l => l.Source.Node == n && l.Target.Node != null).ToList();
+                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Target.Node) + space(l.Target.Node) / 2) : double.MaxValue;
+                }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
+
+                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, position, top_or_left_margin, space, bottom_or_right_margin);
+
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var move = move_generator(y);
+                PlaceNodesInLayer(in_layer_separation, wish_positions, move, position, top_or_left_margin, space, bottom_or_right_margin);
+            }
+            OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, position, top_or_left_margin, space, bottom_or_right_margin);
+
+        }
+
+        private static void OptimizeAboveWidestLayer(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
+            Func<double, Action<NodeBase, double>> move_generator,
+            Func<NodeBase, double> position,
+            Func<NodeBase, double> top_or_left_margin,
+            Func<NodeBase, double> space,
+            Func<NodeBase, double> bottom_or_right_margin)
+        {
             for (int i = widest_layer_index; i > 0; --i)
             {
                 // going through the layers _above_ the widest layer
@@ -284,46 +286,101 @@ namespace Excubo.Blazor.Diagrams
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
                     var relevant_links = all_links.Where(l => l.Source.Node == n && l.Target.Node != null).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => l.Target.Node.X + l.Target.Node.GetWidth() / 2) : double.MaxValue;
+                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Target.Node) + space(l.Target.Node) / 2) : double.MaxValue;
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureHorizontalSeparation(horizontal_separation, wish_positions);
+                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, position, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(i - 1).Sum() + vertical_separation * (i - 1);
-                PlaceNodesHorizontallyInLayer(horizontal_separation, wish_positions, y);
+                var y = layer_heights.Take(i - 1).Sum() + layer_separation * (i - 1);
+                var move = move_generator(y);
+                PlaceNodesInLayer(in_layer_separation, wish_positions, move, position, top_or_left_margin, space, bottom_or_right_margin);
             }
         }
 
-        private static List<(NodeBase Node, double Position)> EnsureHorizontalSeparation(double horizontal_separation, List<(NodeBase Node, double Position)> wish_positions)
+        private static void OptimizeBelowWidestLayer(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
+            Func<double, Action<NodeBase, double>> move_generator,
+            Func<NodeBase, double> position,
+            Func<NodeBase, double> top_or_left_margin,
+            Func<NodeBase, double> space,
+            Func<NodeBase, double> bottom_or_right_margin)
         {
+            for (int i = widest_layer_index; i + 1 < layers.Count; ++i)
+            {
+                // going through the layers _below_ the widest layer
+                var active_layer = layers[i + 1];
+                var wish_positions = active_layer.Zip(active_layer.Select(n =>
+                {
+                    var relevant_links = all_links.Where(l => l.Source.Node != null && l.Target.Node == n).ToList();
+                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Source.Node) + space(l.Source.Node) / 2) : double.MaxValue;
+                }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
+
+                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, position, top_or_left_margin, space, bottom_or_right_margin);
+
+                var y = layer_heights.Take(i + 1).Sum() + layer_separation * (i + 1);
+                var move = move_generator(y);
+                PlaceNodesInLayer(in_layer_separation, wish_positions, move, position, top_or_left_margin, space, bottom_or_right_margin);
+            }
+        }
+
+        private static List<(NodeBase Node, double Position)> EnsureSeparation(double in_layer_separation, List<(NodeBase Node, double Position)> wish_positions,
+            Func<NodeBase, double> position,
+            Func<NodeBase, double> top_or_left_margin,
+            Func<NodeBase, double> space,
+            Func<NodeBase, double> bottom_or_right_margin)
+        {
+            // we pretend here in the variable naming that the tree is top to bottom.
             var center = wish_positions.Where(e => e.Position != double.MaxValue).Average(e => e.Position);
             var left_of_center = wish_positions.Where(e => e.Position != double.MaxValue).TakeWhile(v => v.Position < center).ToList();
             var in_center = wish_positions.Where(e => e.Position != double.MaxValue).Skip(left_of_center.Count).TakeWhile(v => v.Position == center).ToList();
             var right_of_center = wish_positions.Where(e => e.Position != double.MaxValue).Skip(left_of_center.Count + in_center.Count).ToList();
+            if (left_of_center.Any() != right_of_center.Any()) // floats... the average of X,X might be not equal to X.
+            {
+                if (!in_center.Any())
+                {
+                    in_center.AddRange(left_of_center);
+                    in_center.AddRange(right_of_center);
+                    left_of_center.Clear();
+                    right_of_center.Clear();
+                }
+                else
+                {
+                    if (left_of_center.Any())
+                    {
+                        right_of_center.AddRange(in_center);
+                        in_center.Clear();
+                    }
+                    else
+                    {
+                        left_of_center.AddRange(in_center);
+                        in_center.Clear();
+                    }
+                }
+                // this doesn't make sense.
+            }
             if (in_center.Count > 0)
             {
                 if (in_center.Count % 2 == 0)
                 {
                     // the center is free of nodes. It shows the separation between two nodes.
                     var x = center;
-                    x += horizontal_separation / 2;
+                    x += in_layer_separation / 2;
                     for (int j = 0; j < in_center.Count; j += 2)
                     {
-                        x += in_center[j].Node.GetDrawingMargins().Left;
+                        x += top_or_left_margin(in_center[j].Node);
                         in_center[j] = (in_center[j].Node, x);
-                        x += in_center[j].Node.GetWidth();
-                        x += in_center[j].Node.GetDrawingMargins().Right;
-                        x += horizontal_separation;
+                        x += space(in_center[j].Node);
+                        x += bottom_or_right_margin(in_center[j].Node);
+                        x += in_layer_separation;
                     }
                     x = center;
-                    x -= horizontal_separation / 2;
+                    x -= in_layer_separation / 2;
                     for (int j = 1; j < in_center.Count; j += 2)
                     {
-                        x -= in_center[j].Node.GetDrawingMargins().Right;
-                        x -= in_center[j].Node.GetWidth();
+                        x -= bottom_or_right_margin(in_center[j].Node);
+                        x -= space(in_center[j].Node);
                         in_center[j] = (in_center[j].Node, x);
-                        x -= in_center[j].Node.GetDrawingMargins().Left;
-                        x -= horizontal_separation;
+                        x -= top_or_left_margin(in_center[j].Node);
+                        x -= in_layer_separation;
                     }
                 }
                 else
@@ -331,28 +388,28 @@ namespace Excubo.Blazor.Diagrams
                     // there is one node slap bang in the center.
                     var x = center;
                     // in_center[0] stays where it is, the center.
-                    x += in_center[0].Node.GetWidth() / 2;
-                    x += in_center[0].Node.GetDrawingMargins().Right;
-                    x += horizontal_separation;
+                    x += space(in_center[0].Node) / 2;
+                    x += bottom_or_right_margin(in_center[0].Node);
+                    x += in_layer_separation;
                     for (int j = 1; j < in_center.Count; j += 2)
                     {
-                        x += in_center[j].Node.GetDrawingMargins().Left;
+                        x += top_or_left_margin(in_center[j].Node);
                         in_center[j] = (in_center[j].Node, x);
-                        x += in_center[j].Node.GetWidth();
-                        x += in_center[j].Node.GetDrawingMargins().Right;
-                        x += horizontal_separation;
+                        x += space(in_center[j].Node);
+                        x += bottom_or_right_margin(in_center[j].Node);
+                        x += in_layer_separation;
                     }
                     x = center;
-                    x -= in_center[0].Node.GetWidth() / 2;
-                    x -= in_center[0].Node.GetDrawingMargins().Right;
-                    x -= horizontal_separation;
+                    x -= space(in_center[0].Node) / 2;
+                    x -= bottom_or_right_margin(in_center[0].Node);
+                    x -= in_layer_separation;
                     for (int j = 2; j < in_center.Count; j += 2)
                     {
-                        x -= in_center[j].Node.GetDrawingMargins().Right;
-                        x -= in_center[j].Node.GetWidth();
+                        x -= bottom_or_right_margin(in_center[j].Node);
+                        x -= space(in_center[j].Node);
                         in_center[j] = (in_center[j].Node, x);
-                        x -= in_center[j].Node.GetDrawingMargins().Left;
-                        x -= horizontal_separation;
+                        x -= top_or_left_margin(in_center[j].Node);
+                        x -= in_layer_separation;
                     }
                 }
             }
@@ -361,21 +418,21 @@ namespace Excubo.Blazor.Diagrams
             double max_x; // the left boundary of the center
             if (in_center.Count != 0)
             {
-                min_x = in_center.Max(c => c.Position + c.Node.GetWidth() / 2 + c.Node.GetDrawingMargins().Right) + horizontal_separation;
-                max_x = in_center.Min(c => c.Position - c.Node.GetWidth() / 2 - c.Node.GetDrawingMargins().Left) - horizontal_separation;
+                min_x = in_center.Max(c => c.Position + space(c.Node) / 2 + bottom_or_right_margin(c.Node)) + in_layer_separation;
+                max_x = in_center.Min(c => c.Position - space(c.Node) / 2 - top_or_left_margin(c.Node)) - in_layer_separation;
             }
             else
             {
                 // we don't have center nodes. If the separation between left_of_center.Last() and right_of_center.First() is high enough, we don't need further separation
-                var left_edge_of_right_node = right_of_center.First().Position - right_of_center.First().Node.GetWidth() / 2 - right_of_center.First().Node.GetDrawingMargins().Left;
-                var right_edge_of_left_node = left_of_center.Last().Position + left_of_center.Last().Node.GetWidth() / 2 + left_of_center.Last().Node.GetDrawingMargins().Right;
+                var left_edge_of_right_node = right_of_center.First().Position - space(right_of_center.First().Node) / 2 - top_or_left_margin(right_of_center.First().Node);
+                var right_edge_of_left_node = left_of_center.Last().Position + space(left_of_center.Last().Node) / 2 + bottom_or_right_margin(left_of_center.Last().Node);
                 var existing_separation = left_edge_of_right_node - right_edge_of_left_node;
                 min_x = left_edge_of_right_node;
                 max_x = right_edge_of_left_node;
-                if (existing_separation < horizontal_separation)
+                if (existing_separation < in_layer_separation)
                 {
-                    min_x += (horizontal_separation - existing_separation) / 2;
-                    max_x -= (horizontal_separation - existing_separation) / 2;
+                    min_x += (in_layer_separation - existing_separation) / 2;
+                    max_x -= (in_layer_separation - existing_separation) / 2;
                 }
             }
             // treat right of center
@@ -383,10 +440,10 @@ namespace Excubo.Blazor.Diagrams
             {
                 for (int j = 0; j < right_of_center.Count; ++j)
                 {
-                    min_x += right_of_center[j].Node.GetDrawingMargins().Left;
-                    min_x += right_of_center[j].Node.GetWidth() / 2;
+                    min_x += top_or_left_margin(right_of_center[j].Node);
+                    min_x += space(right_of_center[j].Node) / 2;
                     right_of_center[j] = (right_of_center[j].Node, Math.Max(min_x, right_of_center[j].Position));
-                    min_x = right_of_center[j].Position + right_of_center[j].Node.GetWidth() / 2 + right_of_center[j].Node.GetDrawingMargins().Right + horizontal_separation;
+                    min_x = right_of_center[j].Position + space(right_of_center[j].Node) / 2 + bottom_or_right_margin(right_of_center[j].Node) + in_layer_separation;
                 }
             }
             // treat left of center
@@ -395,32 +452,36 @@ namespace Excubo.Blazor.Diagrams
                 for (int j = left_of_center.Count; j > 0;)
                 {
                     --j;
-                    max_x -= left_of_center[j].Node.GetDrawingMargins().Right;
-                    max_x -= left_of_center[j].Node.GetWidth() / 2;
+                    max_x -= bottom_or_right_margin(left_of_center[j].Node);
+                    max_x -= space(left_of_center[j].Node) / 2;
                     left_of_center[j] = (left_of_center[j].Node, Math.Min(max_x, left_of_center[j].Position));
-                    max_x = left_of_center[j].Position - left_of_center[j].Node.GetWidth() / 2 - left_of_center[j].Node.GetDrawingMargins().Left - horizontal_separation;
+                    max_x = left_of_center[j].Position - space(left_of_center[j].Node) / 2 - top_or_left_margin(left_of_center[j].Node) - in_layer_separation;
                 }
             }
             wish_positions = left_of_center.Concat(in_center).Concat(right_of_center).Concat(wish_positions.Where(kv => kv.Position == double.MaxValue)).ToList();
             return wish_positions;
         }
 
-        private static void PlaceNodesHorizontallyInLayer(double horizontal_separation, List<(NodeBase Node, double Position)> nodes_and_positions, double y)
+        private static void PlaceNodesInLayer(double in_layer_separation, List<(NodeBase Node, double Position)> nodes_and_positions, Action<NodeBase, double> move,
+            Func<NodeBase, double> position,
+            Func<NodeBase, double> top_or_left_margin,
+            Func<NodeBase, double> space,
+            Func<NodeBase, double> bottom_or_right_margin)
         {
-            foreach (var (node, position) in nodes_and_positions.Where(kv => kv.Position != double.MaxValue))
+            foreach (var (node, in_layer_position) in nodes_and_positions.Where(kv => kv.Position != double.MaxValue))
             {
-                node.MoveTo(position - node.GetWidth() / 2, y);
+                move(node, in_layer_position - space(node) / 2);
             }
             var right_most = nodes_and_positions.Where(kv => kv.Position != double.MaxValue).Select(kv => kv.Node).LastOrDefault();
-            foreach (var (node, position) in nodes_and_positions.Where(kv => kv.Position == double.MaxValue))
+            foreach (var (node, _) in nodes_and_positions.Where(kv => kv.Position == double.MaxValue))
             {
                 if (right_most == null)
                 {
-                    node.MoveTo(0, y);
+                    move(node, 0);
                 }
                 else
                 {
-                    node.MoveTo(right_most.X + right_most.GetWidth() + right_most.GetDrawingMargins().Right + horizontal_separation + node.GetDrawingMargins().Left, y);
+                    move(node, position(right_most) + space(right_most) + bottom_or_right_margin(right_most) + in_layer_separation + top_or_left_margin(node));
                 }
                 right_most = node;
             }
