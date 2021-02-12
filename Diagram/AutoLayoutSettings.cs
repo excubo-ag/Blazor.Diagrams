@@ -230,7 +230,33 @@ namespace Excubo.Blazor.Diagrams
         }
         private static void ArrangeNodesWithinLayers(List<LinkBase> all_links, List<List<NodeBase>> layers)
         {
-            // 2.1. sort out each layer by looking at where it connects from
+            // 2.1. sort out second and first layer
+            if (layers.Count > 1)
+            {
+                layers[1] = layers[1].OrderBy(node =>
+                {
+                    // calculate average position based on connected nodes in top layer
+                    var connected_nodes = all_links.Where(l => l.Target?.Node == node && layers[0].Contains(l.Source?.Node)).Select(l => l.Source?.Node).ToList();
+                    if (!connected_nodes.Any())
+                    {
+                        return 0;
+                    }
+                    var average_index = connected_nodes.Select(cn => { var i = layers[0].IndexOf(cn); return i; }).Average();
+                    return average_index;
+                }).ToList();
+                layers[0] = layers[0].OrderBy(node =>
+                {
+                    // calculate average position based on connected nodes in top layer
+                    var connected_nodes = all_links.Where(l => l.Source?.Node == node && layers[1].Contains(l.Target?.Node)).Select(l => l.Target?.Node).ToList();
+                    if (!connected_nodes.Any())
+                    {
+                        return 0;
+                    }
+                    var average_index = connected_nodes.Select(cn => { var i = layers[1].IndexOf(cn); return i; }).Average();
+                    return average_index;
+                }).ToList();
+            }
+            // 2.2. sort out each layer by looking at where it connects from
             for (var i = 0; i + 1 < layers.Count; ++i)
             {
                 var top_layer = layers[i];
@@ -243,21 +269,6 @@ namespace Excubo.Blazor.Diagrams
                         return 0;
                     }
                     var average_index = connected_nodes.Select(cn => { var i = top_layer.IndexOf(cn); return i; }).Average();
-                    return average_index;
-                }).ToList();
-            }
-            // 2.2. now that all but the first layer are layed out, let's deal with the first
-            if (layers.Count > 1)
-            {
-                layers[0] = layers[0].OrderBy(node =>
-                {
-                    // calculate average position based on connected nodes in top layer
-                    var connected_nodes = all_links.Where(l => l.Source?.Node == node && layers[1].Contains(l.Target?.Node)).Select(l => l.Target?.Node).ToList();
-                    if (!connected_nodes.Any())
-                    {
-                        return 0;
-                    }
-                    var average_index = connected_nodes.Select(cn => { var i = layers[1].IndexOf(cn); return i; }).Average();
                     return average_index;
                 }).ToList();
             }
