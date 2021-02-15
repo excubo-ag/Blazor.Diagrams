@@ -321,145 +321,34 @@ namespace Excubo.Blazor.Diagrams
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, position, top_or_left_margin, space, bottom_or_right_margin);
             }
         }
-
         private static List<(NodeBase Node, double Position)> EnsureSeparation(double in_layer_separation, List<(NodeBase Node, double Position)> wish_positions,
             Func<NodeBase, double> position,
             Func<NodeBase, double> top_or_left_margin,
             Func<NodeBase, double> space,
             Func<NodeBase, double> bottom_or_right_margin)
         {
-            // we pretend here in the variable naming that the tree is top to bottom.
-            var center = wish_positions.Where(e => e.Position != double.MaxValue).Average(e => e.Position);
-            var left_of_center = wish_positions.Where(e => e.Position != double.MaxValue).TakeWhile(v => v.Position < center).ToList();
-            var in_center = wish_positions.Where(e => e.Position != double.MaxValue).Skip(left_of_center.Count).TakeWhile(v => v.Position == center).ToList();
-            var right_of_center = wish_positions.Where(e => e.Position != double.MaxValue).Skip(left_of_center.Count + in_center.Count).ToList();
-            if (left_of_center.Any() != right_of_center.Any()) // floats... the average of X,X might be not equal to X.
+            var ignored = wish_positions.Where(e => e.Position == double.MaxValue).ToList();
+            var to_adjust = wish_positions.Where(e => e.Position != double.MaxValue).OrderBy(e => e.Position).ToList();
+            // the adjustment of positions is done from "left to right", separating two nodes by moving the left more to the left and the right more to the right.
+            for (var i = 0; i + 1 < to_adjust.Count; ++i)
             {
-                if (!in_center.Any())
+                var (left_node, left_position) = to_adjust[i];
+                var (right_node, right_position) = to_adjust[i + 1];
+                var left_side_of_right = right_position - space(right_node) / 2 - top_or_left_margin(right_node);
+                var right_side_of_left = left_position + space(left_node) / 2 + bottom_or_right_margin(left_node);
+                var current_separation = left_side_of_right - right_side_of_left;
+                if (in_layer_separation - current_separation > 1e-6)
                 {
-                    in_center.AddRange(left_of_center);
-                    in_center.AddRange(right_of_center);
-                    left_of_center.Clear();
-                    right_of_center.Clear();
-                }
-                else
-                {
-                    if (left_of_center.Any())
-                    {
-                        right_of_center.AddRange(in_center);
-                        in_center.Clear();
-                    }
-                    else
-                    {
-                        left_of_center.AddRange(in_center);
-                        in_center.Clear();
-                    }
-                }
-                // this doesn't make sense.
-            }
-            if (in_center.Count > 0)
-            {
-                if (in_center.Count % 2 == 0)
-                {
-                    // the center is free of nodes. It shows the separation between two nodes.
-                    var x = center;
-                    x += in_layer_separation / 2;
-                    for (int j = 0; j < in_center.Count; j += 2)
-                    {
-                        x += top_or_left_margin(in_center[j].Node);
-                        in_center[j] = (in_center[j].Node, x);
-                        x += space(in_center[j].Node);
-                        x += bottom_or_right_margin(in_center[j].Node);
-                        x += in_layer_separation;
-                    }
-                    x = center;
-                    x -= in_layer_separation / 2;
-                    for (int j = 1; j < in_center.Count; j += 2)
-                    {
-                        x -= bottom_or_right_margin(in_center[j].Node);
-                        x -= space(in_center[j].Node);
-                        in_center[j] = (in_center[j].Node, x);
-                        x -= top_or_left_margin(in_center[j].Node);
-                        x -= in_layer_separation;
-                    }
-                }
-                else
-                {
-                    // there is one node slap bang in the center.
-                    var x = center;
-                    // in_center[0] stays where it is, the center.
-                    x += space(in_center[0].Node) / 2;
-                    x += bottom_or_right_margin(in_center[0].Node);
-                    x += in_layer_separation;
-                    for (int j = 1; j < in_center.Count; j += 2)
-                    {
-                        x += top_or_left_margin(in_center[j].Node);
-                        in_center[j] = (in_center[j].Node, x);
-                        x += space(in_center[j].Node);
-                        x += bottom_or_right_margin(in_center[j].Node);
-                        x += in_layer_separation;
-                    }
-                    x = center;
-                    x -= space(in_center[0].Node) / 2;
-                    x -= bottom_or_right_margin(in_center[0].Node);
-                    x -= in_layer_separation;
-                    for (int j = 2; j < in_center.Count; j += 2)
-                    {
-                        x -= bottom_or_right_margin(in_center[j].Node);
-                        x -= space(in_center[j].Node);
-                        in_center[j] = (in_center[j].Node, x);
-                        x -= top_or_left_margin(in_center[j].Node);
-                        x -= in_layer_separation;
-                    }
+                    var difference = Math.Abs(in_layer_separation - current_separation);
+                    left_position -= difference / 2;
+                    right_position += difference / 2;
+                    to_adjust[i] = (left_node, left_position);
+                    to_adjust[i + 1] = (right_node, right_position);
+                    i = -1;
+                    to_adjust = to_adjust.OrderBy(e => e.Position).ToList();
                 }
             }
-
-            double min_x; // the right boundary of the center
-            double max_x; // the left boundary of the center
-            if (in_center.Count != 0)
-            {
-                min_x = in_center.Max(c => c.Position + space(c.Node) / 2 + bottom_or_right_margin(c.Node)) + in_layer_separation;
-                max_x = in_center.Min(c => c.Position - space(c.Node) / 2 - top_or_left_margin(c.Node)) - in_layer_separation;
-            }
-            else
-            {
-                // we don't have center nodes. If the separation between left_of_center.Last() and right_of_center.First() is high enough, we don't need further separation
-                var left_edge_of_right_node = right_of_center.First().Position - space(right_of_center.First().Node) / 2 - top_or_left_margin(right_of_center.First().Node);
-                var right_edge_of_left_node = left_of_center.Last().Position + space(left_of_center.Last().Node) / 2 + bottom_or_right_margin(left_of_center.Last().Node);
-                var existing_separation = left_edge_of_right_node - right_edge_of_left_node;
-                min_x = left_edge_of_right_node;
-                max_x = right_edge_of_left_node;
-                if (existing_separation < in_layer_separation)
-                {
-                    min_x += (in_layer_separation - existing_separation) / 2;
-                    max_x -= (in_layer_separation - existing_separation) / 2;
-                }
-            }
-            // treat right of center
-            if (right_of_center.Count > 0)
-            {
-                for (int j = 0; j < right_of_center.Count; ++j)
-                {
-                    min_x += top_or_left_margin(right_of_center[j].Node);
-                    min_x += space(right_of_center[j].Node) / 2;
-                    right_of_center[j] = (right_of_center[j].Node, Math.Max(min_x, right_of_center[j].Position));
-                    min_x = right_of_center[j].Position + space(right_of_center[j].Node) / 2 + bottom_or_right_margin(right_of_center[j].Node) + in_layer_separation;
-                }
-            }
-            // treat left of center
-            if (left_of_center.Count > 0)
-            {
-                for (int j = left_of_center.Count; j > 0;)
-                {
-                    --j;
-                    max_x -= bottom_or_right_margin(left_of_center[j].Node);
-                    max_x -= space(left_of_center[j].Node) / 2;
-                    left_of_center[j] = (left_of_center[j].Node, Math.Min(max_x, left_of_center[j].Position));
-                    max_x = left_of_center[j].Position - space(left_of_center[j].Node) / 2 - top_or_left_margin(left_of_center[j].Node) - in_layer_separation;
-                }
-            }
-            wish_positions = left_of_center.Concat(in_center).Concat(right_of_center).Concat(wish_positions.Where(kv => kv.Position == double.MaxValue)).ToList();
-            return wish_positions;
+            return to_adjust.Concat(ignored).ToList();
         }
 
         private static void PlaceNodesInLayer(double in_layer_separation, List<(NodeBase Node, double Position)> nodes_and_positions, Action<NodeBase, double> move,
