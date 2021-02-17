@@ -171,11 +171,6 @@ namespace Excubo.Blazor.Diagrams
             }
             X = x;
             Y = y;
-            TriggerPositionChanged();
-            XChanged?.Invoke(X);
-            YChanged?.Invoke(Y);
-            ReRenderIfOffCanvasChanged();
-            StateHasChanged();
         }
         internal virtual void ApplyMoveTo()
         {
