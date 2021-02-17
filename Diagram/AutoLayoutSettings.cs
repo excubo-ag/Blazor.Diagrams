@@ -68,8 +68,16 @@ namespace Excubo.Blazor.Diagrams
         {
             if (Diagram != null && Diagram.Nodes != null && Diagram.Nodes.all_nodes.Any() && Diagram.Nodes.all_nodes.All(n => n.HasSize) && Diagram.Links != null)
             {
-                Layout(Diagram.Nodes.all_nodes, Diagram.Links.all_links);
-                Diagram.UpdateOverview();
+                Diagram.DisableRendering();
+                try
+                {
+                    Layout(Diagram.Nodes.all_nodes, Diagram.Links.all_links);
+                    Diagram.UpdateOverview();
+                }
+                finally
+                {
+                    Diagram.EnableRendering();
+                }
             }
         }
         internal void Layout(List<NodeBase> all_nodes, List<LinkBase> all_links)

@@ -106,8 +106,21 @@ namespace Excubo.Blazor.Diagrams
         private HoverType ActiveElementType;
         private readonly ActiveElementContainer ActionObject = new ActiveElementContainer();
         private ActionType ActionType;
+        private bool rendering_disabled;
+        internal void DisableRendering()
+        {
+            rendering_disabled = true;
+        }
+        internal void EnableRendering()
+        {
+            rendering_disabled = false;
+        }
         protected override bool ShouldRender()
         {
+            if (rendering_disabled)
+            {
+                return false;
+            }
             if (!render_necessary)
             {
                 render_necessary = true;
