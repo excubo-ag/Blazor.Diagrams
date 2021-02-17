@@ -163,6 +163,32 @@ namespace Excubo.Blazor.Diagrams
             ReRenderIfOffCanvasChanged();
             StateHasChanged();
         }
+        internal virtual void MoveToWithoutUIUpdate(double x, double y)
+        {
+            if (!Movable)
+            {
+                return;
+            }
+            X = x;
+            Y = y;
+            TriggerPositionChanged();
+            XChanged?.Invoke(X);
+            YChanged?.Invoke(Y);
+            ReRenderIfOffCanvasChanged();
+            StateHasChanged();
+        }
+        internal virtual void ApplyMoveTo()
+        {
+            if (!Movable)
+            {
+                return;
+            }
+            TriggerPositionChanged();
+            XChanged?.Invoke(X);
+            YChanged?.Invoke(Y);
+            ReRenderIfOffCanvasChanged();
+            StateHasChanged();
+        }
         protected bool Selected { get; private set; }
         protected bool Hovered { get; private set; }
         public bool Deleted { get; private set; }

@@ -188,7 +188,7 @@ namespace Excubo.Blazor.Diagrams
         {
             foreach (var node in layers.SelectMany(l => l))
             {
-                node.MoveTo(0, 0);
+                node.MoveToWithoutUIUpdate(0, 0);
             }
             const double vertical_separation = 50;
             const double horizontal_separation = 50;
@@ -200,7 +200,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetWidth();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
-                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveTo(x, y + y_offset);
+                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y + y_offset);
                 ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
                     move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
@@ -213,10 +213,14 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetHeight();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
-                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveTo(x + x_offset, y);
+                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x + x_offset, y);
                 ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
                     move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
+            }
+            foreach (var node in layers.SelectMany(l => l))
+            {
+                node.ApplyMoveTo();
             }
         }
         private static void ArrangeNodes(
