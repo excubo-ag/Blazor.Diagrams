@@ -20,7 +20,7 @@
   <!--PackageId, Version-->
   <PropertyGroup>
     <PackageId>Excubo.Blazor.Diagrams</PackageId>
-    <Version>3.9.14</Version>
+    <Version>3.9.15</Version>
   </PropertyGroup>
   <!--Self Include-->
   <ItemGroup>

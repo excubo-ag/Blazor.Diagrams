@@ -3,6 +3,7 @@ using Excubo.Blazor.Diagrams.__Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Excubo.Blazor.Diagrams
@@ -69,7 +70,7 @@ namespace Excubo.Blazor.Diagrams
         }
         internal abstract double GetWidth();
         internal abstract double GetHeight();
-        protected string PositionAndScale => $"translate({Zoom * X} {Zoom * Y}) scale({Zoom})";
+        protected string PositionAndScale => $"translate({(Zoom * X).ToString(CultureInfo.InvariantCulture)} {(Zoom * Y).ToString(CultureInfo.InvariantCulture)}) scale({Zoom.ToString(CultureInfo.InvariantCulture)})";
         public abstract double Width { get; set; }
         public abstract double Height { get; set; }
         internal event Action PositionChanged;
