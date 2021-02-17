@@ -186,6 +186,10 @@ namespace Excubo.Blazor.Diagrams
         }
         private void ArrangeNodes(List<LinkBase> all_links, List<List<NodeBase>> layers)
         {
+            foreach (var node in layers.SelectMany(l => l))
+            {
+                node.MoveTo(0, 0);
+            }
             const double vertical_separation = 50;
             const double horizontal_separation = 50;
             if (Algorithm == Algorithm.TreeVerticalTopDown || Algorithm == Algorithm.TreeVerticalBottomUp)
