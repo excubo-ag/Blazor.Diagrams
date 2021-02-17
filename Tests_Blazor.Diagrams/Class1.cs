@@ -37,6 +37,11 @@ namespace Tests_Blazor.Diagrams
             X = x;
             Y = y;
         }
+        internal override void MoveToWithoutUIUpdate(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
     }
     public class TestLink : LinkBase
     {
