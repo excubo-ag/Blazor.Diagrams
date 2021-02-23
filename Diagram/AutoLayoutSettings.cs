@@ -107,6 +107,7 @@ namespace Excubo.Blazor.Diagrams
             var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, all_links) : GetLayersBottomUp(all_nodes, all_links);
             // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
             ArrangeNodesWithinLayers(all_links, layers);
+            layers = layers.Where(layer => layer.Any()).ToList();
             // 3. Layout time!
             ArrangeNodes(all_links, layers);
             // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
@@ -200,7 +201,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetWidth();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
-                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y + y_offset);
+                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y/* - y_offset*/); // 2021-02-23: for some reason, the y_offset is now causing issues. Disabled until it's figured out.
                 ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
                     move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
@@ -213,7 +214,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetHeight();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
-                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x + x_offset, y);
+                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x /*- x_offset*/, y); // 2021-02-23: for some reason, the x_offset is now causing issues. Disabled until it's figured out.
                 ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
                     move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
@@ -530,7 +531,7 @@ namespace Excubo.Blazor.Diagrams
                 var another_round_required = false;
                 // SINK I 
                 // For all nodes 
-                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Target.Node == nd))) // look at all nodes without incoming links 
+                foreach (var node in all_nodes) // look at all nodes without incoming links 
                 {
                     var nodes_to_check = all_links
                         .Where(x => x.Source.Node == node) // get links leaving node 
@@ -549,7 +550,7 @@ namespace Excubo.Blazor.Diagrams
                     }
                 }
                 // SINK II 
-                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Source.Node == nd))) // look at all nodes without outgoing links 
+                foreach (var node in all_nodes) // look at all nodes without outgoing links 
                 {
                     var nodes_to_check = all_links
                         .Where(x => x.Target.Node == node) // get links targeting node
