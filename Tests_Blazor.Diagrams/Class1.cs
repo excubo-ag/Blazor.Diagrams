@@ -60,7 +60,7 @@ namespace Tests_Blazor.Diagrams
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 10000; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
@@ -120,7 +120,7 @@ L5_N0
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
@@ -155,7 +155,7 @@ L5_N0
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
@@ -191,7 +191,7 @@ L5_N0
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
@@ -223,7 +223,7 @@ L5_N0
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
@@ -256,7 +256,7 @@ L5_N0
             var auto_layout = new AutoLayoutSettings();
             auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
             var rnd = new Random();
-            for (int i = 0; i < 1; ++i)
+            for (int i = 0; i < 10; ++i)
             {
                 var nodes = new List<NodeBase>
                 {
