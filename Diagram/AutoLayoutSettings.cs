@@ -239,9 +239,9 @@ namespace Excubo.Blazor.Diagrams
             }
         }
         private static void ArrangeNodes(
-            List<LinkBase> all_links, 
-            List<List<NodeBase>> layers, 
-            double layer_separation, 
+            List<LinkBase> all_links,
+            List<List<NodeBase>> layers,
+            double layer_separation,
             double in_layer_separation,
             Func<double, Action<NodeBase, double, double>> move_generator,
             Action<NodeBase, double> adjust_position,
@@ -310,31 +310,24 @@ namespace Excubo.Blazor.Diagrams
             OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, left_or_top_margin, position, top_or_left_margin, space, bottom_or_right_margin);
 
 
-            var nodes_by_position = layers.SelectMany(layer => layer).GroupBy(node => position(node), new FloatEqualityComparer()).OrderBy(g => g.Key).Select(g => (g.Key, Values: g.ToList())).ToList();
-            for (int i = 0; i + 1 < nodes_by_position.Count; ++i)
+            var nodes_ordered_by_position = layers.SelectMany(layer => layer)
+                .OrderBy(n => position(n) - space(n) - top_or_left_margin(n)) // order the nodes by how far "left" they reach
+                .ToList();
+            for (int i = 0; i + 1 < nodes_ordered_by_position.Count; ++i)
             {
-                var left_x = nodes_by_position[i].Key;
-                var widest_on_left = nodes_by_position[i].Values.Max(n => space(n) / 2 + bottom_or_right_margin(n));
-                var right_x = nodes_by_position[i + 1].Key;
-                var widest_on_right = nodes_by_position[i + 1].Values.Max(n => space(n) / 2 + top_or_left_margin(n));
+                var left_x = position(nodes_ordered_by_position[i]);
+                var widest_on_left = space(nodes_ordered_by_position[i]) / 2 + bottom_or_right_margin(nodes_ordered_by_position[i]);
+                var right_x = position(nodes_ordered_by_position[i + 1]);
+                var widest_on_right = space(nodes_ordered_by_position[i]) / 2 + top_or_left_margin(nodes_ordered_by_position[i]);
                 var separation = right_x - widest_on_right - widest_on_left - left_x;
                 if (separation > in_layer_separation)
                 {
-                    for (int j = i + 1; j < nodes_by_position.Count; ++j)
+                    for (int j = i + 1; j < nodes_ordered_by_position.Count; ++j)
                     {
-                        nodes_by_position[j] = (nodes_by_position[j].Key - (separation - in_layer_separation), nodes_by_position[j].Values);
+                        adjust_position(nodes_ordered_by_position[j], position(nodes_ordered_by_position[j]) - (separation - in_layer_separation));
                     }
                 }
-                foreach (var node in nodes_by_position[i].Values)
-                {
-                    adjust_position(node, nodes_by_position[i].Key);
-                }
             }
-            foreach (var node in nodes_by_position[nodes_by_position.Count - 1].Values)
-            {
-                adjust_position(node, nodes_by_position[nodes_by_position.Count - 1].Key);
-            }
-
         }
 
         private static void OptimizeAboveWidestLayer(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
@@ -389,7 +382,7 @@ namespace Excubo.Blazor.Diagrams
             }
         }
         private static List<(NodeBase Node, double Position)> EnsureSeparation(
-            double in_layer_separation, 
+            double in_layer_separation,
             List<(NodeBase Node, double Position)> wish_positions,
             Func<NodeBase, double> top_or_left_margin,
             Func<NodeBase, double> space,
@@ -420,8 +413,8 @@ namespace Excubo.Blazor.Diagrams
         }
 
         private static void PlaceNodesInLayer(
-            double in_layer_separation, 
-            List<(NodeBase Node, double Position)> nodes_and_positions, 
+            double in_layer_separation,
+            List<(NodeBase Node, double Position)> nodes_and_positions,
             Action<NodeBase, double, double> move,
             Func<NodeBase, double> left_or_top_margin,
             Func<NodeBase, double> position,

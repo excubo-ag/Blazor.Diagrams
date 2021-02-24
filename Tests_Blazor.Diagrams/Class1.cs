@@ -100,12 +100,12 @@ L5_N0
                 var layer_1 = nodes.Where(n => n.Id is "L1_N0").ToList();
                 var layer_2 = nodes.Where(n => n.Id is "L2_N0" or "L2_N1" or "L2_N2").ToList();
                 var layer_3 = nodes.Where(n => n.Id is "L3_N0" or "L3_N1" or "L3_N2").ToList();
-                    var layer_4 = nodes.Where(n => n.Id is "L4_N0" or "L4_N1" or "L4_N2" or "L4_N3").ToList();
+                var layer_4 = nodes.Where(n => n.Id is "L4_N0" or "L4_N1" or "L4_N2" or "L4_N3").ToList();
                 var layer_5 = nodes.Where(n => n.Id is "L5_N0").ToList();
                 Assert.AreEqual(1, layer_1.Select(n => n.Y).Distinct().Count());
                 Assert.AreEqual(1, layer_2.Select(n => n.Y).Distinct().Count());
                 Assert.AreEqual(1, layer_3.Select(n => n.Y).Distinct().Count());
-                    Assert.AreEqual(1, layer_4.Select(n => n.Y).Distinct().Count(), $"{i}");
+                Assert.AreEqual(1, layer_4.Select(n => n.Y).Distinct().Count(), $"{i}");
                 Assert.AreEqual(1, layer_5.Select(n => n.Y).Distinct().Count());
                 Assert.Less(layer_1.Select(n => n.Y).First(), layer_2.Select(n => n.Y).First());
                 Assert.Less(layer_2.Select(n => n.Y).First(), layer_3.Select(n => n.Y).First());
