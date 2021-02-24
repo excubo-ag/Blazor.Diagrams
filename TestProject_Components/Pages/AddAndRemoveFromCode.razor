@@ -34,13 +34,14 @@
 <button @onclick="NewRectangle">Add rectangle</button>
 <button @onclick="NewEllipse">Add ellipse</button>
 <button @onclick="RemoveFirstNode">Remove first node</button>
+<button @onclick="RemoveLastNode">Remove last node</button>
 <button @onclick="NewLink">Add random link</button>
 <button @onclick="RemoveFirstLink">Remove first link</button>
 
 @code {
     private void NewGraph()
     {
-        var rnd = new Random((int) DateTime.Now.Ticks);
+        var rnd = new Random((int)DateTime.Now.Ticks);
         nodes.Clear();
         nodes.AddRange(Enumerable.Range(0, rnd.Next(10, 20)).Select(i => new MyNode { Id = "N" + rnd.Next(100 * i, 100 * (i + 1)).ToString(), Type = NodeType.Rectangle }));
         links.Clear();
@@ -70,6 +71,15 @@
         if (nodes.Any())
         {
             nodes.RemoveAt(0);
+        }
+        run_auto_layout = true;
+        StateHasChanged();
+    }
+    private void RemoveLastNode()
+    {
+        if (nodes.Any())
+        {
+            nodes.RemoveAt(nodes.Count - 1);
         }
         run_auto_layout = true;
         StateHasChanged();

@@ -40,6 +40,18 @@ namespace Excubo.Blazor.Diagrams
             }
         }
     }
+    internal class FloatEqualityComparer : IEqualityComparer<double>
+    {
+        public bool Equals(double x, double y)
+        {
+            return Math.Abs(x - y) < 1e-6;
+        }
+
+        public int GetHashCode(double obj)
+        {
+            return 0;
+        }
+    }
     public class AutoLayoutSettings : ComponentBase
     {
         [CascadingParameter] public Diagram Diagram { get; set; }
@@ -107,6 +119,7 @@ namespace Excubo.Blazor.Diagrams
             var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, all_links) : GetLayersBottomUp(all_nodes, all_links);
             // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
             ArrangeNodesWithinLayers(all_links, layers);
+            layers = layers.Where(layer => layer.Any()).ToList();
             // 3. Layout time!
             ArrangeNodes(all_links, layers);
             // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
@@ -197,12 +210,13 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> left_or_top_margin = (node) => node.GetDrawingMargins().Top;
                 Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Left;
                 Func<NodeBase, double> position = (node) => node.X;
+                Action<NodeBase, double> adjust_position = (node, x) => node.MoveToWithoutUIUpdate(x, node.Y);
                 Func<NodeBase, double> space = (node) => node.GetWidth();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
-                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y + y_offset);
+                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y /*+ y_offset*/);
                 ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
-                    move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
+                    move_generator, adjust_position, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
             }
             else
@@ -210,12 +224,13 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> left_or_top_margin = (node) => node.GetDrawingMargins().Left;
                 Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Top;
                 Func<NodeBase, double> position = (node) => node.Y;
+                Action<NodeBase, double> adjust_position = (node, y) => node.MoveToWithoutUIUpdate(node.X, y);
                 Func<NodeBase, double> space = (node) => node.GetHeight();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
-                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x + x_offset, y);
+                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x /*+ x_offset*/, y);
                 ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
-                    move_generator, orthogonal_space_with_margins, left_or_top_margin, position,
+                    move_generator, adjust_position, orthogonal_space_with_margins, left_or_top_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
             }
             foreach (var node in layers.SelectMany(l => l))
@@ -229,6 +244,7 @@ namespace Excubo.Blazor.Diagrams
             double layer_separation, 
             double in_layer_separation,
             Func<double, Action<NodeBase, double, double>> move_generator,
+            Action<NodeBase, double> adjust_position,
             Func<NodeBase, double> orthogonal_space_with_margins,
             Func<NodeBase, double> left_or_top_margin,
             Func<NodeBase, double> position,
@@ -292,6 +308,32 @@ namespace Excubo.Blazor.Diagrams
             }
             OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, left_or_top_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, left_or_top_margin, position, top_or_left_margin, space, bottom_or_right_margin);
+
+
+            var nodes_by_position = layers.SelectMany(layer => layer).GroupBy(node => position(node), new FloatEqualityComparer()).OrderBy(g => g.Key).Select(g => (g.Key, Values: g.ToList())).ToList();
+            for (int i = 0; i + 1 < nodes_by_position.Count; ++i)
+            {
+                var left_x = nodes_by_position[i].Key;
+                var widest_on_left = nodes_by_position[i].Values.Max(n => space(n) / 2 + bottom_or_right_margin(n));
+                var right_x = nodes_by_position[i + 1].Key;
+                var widest_on_right = nodes_by_position[i + 1].Values.Max(n => space(n) / 2 + top_or_left_margin(n));
+                var separation = right_x - widest_on_right - widest_on_left - left_x;
+                if (separation > in_layer_separation)
+                {
+                    for (int j = i + 1; j < nodes_by_position.Count; ++j)
+                    {
+                        nodes_by_position[j] = (nodes_by_position[j].Key - (separation - in_layer_separation), nodes_by_position[j].Values);
+                    }
+                }
+                foreach (var node in nodes_by_position[i].Values)
+                {
+                    adjust_position(node, nodes_by_position[i].Key);
+                }
+            }
+            foreach (var node in nodes_by_position[nodes_by_position.Count - 1].Values)
+            {
+                adjust_position(node, nodes_by_position[nodes_by_position.Count - 1].Key);
+            }
 
         }
 
