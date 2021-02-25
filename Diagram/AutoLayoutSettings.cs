@@ -309,22 +309,36 @@ namespace Excubo.Blazor.Diagrams
             OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, left_or_top_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, left_or_top_margin, position, top_or_left_margin, space, bottom_or_right_margin);
 
+            IEnumerable<(NodeBase Node, double Position, bool IsLeftMargin)> NodeWithLeftOrRightMargin(NodeBase n)
+            {
+                yield return (n, position(n) - space(n) / 2 - top_or_left_margin(n), true);
+                yield return (n, position(n) + space(n) / 2 + bottom_or_right_margin(n), false);
+            }
 
             var nodes_ordered_by_position = layers.SelectMany(layer => layer)
-                .OrderBy(n => position(n) - space(n) / 2 - top_or_left_margin(n)) // order the nodes by how far "left" they reach
+                .SelectMany(NodeWithLeftOrRightMargin)
+                .OrderBy(n => n.Position) // order the nodes by their position
                 .ToList();
             for (int i = 0; i + 1 < nodes_ordered_by_position.Count; ++i)
             {
-                var left_x = position(nodes_ordered_by_position[i]);
-                var widest_on_left = space(nodes_ordered_by_position[i]) / 2 + bottom_or_right_margin(nodes_ordered_by_position[i]);
-                var right_x = position(nodes_ordered_by_position[i + 1]);
-                var widest_on_right = space(nodes_ordered_by_position[i + 1]) / 2 + top_or_left_margin(nodes_ordered_by_position[i + 1]);
-                var separation = right_x - widest_on_right - widest_on_left - left_x;
+                var left = nodes_ordered_by_position[i];
+                var right = nodes_ordered_by_position[i + 1];
+                if (left.IsLeftMargin || !right.IsLeftMargin)
+                {
+                    continue;
+                }
+                // we are now looking at the right-most position of the left node and the left-most position of the right node
+                var separation = right.Position - left.Position;
                 if (separation > in_layer_separation)
                 {
                     for (int j = i + 1; j < nodes_ordered_by_position.Count; ++j)
                     {
-                        adjust_position(nodes_ordered_by_position[j], position(nodes_ordered_by_position[j]) - (separation - in_layer_separation));
+                        if (!nodes_ordered_by_position[j].IsLeftMargin)
+                        {
+                            // only nodes that have their left margin further right than the left node should be moved
+                            continue;
+                        }
+                        adjust_position(nodes_ordered_by_position[j].Node, position(nodes_ordered_by_position[j].Node) - (separation - in_layer_separation));
                     }
                 }
             }
