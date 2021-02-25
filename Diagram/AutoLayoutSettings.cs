@@ -313,7 +313,7 @@ namespace Excubo.Blazor.Diagrams
             var nodes_ordered_by_position = layers.SelectMany(layer => layer)
                 .OrderBy(n => position(n) - space(n) / 2 - top_or_left_margin(n)) // order the nodes by how far "left" they reach
                 .ToList();
-            for (int i = 0; i + 1 < nodes_ordered_by_position.Count; ++i) 
+            for (int i = 0; i + 1 < nodes_ordered_by_position.Count; ++i)
             {
                 var left_x = position(nodes_ordered_by_position[i]);
                 var widest_on_left = space(nodes_ordered_by_position[i]) / 2 + bottom_or_right_margin(nodes_ordered_by_position[i]);
