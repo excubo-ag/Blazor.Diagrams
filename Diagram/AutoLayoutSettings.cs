@@ -207,28 +207,28 @@ namespace Excubo.Blazor.Diagrams
             const double horizontal_separation = 50;
             if (Algorithm == Algorithm.TreeVerticalTopDown || Algorithm == Algorithm.TreeVerticalBottomUp)
             {
-                Func<NodeBase, double> between_layer_start_margin = (node) => node.GetHeight() / 2 - node.GetDrawingMargins().Top;
+                Func<NodeBase, double> between_layer_start_margin = (node) => node.GetHeight() / 2;
                 Func<NodeBase, double> position = (node) => node.X;
                 Action<NodeBase, double> adjust_position = (node, x) => node.MoveToWithoutUIUpdate(x, node.Y);
                 Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Left;
                 Func<NodeBase, double> space = (node) => node.GetWidth();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
-                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y + y_offset);
+                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y - y_offset);
                 ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
             }
             else
             {
-                Func<NodeBase, double> between_layer_start_margin = (node) => node.GetDrawingMargins().Left;
+                Func<NodeBase, double> between_layer_start_margin = (node) => node.GetWidth() / 2;
                 Func<NodeBase, double> position = (node) => node.Y;
                 Action<NodeBase, double> adjust_position = (node, y) => node.MoveToWithoutUIUpdate(node.X, y);
                 Func<NodeBase, double> top_or_left_margin = (node) => node.GetDrawingMargins().Top;
                 Func<NodeBase, double> space = (node) => node.GetHeight();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
-                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x + x_offset, y);
+                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x - x_offset, y);
                 ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
@@ -264,7 +264,7 @@ namespace Excubo.Blazor.Diagrams
             // Provisionally arrange the widest layer
             {
                 double x = 0;
-                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index + layer_heights[widest_layer_index] / 2;
                 var move = move_generator(y);
                 foreach (var node in widest_layer)
                 {
@@ -286,7 +286,7 @@ namespace Excubo.Blazor.Diagrams
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index + layer_heights[widest_layer_index] / 2;
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
@@ -302,7 +302,7 @@ namespace Excubo.Blazor.Diagrams
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index;
+                var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index + layer_heights[widest_layer_index] / 2;
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
@@ -352,10 +352,11 @@ namespace Excubo.Blazor.Diagrams
             Func<NodeBase, double> space,
             Func<NodeBase, double> bottom_or_right_margin)
         {
-            for (int i = widest_layer_index; i > 0; --i)
+            for (int i = widest_layer_index; i > 0;)
             {
+                --i;
                 // going through the layers _above_ the widest layer
-                var active_layer = layers[i - 1];
+                var active_layer = layers[i];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
                     var relevant_links = all_links.Where(l => l.Source.Node == n && l.Target.Node != null).ToList();
@@ -364,7 +365,7 @@ namespace Excubo.Blazor.Diagrams
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(i - 1).Sum() + layer_separation * (i - 1);
+                var y = layer_heights.Take(i).Sum() + layer_separation * i + layer_heights[i] / 2;
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
@@ -378,10 +379,10 @@ namespace Excubo.Blazor.Diagrams
             Func<NodeBase, double> space,
             Func<NodeBase, double> bottom_or_right_margin)
         {
-            for (int i = widest_layer_index; i + 1 < layers.Count; ++i)
+            for (int i = widest_layer_index + 1; i < layers.Count; ++i)
             {
                 // going through the layers _below_ the widest layer
-                var active_layer = layers[i + 1];
+                var active_layer = layers[i];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
                     var relevant_links = all_links.Where(l => l.Source.Node != null && l.Target.Node == n).ToList();
@@ -390,7 +391,7 @@ namespace Excubo.Blazor.Diagrams
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
-                var y = layer_heights.Take(i + 1).Sum() + layer_separation * (i + 1);
+                var y = layer_heights.Take(i).Sum() + layer_separation * i + layer_heights[i] / 2;
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
