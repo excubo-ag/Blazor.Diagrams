@@ -115,13 +115,21 @@ namespace Excubo.Blazor.Diagrams
         #region tree
         private void TreeAlgorithm(List<NodeBase> all_nodes, List<LinkBase> all_links)
         {
+            var links_by_source = all_links
+                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
+                .GroupBy(e => e.Source.Node, e => e)
+                .ToDictionary(e => e.Key, e => e.ToList());
+            var links_by_target = all_links
+                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
+                .GroupBy(e => e.Target.Node, e => e)
+                .ToDictionary(e => e.Key, e => e.ToList());
             // 1. Establish hierarchy.
-            var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, all_links) : GetLayersBottomUp(all_nodes, all_links);
+            var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, links_by_source, links_by_target) : GetLayersBottomUp(all_nodes, links_by_source, links_by_target);
             // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
-            ArrangeNodesWithinLayers(all_links, layers);
+            ArrangeNodesWithinLayers(links_by_source, links_by_target, layers);
             layers = layers.Where(layer => layer.Any()).ToList();
             // 3. Layout time!
-            ArrangeNodes(all_links, layers);
+            ArrangeNodes(links_by_source, links_by_target, layers);
             // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
             ArrangeLinks(all_links, layers);
         }
@@ -197,7 +205,7 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
-        private void ArrangeNodes(List<LinkBase> all_links, List<List<NodeBase>> layers)
+        private void ArrangeNodes(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target, List<List<NodeBase>> layers)
         {
             foreach (var node in layers.SelectMany(l => l))
             {
@@ -215,7 +223,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
                 Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y - y_offset);
-                ArrangeNodes(all_links, layers, vertical_separation, horizontal_separation,
+                ArrangeNodes(links_by_source, links_by_target, layers, vertical_separation, horizontal_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
             }
@@ -229,7 +237,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
                 Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x - x_offset, y);
-                ArrangeNodes(all_links, layers, horizontal_separation, vertical_separation,
+                ArrangeNodes(links_by_source, links_by_target, layers, horizontal_separation, vertical_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
             }
@@ -238,8 +246,7 @@ namespace Excubo.Blazor.Diagrams
                 node.ApplyMoveTo();
             }
         }
-        private static void ArrangeNodes(
-            List<LinkBase> all_links,
+        private static void ArrangeNodes(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target,
             List<List<NodeBase>> layers,
             double layer_separation,
             double in_layer_separation,
@@ -272,16 +279,19 @@ namespace Excubo.Blazor.Diagrams
                     x += space(node) + top_or_left_margin(node) + bottom_or_right_margin(node) + in_layer_separation;
                 }
             }
-            OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
-            OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeBelowWidestLayer(links_by_target, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeAboveWidestLayer(links_by_source, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             if (widest_layer_index > 0)
             {
                 // optimize the widest layer by the layers above
                 var active_layer = layers[widest_layer_index];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
-                    var relevant_links = all_links.Where(l => l.Source.Node != null && l.Target.Node == n).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Source.Node) + space(l.Source.Node) / 2) : double.MaxValue;
+                    if (!links_by_target.ContainsKey(n))
+                    {
+                        return double.MaxValue;
+                    }
+                    return links_by_target[n].Average(l => position(l.Source.Node) + space(l.Source.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
@@ -296,8 +306,11 @@ namespace Excubo.Blazor.Diagrams
                 var active_layer = layers[widest_layer_index];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
-                    var relevant_links = all_links.Where(l => l.Source.Node == n && l.Target.Node != null).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Target.Node) + space(l.Target.Node) / 2) : double.MaxValue;
+                    if (!links_by_source.ContainsKey(n))
+                    {
+                        return double.MaxValue;
+                    }
+                    return links_by_source[n].Average(l => position(l.Target.Node) + space(l.Target.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
@@ -306,8 +319,8 @@ namespace Excubo.Blazor.Diagrams
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
-            OptimizeBelowWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
-            OptimizeAboveWidestLayer(all_links, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeBelowWidestLayer(links_by_target, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
+            OptimizeAboveWidestLayer(links_by_source, layers, layer_separation, in_layer_separation, layer_heights, widest_layer_index, move_generator, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
 
             IEnumerable<(NodeBase Node, double Position, bool IsLeftMargin)> NodeWithLeftOrRightMargin(NodeBase n)
             {
@@ -344,7 +357,8 @@ namespace Excubo.Blazor.Diagrams
             }
         }
 
-        private static void OptimizeAboveWidestLayer(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
+        private static void OptimizeAboveWidestLayer(Dictionary<NodeBase, List<LinkBase>> links_by_source,
+            List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
             Func<double, Action<NodeBase, double, double>> move_generator,
             Func<NodeBase, double> between_layer_start_margin,
             Func<NodeBase, double> position,
@@ -359,8 +373,11 @@ namespace Excubo.Blazor.Diagrams
                 var active_layer = layers[i];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
-                    var relevant_links = all_links.Where(l => l.Source.Node == n && l.Target.Node != null).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Target.Node) + space(l.Target.Node) / 2) : double.MaxValue;
+                    if (!links_by_source.ContainsKey(n))
+                    {
+                        return double.MaxValue;
+                    }
+                    return links_by_source[n].Average(l => position(l.Target.Node) + space(l.Target.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
@@ -371,7 +388,8 @@ namespace Excubo.Blazor.Diagrams
             }
         }
 
-        private static void OptimizeBelowWidestLayer(List<LinkBase> all_links, List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
+        private static void OptimizeBelowWidestLayer(Dictionary<NodeBase, List<LinkBase>> links_by_target,
+            List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
             Func<double, Action<NodeBase, double, double>> move_generator,
             Func<NodeBase, double> between_layer_start_margin,
             Func<NodeBase, double> position,
@@ -385,8 +403,11 @@ namespace Excubo.Blazor.Diagrams
                 var active_layer = layers[i];
                 var wish_positions = active_layer.Zip(active_layer.Select(n =>
                 {
-                    var relevant_links = all_links.Where(l => l.Source.Node != null && l.Target.Node == n).ToList();
-                    return relevant_links.Any() ? relevant_links.Average(l => position(l.Source.Node) + space(l.Source.Node) / 2) : double.MaxValue;
+                    if (!links_by_target.ContainsKey(n))
+                    {
+                        return double.MaxValue;
+                    }
+                    return links_by_target[n].Average(l => position(l.Source.Node) + space(l.Source.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
                 wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
@@ -456,15 +477,19 @@ namespace Excubo.Blazor.Diagrams
             }
         }
 
-        private static void ArrangeNodesWithinLayers(List<LinkBase> all_links, List<List<NodeBase>> layers)
+        private static void ArrangeNodesWithinLayers(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target, List<List<NodeBase>> layers)
         {
             // 2.1. sort out second and first layer
             if (layers.Count > 1)
             {
                 layers[1] = layers[1].OrderBy(node =>
                 {
+                    if (!links_by_target.ContainsKey(node)) // node is not connected from anywhere, so also not from layer 0.
+                    {
+                        return 0;
+                    }
                     // calculate average position based on connected nodes in top layer
-                    var connected_nodes = all_links.Where(l => l.Target?.Node == node && layers[0].Contains(l.Source?.Node)).Select(l => l.Source?.Node).ToList();
+                    var connected_nodes = links_by_target[node].Where(l => layers[0].Contains(l.Source.Node)).Select(l => l.Source.Node).ToList();
                     if (!connected_nodes.Any())
                     {
                         return 0;
@@ -474,8 +499,12 @@ namespace Excubo.Blazor.Diagrams
                 }).ToList();
                 layers[0] = layers[0].OrderBy(node =>
                 {
+                    if (!links_by_source.ContainsKey(node)) // node is not connected to anywhere, so also not from layer 1.
+                    {
+                        return 0;
+                    }
                     // calculate average position based on connected nodes in top layer
-                    var connected_nodes = all_links.Where(l => l.Source?.Node == node && layers[1].Contains(l.Target?.Node)).Select(l => l.Target?.Node).ToList();
+                    var connected_nodes = links_by_source[node].Where(l => layers[1].Contains(l.Target.Node)).Select(l => l.Target.Node).ToList();
                     if (!connected_nodes.Any())
                     {
                         return 0;
@@ -490,8 +519,12 @@ namespace Excubo.Blazor.Diagrams
                 var top_layer = layers[i];
                 layers[i + 1] = layers[i + 1].OrderBy(node =>
                 {
+                    if (!links_by_target.ContainsKey(node)) // node is not connected from anywhere, so also not from top_layer.
+                    {
+                        return 0;
+                    }
                     // calculate average position based on connected nodes in top layer
-                    var connected_nodes = all_links.Where(l => l.Target?.Node == node && top_layer.Contains(l.Source?.Node)).Select(l => l.Source?.Node).ToList();
+                    var connected_nodes = links_by_target[node].Where(l => top_layer.Contains(l.Source.Node)).Select(l => l.Source.Node).ToList();
                     if (!connected_nodes.Any())
                     {
                         return 0;
@@ -502,7 +535,7 @@ namespace Excubo.Blazor.Diagrams
             }
         }
 
-        private static List<List<NodeBase>> GetLayersTopDown(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        private static List<List<NodeBase>> GetLayersTopDown(List<NodeBase> all_nodes, Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target)
         {
             // 1.0 if we don't have nodes, we have no layers
             if (!all_nodes.Any())
@@ -510,17 +543,12 @@ namespace Excubo.Blazor.Diagrams
                 return new List<List<NodeBase>>();
             }
             // 1.1. We identify the nodes that have no incoming link
-            var roots = all_nodes.Where(n => !all_links.Any(l => l.Target?.Node == n)).ToList();
+            var roots = all_nodes.Where(n => !links_by_target.ContainsKey(n)).ToList();
             // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a root.
             // That random choice is the first node. Chosen by a fair die, as legend has it.
             roots = roots.Any() ? roots : all_nodes.Take(1).ToList();
 
-            var targets_by_source = all_links
-                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
-                .Select(l => (Source: l.Source.Node, Target: l.Target.Node))
-                .GroupBy(e => e.Source, e => e.Target)
-                .ToNullAllowingDictionary();
-            var (layer_assignments, max_layer) = PushNodesDown(roots, targets_by_source);
+            var (layer_assignments, max_layer) = PushNodesDown(roots, links_by_source);
             var layers = new List<List<NodeBase>>(max_layer + 1);
             for (int i = 0; i <= max_layer; ++i)
             {
@@ -534,15 +562,15 @@ namespace Excubo.Blazor.Diagrams
             }
 
             // 1.5. we might have remaining remaining nodes. We calculate the layout for those too, and merge it afterwards
-            var rest_in_layers = GetLayersTopDown(all_nodes.Except(layers.SelectMany(n => n)).ToList(), all_links);
+            var rest_in_layers = GetLayersTopDown(all_nodes.Except(layers.SelectMany(n => n)).ToList(), links_by_source, links_by_target);
             layers.Merge(rest_in_layers);
 
-            OptimizeNodePositions(all_nodes, all_links, layers);
+            OptimizeNodePositions(all_nodes, links_by_source, links_by_target, layers);
 
             return layers;
         }
 
-        private static void OptimizeNodePositions(List<NodeBase> all_nodes, List<LinkBase> all_links, List<List<NodeBase>> layers)
+        private static void OptimizeNodePositions(List<NodeBase> all_nodes, Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target, List<List<NodeBase>> layers)
         {
             while (true)
             {
@@ -580,10 +608,13 @@ namespace Excubo.Blazor.Diagrams
                 var another_round_required = false;
                 // SINK I 
                 // For all nodes 
-                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Target.Node == nd))) // look at all nodes without incoming links 
+                foreach (var node in all_nodes.Where(nd => !links_by_target.ContainsKey(nd))) // look at all nodes without incoming links 
                 {
-                    var nodes_to_check = all_links
-                        .Where(x => x.Source.Node == node) // get links leaving node 
+                    if (!links_by_source.ContainsKey(node))
+                    {
+                        continue;
+                    }
+                    var nodes_to_check = links_by_source[node]
                         .Select(x => x.Target.Node)        // get target nodes from links
                         .ToList();
 
@@ -599,10 +630,13 @@ namespace Excubo.Blazor.Diagrams
                     }
                 }
                 // SINK II 
-                foreach (var node in all_nodes.Where(nd => !all_links.Any(x => x.Source.Node == nd))) // look at all nodes without outgoing links 
+                foreach (var node in all_nodes.Where(nd => !links_by_source.ContainsKey(nd))) // look at all nodes without outgoing links 
                 {
-                    var nodes_to_check = all_links
-                        .Where(x => x.Target.Node == node) // get links targeting node
+                    if (!links_by_target.ContainsKey(node))
+                    {
+                        continue;
+                    }
+                    var nodes_to_check = links_by_target[node]
                         .Select(x => x.Source.Node)        // get source nodes from links
                         .ToList();
 
@@ -629,7 +663,7 @@ namespace Excubo.Blazor.Diagrams
             }
         }
 
-        private static List<List<NodeBase>> GetLayersBottomUp(List<NodeBase> all_nodes, List<LinkBase> all_links)
+        private static List<List<NodeBase>> GetLayersBottomUp(List<NodeBase> all_nodes, Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target)
         {
             // 1.0 if we don't have nodes, we have no layers
             if (!all_nodes.Any())
@@ -637,17 +671,12 @@ namespace Excubo.Blazor.Diagrams
                 return new List<List<NodeBase>>();
             }
             // 1.1. We identify the nodes that have no outgoing link
-            var leaves = all_nodes.Where(n => !all_links.Any(l => l.Source?.Node == n)).ToList();
+            var leaves = all_nodes.Where(n => !links_by_source.ContainsKey(n)).ToList();
             // 1.2. If we do not have any such node, we exclusively have cycles. We now randomly pick a leaf.
             // That random choice is the first node. Chosen by a fair die, as legend has it.
             leaves = leaves.Any() ? leaves : all_nodes.Take(1).ToList();
 
-            var sources_by_target = all_links
-                .Where(l => l.Source?.Node != null && l.Target?.Node != null)
-                .Select(l => (Source: l.Source.Node, Target: l.Target.Node))
-                .GroupBy(e => e.Target, e => e.Source)
-                .ToNullAllowingDictionary();
-            var (layer_assignments, max_layer) = PushNodesUp(leaves, sources_by_target);
+            var (layer_assignments, max_layer) = PushNodesUp(leaves, links_by_target);
             var layers = new List<List<NodeBase>>(max_layer + 1);
             for (int i = 0; i <= max_layer; ++i)
             {
@@ -662,13 +691,13 @@ namespace Excubo.Blazor.Diagrams
             layers.Reverse();
 
             // 1.5. we might have remaining remaining nodes. We calculate the layout for those too, and merge it afterwards
-            var rest_in_layers = GetLayersBottomUp(all_nodes.Except(layers.SelectMany(n => n)).ToList(), all_links);
+            var rest_in_layers = GetLayersBottomUp(all_nodes.Except(layers.SelectMany(n => n)).ToList(), links_by_source, links_by_target);
             layers.Merge(rest_in_layers);
 
             return layers;
         }
 
-        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesUp(List<NodeBase> leaves, NullAllowingDictionary<NodeBase, List<NodeBase>> sources_by_target)
+        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesUp(List<NodeBase> leaves, Dictionary<NodeBase, List<LinkBase>> links_by_target)
         {
             var layer_assignments = leaves.ToDictionary(leaf => leaf, _ => 0);
             var nodes_pushing_up = leaves.ToDictionary(leaf => leaf, _ => new List<NodeBase>());
@@ -685,12 +714,12 @@ namespace Excubo.Blazor.Diagrams
                 var new_look_at = new List<NodeBase>();
                 foreach (var target in look_at)
                 {
-                    if (!sources_by_target.ContainsKey(target))
+                    if (!links_by_target.ContainsKey(target))
                     {
                         continue;
                     }
-                    var sources = sources_by_target[target];
-                    foreach (var source in sources)
+                    var links = links_by_target[target];
+                    foreach (var source in links.Select(l => l.Source.Node))
                     {
                         if (nodes_pushing_up.ContainsKey(target) && nodes_pushing_up[target].Contains(source))
                         {
@@ -720,7 +749,7 @@ namespace Excubo.Blazor.Diagrams
 
             return (layer_assignments, max_layer);
         }
-        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesDown(List<NodeBase> roots, NullAllowingDictionary<NodeBase, List<NodeBase>> targets_by_source)
+        private static (Dictionary<NodeBase, int> LayerAssignments, int HighestLayer) PushNodesDown(List<NodeBase> roots, Dictionary<NodeBase, List<LinkBase>> links_by_source)
         {
             var layer_assignments = roots.ToDictionary(root => root, _ => 0);
             var nodes_pushing_down = roots.ToDictionary(root => root, _ => new List<NodeBase>());
@@ -737,12 +766,12 @@ namespace Excubo.Blazor.Diagrams
                 var new_look_at = new List<NodeBase>();
                 foreach (var source in look_at)
                 {
-                    if (!targets_by_source.ContainsKey(source))
+                    if (!links_by_source.ContainsKey(source))
                     {
                         continue;
                     }
-                    var targets = targets_by_source[source];
-                    foreach (var target in targets)
+                    var links = links_by_source[source];
+                    foreach (var target in links.Select(l => l.Target.Node))
                     {
                         if (nodes_pushing_down.ContainsKey(source) && nodes_pushing_down[source].Contains(target))
                         {
