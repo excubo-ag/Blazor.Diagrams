@@ -78,7 +78,7 @@ namespace Excubo.Blazor.Diagrams
         }
         public void Run()
         {
-            if (Diagram != null && Diagram.Nodes != null && Diagram.Nodes.all_nodes.Any() && Diagram.Nodes.all_nodes.All(n => n.HasSize) && Diagram.Links != null)
+            if (Diagram != null && Diagram.IsInitialized && Diagram.Nodes != null && Diagram.Nodes.all_nodes.Any() && Diagram.Nodes.all_nodes.All(n => n.HasSize) && Diagram.Links != null)
             {
                 Diagram.DisableRendering();
                 try

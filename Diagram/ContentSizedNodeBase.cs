@@ -41,12 +41,6 @@ namespace Excubo.Blazor.Diagrams
         protected internal void GetSize((double Width, double Height) result)
         {
             has_size = true;
-            if (HintHeight == null || HintWidth == null)
-            {
-                // the layout algorithm runs as soon as all nodes either have a size or have a hinted size. 
-                // So if we already had a hinted size for this and now have a real size, we shouldn't immediately re-render
-                Diagram.AutoLayoutSettings?.Run();
-            }
             (Width, Height) = result;
             ReRenderIfOffCanvasChanged();
             if (NodeLibrary != null)

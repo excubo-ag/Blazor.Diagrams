@@ -9,10 +9,6 @@ namespace Excubo.Blazor.Diagrams
             if (first_render)
             {
                 await js.InitializeJsAsync();
-                if (AutoLayoutSettings != null)
-                {
-                    AutoLayoutSettings.Run();
-                }
             }
             if (Links != null && Nodes != null && render_cycles < 2)
             {
@@ -20,8 +16,15 @@ namespace Excubo.Blazor.Diagrams
                 await GetPositionAsync();
                 await InvokeAsync(ReRender);
             }
+            if (render_cycles == 2)
+            {
+                ++render_cycles;
+                IsInitialized = true;
+                AutoLayoutSettings?.Run();
+            }
             await base.OnAfterRenderAsync(first_render);
         }
+        internal bool IsInitialized;
         private int render_cycles = 0;
         private void ReRender()
         {
