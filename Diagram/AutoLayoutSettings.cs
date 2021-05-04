@@ -132,8 +132,8 @@ namespace Excubo.Blazor.Diagrams
                 var links_by_source_this_group = links_by_source.Where(kv => group.Contains(kv.Key)).ToDictionary(kv => kv.Key, kv => kv.Value);
                 var links_by_target_this_group = links_by_target.Where(kv => group.Contains(kv.Key)).ToDictionary(kv => kv.Key, kv => kv.Value);
                 var all_links_this_group = links_by_source_this_group.SelectMany(kv => kv.Value).ToList();
-                var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) 
-                    ? GetLayersTopDown(group, links_by_source_this_group, links_by_target_this_group) 
+                var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical)
+                    ? GetLayersTopDown(group, links_by_source_this_group, links_by_target_this_group)
                     : GetLayersBottomUp(group, links_by_source_this_group, links_by_target_this_group);
                 ArrangeNodesWithinLayers(links_by_source_this_group, links_by_target_this_group, layers);
                 layers = layers.Where(layer => layer.Any()).ToList();
