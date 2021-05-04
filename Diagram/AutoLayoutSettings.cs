@@ -123,16 +123,80 @@ namespace Excubo.Blazor.Diagrams
                 .Where(l => l.Source?.Node != null && l.Target?.Node != null)
                 .GroupBy(e => e.Target.Node, e => e)
                 .ToDictionary(e => e.Key, e => e.ToList());
+            var connected_groups = FindConnectedGroups(all_nodes, links_by_source, links_by_target);
+            const double separation_between_groups = 50;
+            double offset = 0;
             // 1. Establish hierarchy.
-            var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) ? GetLayersTopDown(all_nodes, links_by_source, links_by_target) : GetLayersBottomUp(all_nodes, links_by_source, links_by_target);
-            // 2. Now that everything is in layers, we should arrange the items per layer such that there is minimal crossing of links.
-            ArrangeNodesWithinLayers(links_by_source, links_by_target, layers);
-            layers = layers.Where(layer => layer.Any()).ToList();
-            // 3. Layout time!
-            ArrangeNodes(links_by_source, links_by_target, layers);
-            // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
-            ArrangeLinks(all_links, layers);
+            foreach (var group in connected_groups)
+            {
+                var links_by_source_this_group = links_by_source.Where(kv => group.Contains(kv.Key)).ToDictionary(kv => kv.Key, kv => kv.Value);
+                var links_by_target_this_group = links_by_target.Where(kv => group.Contains(kv.Key)).ToDictionary(kv => kv.Key, kv => kv.Value);
+                var all_links_this_group = links_by_source_this_group.SelectMany(kv => kv.Value).ToList();
+                var layers = (Algorithm == Algorithm.TreeHorizontal || Algorithm == Algorithm.TreeVertical) 
+                    ? GetLayersTopDown(group, links_by_source_this_group, links_by_target_this_group) 
+                    : GetLayersBottomUp(group, links_by_source_this_group, links_by_target_this_group);
+                ArrangeNodesWithinLayers(links_by_source_this_group, links_by_target_this_group, layers);
+                layers = layers.Where(layer => layer.Any()).ToList();
+                // 3. Layout time!
+                ArrangeNodes(links_by_source_this_group, links_by_target_this_group, layers, offset);
+                // 4. fix link positions. This is easy, because we work top down, except when we have upwards arrows (cycles) or ltr/rtl arrows.
+                ArrangeLinks(all_links_this_group, layers);
+                var is_vertical = Algorithm is Algorithm.TreeVertical or Algorithm.TreeVerticalBottomUp or Algorithm.TreeVerticalTopDown;
+                offset = is_vertical
+                    ? layers.Last().Max(n => n.Y + n.Height + n.GetDrawingMargins().Bottom)
+                    : layers.Last().Max(n => n.X + n.Width + n.GetDrawingMargins().Right);
+                offset += separation_between_groups;
+            }
+            foreach (var node in all_nodes)
+            {
+                node.ApplyMoveTo();
+            }
         }
+
+        private List<List<NodeBase>> FindConnectedGroups(List<NodeBase> all_nodes, Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target)
+        {
+            var groups = new List<List<NodeBase>>();
+            var copy = new List<NodeBase>(all_nodes);
+            while (copy.Any())
+            {
+                var node = copy.Last();
+                copy.RemoveAt(copy.Count - 1);
+                var group = new List<NodeBase> { node };
+                var unvisited = group.ToList();
+                while (unvisited.Any())
+                {
+                    var current = unvisited.Last();
+                    unvisited.RemoveAt(unvisited.Count - 1);
+                    if (links_by_source.TryGetValue(current, out var sLinks))
+                    {
+                        foreach (var link in sLinks)
+                        {
+                            if (copy.Contains(link.Target.Node))
+                            {
+                                copy.Remove(link.Target.Node);
+                                unvisited.Add(link.Target.Node);
+                                group.Add(link.Target.Node);
+                            }
+                        }
+                    }
+                    if (links_by_target.TryGetValue(current, out var tLinks))
+                    {
+                        foreach (var link in tLinks)
+                        {
+                            if (copy.Contains(link.Source.Node))
+                            {
+                                copy.Remove(link.Source.Node);
+                                unvisited.Add(link.Source.Node);
+                                group.Add(link.Source.Node);
+                            }
+                        }
+                    }
+                }
+                groups.Add(group);
+            }
+            return groups;
+        }
+
         private void ArrangeLinks(List<LinkBase> all_links, List<List<NodeBase>> layers)
         {
             if (Algorithm == Algorithm.TreeVerticalBottomUp || Algorithm == Algorithm.TreeVerticalTopDown)
@@ -205,7 +269,7 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
-        private void ArrangeNodes(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target, List<List<NodeBase>> layers)
+        private void ArrangeNodes(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target, List<List<NodeBase>> layers, double initial_offset)
         {
             foreach (var node in layers.SelectMany(l => l))
             {
@@ -222,7 +286,7 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetWidth();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Right;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetHeight() + node.GetDrawingMargins().Top + node.GetDrawingMargins().Bottom;
-                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, y - y_offset);
+                Func<double, Action<NodeBase, double, double>> move_generator = (y) => (node, x, y_offset) => node.MoveToWithoutUIUpdate(x, initial_offset + y - y_offset);
                 ArrangeNodes(links_by_source, links_by_target, layers, vertical_separation, horizontal_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
@@ -236,14 +300,10 @@ namespace Excubo.Blazor.Diagrams
                 Func<NodeBase, double> space = (node) => node.GetHeight();
                 Func<NodeBase, double> bottom_or_right_margin = (node) => node.GetDrawingMargins().Bottom;
                 Func<NodeBase, double> orthogonal_space_with_margins = (node) => node.GetWidth() + node.GetDrawingMargins().Left + node.GetDrawingMargins().Right;
-                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(x - x_offset, y);
+                Func<double, Action<NodeBase, double, double>> move_generator = (x) => (node, y, x_offset) => node.MoveToWithoutUIUpdate(initial_offset + x - x_offset, y);
                 ArrangeNodes(links_by_source, links_by_target, layers, horizontal_separation, vertical_separation,
                     move_generator, adjust_position, orthogonal_space_with_margins, between_layer_start_margin, position,
                     top_or_left_margin, space, bottom_or_right_margin);
-            }
-            foreach (var node in layers.SelectMany(l => l))
-            {
-                node.ApplyMoveTo();
             }
         }
         private static void ArrangeNodes(Dictionary<NodeBase, List<LinkBase>> links_by_source, Dictionary<NodeBase, List<LinkBase>> links_by_target,

@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject_Components", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProject_ServerSide", "TestProject_ServerSide\TestProject_ServerSide.csproj", "{C92641E8-4DAD-4FB0-BBC2-BDEBA016B917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests_Blazor.Diagrams", "Tests_Blazor.Diagrams\Tests_Blazor.Diagrams.csproj", "{9FE3F908-7231-4302-A028-191B41953E19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests_Blazor.Diagrams", "Tests_Blazor.Diagrams\Tests_Blazor.Diagrams.csproj", "{9FE3F908-7231-4302-A028-191B41953E19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
