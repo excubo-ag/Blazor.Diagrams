@@ -170,13 +170,12 @@ L5_N0
                     new TestLink(nodes, source: "2", target: "3"),
                     new TestLink(nodes, source: "3", target: "1"),
                 }
-                .OrderBy(_ => rnd.NextDouble())
                 .ToList();
                 ;
                 auto_layout.Layout(nodes, links);
-                var layer_0 = nodes.Where(n => n.Id is "1").ToList();
-                var layer_1 = nodes.Where(n => n.Id is "2").ToList();
-                var layer_2 = nodes.Where(n => n.Id is "3").ToList();
+                var layer_0 = nodes.Where(n => n.Id is "3").ToList();
+                var layer_1 = nodes.Where(n => n.Id is "1").ToList();
+                var layer_2 = nodes.Where(n => n.Id is "2").ToList();
                 Assert.AreEqual(1, layer_0.Select(n => n.Y).Distinct().Count());
                 Assert.AreEqual(1, layer_1.Select(n => n.Y).Distinct().Count());
                 Assert.AreEqual(1, layer_2.Select(n => n.Y).Distinct().Count());
@@ -238,15 +237,23 @@ L5_N0
                     new TestLink(nodes, source: "1", target: "2"),
                     new TestLink(nodes, source: "3", target: "4"),
                 }
-                .OrderBy(_ => rnd.NextDouble())
                 .ToList();
                 ;
                 auto_layout.Layout(nodes, links);
-                var layer_0 = nodes.Where(n => n.Id is "1" or "3").ToList();
-                var layer_1 = nodes.Where(n => n.Id is "2" or "4").ToList();
-                Assert.AreEqual(1, layer_0.Select(n => n.Y).Distinct().Count());
-                Assert.AreEqual(1, layer_1.Select(n => n.Y).Distinct().Count());
-                Assert.Less(layer_0.Select(n => n.Y).First(), layer_1.Select(n => n.Y).First());
+                var layers = Enumerable.Empty<List<NodeBase>>()
+                    .Append(nodes.Where(n => n.Id is "3").ToList())
+                    .Append(nodes.Where(n => n.Id is "4").ToList())
+                    .Append(nodes.Where(n => n.Id is "1").ToList())
+                    .Append(nodes.Where(n => n.Id is "2").ToList())
+                    .ToList();
+                foreach (var layer in layers)
+                {
+                    Assert.AreEqual(1, layer.Select(n => n.Y).Distinct().Count());
+                }
+                for (int li = 0; li + 1 < layers.Count; ++li)
+                {
+                    Assert.Less(layers[li].Select(n => n.Y).First(), layers[li + 1].Select(n => n.Y).First());
+                }
             }
         }
         [Test]
