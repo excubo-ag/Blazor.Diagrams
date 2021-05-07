@@ -501,7 +501,11 @@ namespace Excubo.Blazor.Diagrams
                     right_position += difference / 2;
                     to_adjust[i] = (left_node, left_position);
                     to_adjust[i + 1] = (right_node, right_position);
-                    i = -1;
+                    i -= 2;
+                    if (i < -1)
+                    {
+                        i = -1;
+                    }
                     to_adjust = to_adjust.OrderBy(e => e.Position).ToList();
                 }
             }
