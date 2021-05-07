@@ -124,6 +124,10 @@ namespace Excubo.Blazor.Diagrams.__Internal
             old_max_y = max_y;
 
             var hidden_canvas = canvas_2_visible ? canvas1 : canvas2;
+            if (hidden_canvas == default)
+            {
+                return;
+            }
             await using var ctx = await hidden_canvas.GetContext2DAsync(alpha: true);
             await using var batch = await ctx.CreateBatchAsync();
             await batch.Transformations.SetTransformAsync(1, 0, 0, 1, 0, 0);
