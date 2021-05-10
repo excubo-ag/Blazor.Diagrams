@@ -486,29 +486,79 @@ namespace Excubo.Blazor.Diagrams
         {
             var ignored = wish_positions.Where(e => e.Position == double.MaxValue).ToList();
             var to_adjust = wish_positions.Where(e => e.Position != double.MaxValue).OrderBy(e => e.Position).ToList();
-            // the adjustment of positions is done from "left to right", separating two nodes by moving the left more to the left and the right more to the right.
-            for (var i = 0; i + 1 < to_adjust.Count; ++i)
+            if (to_adjust.Count <= 1)
+            {
+                return wish_positions;
+            }
+            var original_wishes = to_adjust.ToList();
+            var forces = Enumerable.Range(0, to_adjust.Count - 1).Select(i =>
             {
                 var (left_node, left_position) = to_adjust[i];
                 var (right_node, right_position) = to_adjust[i + 1];
                 var left_side_of_right = right_position - space(right_node) / 2 - top_or_left_margin(right_node);
                 var right_side_of_left = left_position + space(left_node) / 2 + bottom_or_right_margin(left_node);
                 var current_separation = left_side_of_right - right_side_of_left;
-                if (in_layer_separation - current_separation > 1e-6)
+                return (in_layer_separation - current_separation) / 2;
+            }).ToList();
+
+            IEnumerable<TCummulative> Cummulative<TCummulative, TValue>(IEnumerable<TValue> values, TCummulative seed, Func<TCummulative, TValue, TCummulative> func)
+            {
+                yield return seed;
+                foreach (var value in values)
                 {
-                    var difference = Math.Abs(in_layer_separation - current_separation);
-                    left_position -= difference / 2;
-                    right_position += difference / 2;
-                    to_adjust[i] = (left_node, left_position);
-                    to_adjust[i + 1] = (right_node, right_position);
-                    i -= 2;
-                    if (i < -1)
-                    {
-                        i = -1;
-                    }
-                    to_adjust = to_adjust.OrderBy(e => e.Position).ToList();
+                    seed = func(seed, value);
+                    yield return seed;
                 }
             }
+            Func<double, double, double> forcePropagation = (existing, additional) => (existing + 2 * additional <= 0) ? 0d : (existing + additional);
+
+            var forces_to_right_cummulative = Cummulative(forces, 0, forcePropagation).ToList();
+            forces.Reverse();
+            var forces_to_left_cummulative = Cummulative(forces, 0, forcePropagation).Reverse().ToList();
+
+            // step one: fix the separation issues
+            for (int i = 0; i < to_adjust.Count; ++i)
+            {
+                var force_to_left = forces_to_left_cummulative[i];
+                var force_to_right = forces_to_right_cummulative[i];
+                to_adjust[i] = (to_adjust[i].Node, to_adjust[i].Position - force_to_left + force_to_right);
+            }
+
+            // step two: find the "rigid" ranges.
+            // A rigid range is a range of consecutive nodes, where there is to freedom to move the elements within this range closer to each other without violating the separation constraint.
+            IEnumerable<List<(NodeBase Node, double CurrentPosition, double Wish)>> InGroups()
+            {
+                List<(NodeBase Node, double CurrentPosition, double Wish)> group = null;
+                var last_was_negative = true;
+                foreach (var (node, current, wish) in to_adjust.Zip(original_wishes, (c, o) => (c.Node, c.Position, o.Position)))
+                {
+                    var is_positive = wish - current >= 0;
+                    if (is_positive && last_was_negative)
+                    {
+                        // this is a start of a new group. yield the last one, create new group and add this.
+                        if (group != null)
+                        {
+                            yield return group; // only yield if not null
+                        }
+                        group = new();
+                    }
+                    group.Add((node, current, wish));
+                    last_was_negative = !is_positive;
+                }
+                if (group.Any())
+                {
+                    yield return group;
+                }
+            }
+            IEnumerable<(NodeBase Node, double Position)> ApplyAverageForce(List<(NodeBase Node, double CurrentPosition, double Wish)> group)
+            {
+                var average_force = group.Average(ncw => ncw.Wish - ncw.CurrentPosition);
+                foreach (var element in group)
+                {
+                    yield return (Node: element.Node, element.CurrentPosition + average_force);
+                }
+            }
+            to_adjust = InGroups().SelectMany(ApplyAverageForce).ToList();
             return to_adjust.Concat(ignored).ToList();
         }
 
