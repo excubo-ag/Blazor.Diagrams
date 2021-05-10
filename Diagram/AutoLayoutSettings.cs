@@ -354,7 +354,7 @@ namespace Excubo.Blazor.Diagrams
                     return links_by_target[n].Average(l => position(l.Source.Node) + space(l.Source.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
+                wish_positions = Implementation.EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
                 var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index + layer_heights[widest_layer_index] / 2;
                 var move = move_generator(y);
@@ -373,7 +373,7 @@ namespace Excubo.Blazor.Diagrams
                     return links_by_source[n].Average(l => position(l.Target.Node) + space(l.Target.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
+                wish_positions = Implementation.EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
                 var y = layer_heights.Take(widest_layer_index).Sum() + layer_separation * widest_layer_index + layer_heights[widest_layer_index] / 2;
                 var move = move_generator(y);
@@ -416,7 +416,6 @@ namespace Excubo.Blazor.Diagrams
                 }
             }
         }
-
         private static void OptimizeAboveWidestLayer(Dictionary<NodeBase, List<LinkBase>> links_by_source,
             List<List<NodeBase>> layers, double layer_separation, double in_layer_separation, List<double> layer_heights, int widest_layer_index,
             Func<double, Action<NodeBase, double, double>> move_generator,
@@ -440,7 +439,7 @@ namespace Excubo.Blazor.Diagrams
                     return links_by_source[n].Average(l => position(l.Target.Node) + space(l.Target.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
+                wish_positions = Implementation.EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
                 var y = layer_heights.Take(i).Sum() + layer_separation * i + layer_heights[i] / 2;
                 var move = move_generator(y);
@@ -470,96 +469,99 @@ namespace Excubo.Blazor.Diagrams
                     return links_by_target[n].Average(l => position(l.Source.Node) + space(l.Source.Node) / 2);
                 }), (Node, Position) => (Node, Position)).OrderBy(e => e.Position).ToList();
 
-                wish_positions = EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
+                wish_positions = Implementation.EnsureSeparation(in_layer_separation, wish_positions, top_or_left_margin, space, bottom_or_right_margin);
 
                 var y = layer_heights.Take(i).Sum() + layer_separation * i + layer_heights[i] / 2;
                 var move = move_generator(y);
                 PlaceNodesInLayer(in_layer_separation, wish_positions, move, between_layer_start_margin, position, top_or_left_margin, space, bottom_or_right_margin);
             }
         }
-        private static List<(NodeBase Node, double Position)> EnsureSeparation(
-            double in_layer_separation,
-            List<(NodeBase Node, double Position)> wish_positions,
-            Func<NodeBase, double> top_or_left_margin,
-            Func<NodeBase, double> space,
-            Func<NodeBase, double> bottom_or_right_margin)
+        internal static class Implementation
         {
-            var ignored = wish_positions.Where(e => e.Position == double.MaxValue).ToList();
-            var to_adjust = wish_positions.Where(e => e.Position != double.MaxValue).OrderBy(e => e.Position).ToList();
-            if (to_adjust.Count <= 1)
+            internal static List<(NodeBase Node, double Position)> EnsureSeparation(
+                double in_layer_separation,
+                List<(NodeBase Node, double Position)> wish_positions,
+                Func<NodeBase, double> top_or_left_margin,
+                Func<NodeBase, double> space,
+                Func<NodeBase, double> bottom_or_right_margin)
             {
-                return wish_positions;
-            }
-            var original_wishes = to_adjust.ToList();
-            var forces = Enumerable.Range(0, to_adjust.Count - 1).Select(i =>
-            {
-                var (left_node, left_position) = to_adjust[i];
-                var (right_node, right_position) = to_adjust[i + 1];
-                var left_side_of_right = right_position - space(right_node) / 2 - top_or_left_margin(right_node);
-                var right_side_of_left = left_position + space(left_node) / 2 + bottom_or_right_margin(left_node);
-                var current_separation = left_side_of_right - right_side_of_left;
-                return (in_layer_separation - current_separation) / 2;
-            }).ToList();
-
-            IEnumerable<TCummulative> Cummulative<TCummulative, TValue>(IEnumerable<TValue> values, TCummulative seed, Func<TCummulative, TValue, TCummulative> func)
-            {
-                yield return seed;
-                foreach (var value in values)
+                var ignored = wish_positions.Where(e => e.Position == double.MaxValue).ToList();
+                var to_adjust = wish_positions.Where(e => e.Position != double.MaxValue).OrderBy(e => e.Position).ToList();
+                if (to_adjust.Count <= 1)
                 {
-                    seed = func(seed, value);
+                    return wish_positions;
+                }
+                var original_wishes = to_adjust.ToList();
+                var forces = Enumerable.Range(0, to_adjust.Count - 1).Select(i =>
+                {
+                    var (left_node, left_position) = to_adjust[i];
+                    var (right_node, right_position) = to_adjust[i + 1];
+                    var left_side_of_right = right_position - space(right_node) / 2 - top_or_left_margin(right_node);
+                    var right_side_of_left = left_position + space(left_node) / 2 + bottom_or_right_margin(left_node);
+                    var current_separation = left_side_of_right - right_side_of_left;
+                    return (in_layer_separation - current_separation) / 2;
+                }).ToList();
+
+                IEnumerable<TCummulative> Cummulative<TCummulative, TValue>(IEnumerable<TValue> values, TCummulative seed, Func<TCummulative, TValue, TCummulative> func)
+                {
                     yield return seed;
-                }
-            }
-            Func<double, double, double> forcePropagation = (existing, additional) => (existing + 2 * additional <= 0) ? 0d : (existing + additional);
-
-            var forces_to_right_cummulative = Cummulative(forces, 0, forcePropagation).ToList();
-            forces.Reverse();
-            var forces_to_left_cummulative = Cummulative(forces, 0, forcePropagation).Reverse().ToList();
-
-            // step one: fix the separation issues
-            for (int i = 0; i < to_adjust.Count; ++i)
-            {
-                var force_to_left = forces_to_left_cummulative[i];
-                var force_to_right = forces_to_right_cummulative[i];
-                to_adjust[i] = (to_adjust[i].Node, to_adjust[i].Position - force_to_left + force_to_right);
-            }
-
-            // step two: find the "rigid" ranges.
-            // A rigid range is a range of consecutive nodes, where there is to freedom to move the elements within this range closer to each other without violating the separation constraint.
-            IEnumerable<List<(NodeBase Node, double CurrentPosition, double Wish)>> InGroups()
-            {
-                List<(NodeBase Node, double CurrentPosition, double Wish)> group = null;
-                var last_was_negative = true;
-                foreach (var (node, current, wish) in to_adjust.Zip(original_wishes, (c, o) => (c.Node, c.Position, o.Position)))
-                {
-                    var is_positive = wish - current >= 0;
-                    if (is_positive && last_was_negative)
+                    foreach (var value in values)
                     {
-                        // this is a start of a new group. yield the last one, create new group and add this.
-                        if (group != null)
-                        {
-                            yield return group; // only yield if not null
-                        }
-                        group = new();
+                        seed = func(seed, value);
+                        yield return seed;
                     }
-                    group.Add((node, current, wish));
-                    last_was_negative = !is_positive;
                 }
-                if (group.Any())
+                Func<double, double, double> forcePropagation = (existing, additional) => existing + additional;
+
+                var forces_to_right_cummulative = Cummulative(forces, 0, forcePropagation).ToList();
+                forces.Reverse();
+                var forces_to_left_cummulative = Cummulative(forces, 0, forcePropagation).Reverse().ToList();
+
+                // step one: fix the separation issues
+                for (int i = 0; i < to_adjust.Count; ++i)
                 {
-                    yield return group;
+                    var force_to_left = forces_to_left_cummulative[i];
+                    var force_to_right = forces_to_right_cummulative[i];
+                    to_adjust[i] = (to_adjust[i].Node, to_adjust[i].Position - force_to_left + force_to_right);
                 }
-            }
-            IEnumerable<(NodeBase Node, double Position)> ApplyAverageForce(List<(NodeBase Node, double CurrentPosition, double Wish)> group)
-            {
-                var average_force = group.Average(ncw => ncw.Wish - ncw.CurrentPosition);
-                foreach (var element in group)
+
+                // step two: find the "rigid" ranges.
+                // A rigid range is a range of consecutive nodes, where there is to freedom to move the elements within this range closer to each other without violating the separation constraint.
+                IEnumerable<List<(NodeBase Node, double CurrentPosition, double Wish)>> InGroups()
                 {
-                    yield return (Node: element.Node, element.CurrentPosition + average_force);
+                    List<(NodeBase Node, double CurrentPosition, double Wish)> group = new();
+                    var last_was_negative = true;
+                    foreach (var (node, current, wish) in to_adjust.Zip(original_wishes, (c, o) => (c.Node, c.Position, o.Position)))
+                    {
+                        var is_positive = wish - current >= 0;
+                        if (is_positive && last_was_negative)
+                        {
+                            // this is a start of a new group. yield the last one, create new group and add this.
+                            if (group.Any())
+                            {
+                                yield return group; // only yield if not null
+                            }
+                            group = new();
+                        }
+                        group.Add((node, current, wish));
+                        last_was_negative = !is_positive;
+                    }
+                    if (group.Any())
+                    {
+                        yield return group;
+                    }
                 }
+                IEnumerable<(NodeBase Node, double Position)> ApplyAverageForce(List<(NodeBase Node, double CurrentPosition, double Wish)> group)
+                {
+                    var average_force = group.Average(ncw => ncw.Wish - ncw.CurrentPosition);
+                    foreach (var element in group)
+                    {
+                        yield return (Node: element.Node, element.CurrentPosition + average_force);
+                    }
+                }
+                to_adjust = InGroups().SelectMany(ApplyAverageForce).ToList();
+                return to_adjust.Concat(ignored).ToList();
             }
-            to_adjust = InGroups().SelectMany(ApplyAverageForce).ToList();
-            return to_adjust.Concat(ignored).ToList();
         }
 
         private static void PlaceNodesInLayer(
