@@ -511,7 +511,7 @@ namespace Excubo.Blazor.Diagrams
                         yield return seed;
                     }
                 }
-                Func<double, double, double> forcePropagation = (existing, additional) => existing + additional;
+                Func<double, double, double> forcePropagation = (existing, additional) => Math.Max(0, existing + additional);
 
                 var forces_to_right_cummulative = Cummulative(forces, 0, forcePropagation).ToList();
                 forces.Reverse();
