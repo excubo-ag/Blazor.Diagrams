@@ -530,21 +530,26 @@ namespace Excubo.Blazor.Diagrams
                 IEnumerable<List<(NodeBase Node, double CurrentPosition, double Wish)>> InGroups()
                 {
                     List<(NodeBase Node, double CurrentPosition, double Wish)> group = new();
-                    var last_was_negative = true;
-                    foreach (var (node, current, wish) in to_adjust.Zip(original_wishes, (c, o) => (c.Node, c.Position, o.Position)))
+                    group.Add((to_adjust[0].Node, to_adjust[0].Position, original_wishes[0].Position));
+                    for (int i = 0; i + 1 < to_adjust.Count; ++i)
                     {
-                        var is_positive = wish - current >= 0;
-                        if (is_positive && last_was_negative)
+                        var (left_node, left_position) = to_adjust[i];
+                        var (right_node, right_position) = to_adjust[i + 1];
+                        var left_side_of_right = right_position - space(right_node) / 2 - top_or_left_margin(right_node);
+                        var right_side_of_left = left_position + space(left_node) / 2 + bottom_or_right_margin(left_node);
+                        var current_separation = left_side_of_right - right_side_of_left;
+                        if (current_separation <= in_layer_separation + 1e-6)
                         {
-                            // this is a start of a new group. yield the last one, create new group and add this.
-                            if (group.Any())
-                            {
-                                yield return group; // only yield if not null
-                            }
-                            group = new();
+                            // node i + 1 is still in the same group as node i
+                            group.Add((to_adjust[i + 1].Node, to_adjust[i + 1].Position, original_wishes[i + 1].Position));
                         }
-                        group.Add((node, current, wish));
-                        last_was_negative = !is_positive;
+                        else
+                        {
+                            // the group is full. Yield group, and create a new one for i + 1.
+                            yield return group;
+                            group = new();
+                            group.Add((to_adjust[i + 1].Node, to_adjust[i + 1].Position, original_wishes[i + 1].Position));
+                        }
                     }
                     if (group.Any())
                     {
