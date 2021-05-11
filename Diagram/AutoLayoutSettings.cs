@@ -492,6 +492,21 @@ namespace Excubo.Blazor.Diagrams
                     return wish_positions;
                 }
                 var original_wishes = to_adjust.ToList();
+                to_adjust = ApplyForceBasedApproach(in_layer_separation, to_adjust, top_or_left_margin, space, bottom_or_right_margin);
+                to_adjust = ApplyWishBasedApproach(in_layer_separation, original_wishes, to_adjust, top_or_left_margin, space, bottom_or_right_margin);
+                to_adjust = ApplyForceBasedApproach(in_layer_separation, to_adjust, top_or_left_margin, space, bottom_or_right_margin);
+
+
+                return to_adjust.Concat(ignored).ToList();
+            }
+
+            private static List<(NodeBase Node, double Position)> ApplyForceBasedApproach(
+                double in_layer_separation,
+                List<(NodeBase Node, double Position)> to_adjust,
+                Func<NodeBase, double> top_or_left_margin,
+                Func<NodeBase, double> space,
+                Func<NodeBase, double> bottom_or_right_margin)
+            {
                 var forces = Enumerable.Range(0, to_adjust.Count - 1).Select(i =>
                 {
                     var (left_node, left_position) = to_adjust[i];
@@ -524,7 +539,16 @@ namespace Excubo.Blazor.Diagrams
                     var force_to_right = forces_to_right_cummulative[i];
                     to_adjust[i] = (to_adjust[i].Node, to_adjust[i].Position - force_to_left + force_to_right);
                 }
-
+                return to_adjust;
+            }
+            private static List<(NodeBase Node, double Position)> ApplyWishBasedApproach(
+                double in_layer_separation,
+                List<(NodeBase Node, double Position)> original_wishes,
+                List<(NodeBase Node, double Position)> to_adjust,
+                Func<NodeBase, double> top_or_left_margin,
+                Func<NodeBase, double> space,
+                Func<NodeBase, double> bottom_or_right_margin)
+            {
                 // step two: find the "rigid" ranges.
                 // A rigid range is a range of consecutive nodes, where there is to freedom to move the elements within this range closer to each other without violating the separation constraint.
                 IEnumerable<List<(NodeBase Node, double CurrentPosition, double Wish)>> InGroups()
@@ -564,8 +588,7 @@ namespace Excubo.Blazor.Diagrams
                         yield return (Node: element.Node, element.CurrentPosition + average_force);
                     }
                 }
-                to_adjust = InGroups().SelectMany(ApplyAverageForce).ToList();
-                return to_adjust.Concat(ignored).ToList();
+                return InGroups().SelectMany(ApplyAverageForce).ToList();
             }
         }
 

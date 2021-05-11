@@ -418,5 +418,60 @@ L5_N0
                 }
             }
         }
+        [Test]
+        public void AutoLayout_Real3()
+        {
+            var diagram = new Diagram();
+            var auto_layout = new AutoLayoutSettings();
+            auto_layout.Algorithm = Algorithm.TreeVerticalTopDown;
+            var rnd = new Random();
+            for (int i = 0; i < 10; ++i)
+            {
+                var nodes = new List<NodeBase>
+                {
+                    new TestNode(diagram, "01"),
+                    new TestNode(diagram, "02"),
+
+                    new TestNode(diagram, "03"),
+                    new TestNode(diagram, "04"),
+                    new TestNode(diagram, "05"),
+                    new TestNode(diagram, "06"),
+
+                    new TestNode(diagram, "11"),
+                    new TestNode(diagram, "12")
+                }
+                .ToList();
+                var links = new List<LinkBase>
+                {
+                    new TestLink(nodes, source: "01", target: "11"),
+                    new TestLink(nodes, source: "02", target: "11"),
+                    new TestLink(nodes, source: "02", target: "12"),
+                    new TestLink(nodes, source: "03", target: "12"),
+                    new TestLink(nodes, source: "04", target: "12"),
+                    new TestLink(nodes, source: "05", target: "12"),
+                    new TestLink(nodes, source: "06", target: "12"),
+                }
+                .ToList();
+                ;
+                auto_layout.Layout(nodes, links);
+                var layers = Enumerable.Empty<List<NodeBase>>()
+                    .Append(nodes.Where(n => n.Id.StartsWith("0")).ToList())
+                    .Append(nodes.Where(n => n.Id.StartsWith("1")).ToList())
+                    .ToList();
+                foreach (var layer in layers)
+                {
+                    Assert.AreEqual(1, layer.Select(n => n.Y).Distinct().Count());
+                }
+                for (int li = 0; li + 1 < layers.Count; ++li)
+                {
+                    Assert.Less(layers[li].Select(n => n.Y).First(), layers[li + 1].Select(n => n.Y).First());
+                }
+                foreach (var layer in layers)
+                {
+                    var positions = layer.Select(n => n.X).OrderBy(v => v).ToList();
+                    Assert.IsFalse(positions.SkipLast(1).Zip(positions.Skip(1), (first, second) => second - first).Any(v => v < 150), "Some nodes were too close to each other");
+                }
+            }
+        }
     }
 }
