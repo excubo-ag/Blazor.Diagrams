@@ -4,6 +4,7 @@
     {
         None,
         Pan,
+        PanOrResetSelection,
         SelectRegion,
         Move,
         UpdateLinkTarget,

@@ -137,6 +137,10 @@ namespace Excubo.Blazor.Diagrams
                 case ActionType.SelectRegion:
                     UpdateSelection(e);
                     break;
+                case ActionType.PanOrResetSelection when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
+                    ActionType = ActionType.Pan;
+                    Pan(e);
+                    break;
                 case ActionType.Pan when ActiveElementType == HoverType.Unknown && e.Buttons == 1:
                     Pan(e);
                     break;
@@ -211,6 +215,14 @@ namespace Excubo.Blazor.Diagrams
                     break;
                 case ActionType.Pan:
                     ActionType = ActionType.None;
+                    break;
+                case ActionType.PanOrResetSelection:
+                    ActionType = ActionType.None;
+                    foreach (var node in Group.Nodes)
+                    {
+                        node.Deselect();
+                    }
+                    Group.Clear();
                     break;
                 case ActionType.None:
                     // nothing to do here
@@ -462,7 +474,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 case HoverType.Unknown when !e.CtrlKey && !e.ShiftKey:
                     // panning starts, when you simply press the mouse down anywhere where there's nothing.
-                    ActionType = ActionType.Pan;
+                    ActionType = ActionType.PanOrResetSelection;
                     break;
                 case HoverType.Unknown when e.ShiftKey:
                     ActionType = ActionType.SelectRegion;
