@@ -8,10 +8,12 @@ namespace Excubo.Blazor.Diagrams
         private sealed class UpdatingLinkTarget : InteractionState
         {
             private readonly LinkBase link;
+            private readonly Point referencePoint;
 
-            public UpdatingLinkTarget(InteractionState previous, LinkBase link) : base(previous)
+            public UpdatingLinkTarget(InteractionState previous, LinkBase link, MouseEventArgs e) : base(previous)
             {
                 this.link = link;
+                referencePoint = new Point(e.ClientX, e.ClientY);
             }
             public override InteractionState OnMouseMove(MouseEventArgs e)
             {
@@ -20,6 +22,10 @@ namespace Excubo.Blazor.Diagrams
             }
             public override InteractionState OnMouseUp(MouseEventArgs e)
             {
+                if (referencePoint.X == e.ClientX && referencePoint.Y == e.ClientY)
+                {
+                    return this; // this link is not yet done! The user probably did not intend to end this yet, so let's pretend it didn't happen.
+                }
                 EndLink(e);
                 return new Default(this);
             }

@@ -10,7 +10,7 @@ namespace Excubo.Blazor.Diagrams
             {
                 diagram.Links.AddNewLink(node, e, (generated_link) =>
                 {
-                    diagram.State = new UpdatingLinkTarget(diagram.State, generated_link);
+                    diagram.State = new UpdatingLinkTarget(diagram.State, generated_link, e);
                     generated_link.Select();
                     diagram.Overview?.TriggerUpdate();
                 });
