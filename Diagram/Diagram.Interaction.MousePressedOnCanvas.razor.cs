@@ -14,20 +14,12 @@ namespace Excubo.Blazor.Diagrams
             }
             public override InteractionState OnMouseUp(MouseEventArgs e)
             {
-                ResetSelection();
+                diagram.Group.Clear();
                 return new Default(this);
             }
             public override InteractionState OnMouseDown(MouseEventArgs e)
             {
                 throw new InvalidOperationException($"The mouse cannot be pressed while the state is {nameof(MousePressedOnCanvas)}");
-            }
-            private void ResetSelection()
-            {
-                foreach (var node in diagram.Group.Nodes)
-                {
-                    node.Deselect();
-                }
-                diagram.Group.Clear();
             }
         }
     }
