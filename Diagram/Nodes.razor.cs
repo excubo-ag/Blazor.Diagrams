@@ -20,6 +20,10 @@ namespace Excubo.Blazor.Diagrams
         /// Callback that is executed when a node is added.
         /// </summary>
         [Parameter] public Action<NodeBase> OnAdd { get; set; }
+        /// <summary>
+        /// Callback that is executed after a node was moved.
+        /// </summary>
+        [Parameter] public Action<NodeBase> OnModified { get; set; }
         [CascadingParameter] public Diagram Diagram { get; set; }
         internal bool render_not_necessary;
         protected override bool ShouldRender()

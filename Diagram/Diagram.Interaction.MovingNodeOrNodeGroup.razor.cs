@@ -62,6 +62,10 @@ namespace Excubo.Blazor.Diagrams
                             node.TriggerStateHasChanged();
                         }
                     }));
+                    foreach (var node in nodes)
+                    {
+                        diagram.Nodes.OnModified?.Invoke(node);
+                    }
                 }
                 if (diagram.Group.Nodes.Count == 1)
                 {
