@@ -54,7 +54,7 @@ namespace Excubo.Blazor.Diagrams
                 if (e.Buttons != 1)
                 {
                     // this is not a move, because the mouse button isn't pressed.
-                    return this; 
+                    return this;
                 }
                 switch (anticipatedAction)
                 {

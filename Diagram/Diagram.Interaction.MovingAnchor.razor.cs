@@ -41,7 +41,7 @@ namespace Excubo.Blazor.Diagrams
             }
             private void FixNodeAnchor(MouseEventArgs e)
             {
-                var node = diagram.ActiveElement.Node;
+                var node = diagram.ActiveElement as NodeBase;
                 if (node == null && !link.Links.AllowFreeFloatingLinks)
                 {
                     // free-floating links are not allowed and this action would not attach the link to a node

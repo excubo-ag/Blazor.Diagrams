@@ -34,11 +34,11 @@ namespace Excubo.Blazor.Diagrams
             {
                 if (diagram.ActiveElementType == HoverType.Anchor)
                 {
-                    return new MovingAnchor(this, link, diagram.ActiveElement.Anchor, e);
+                    return new MovingAnchor(this, link, diagram.ActiveElement as NodeAnchor, e);
                 }
                 if (diagram.ActiveElementType == HoverType.ControlPoint)
                 {
-                    return new MovingControlPoint(this, link, diagram.ActiveElement.ControlPoint, e);
+                    return new MovingControlPoint(this, link, diagram.ActiveElement as ControlPoint, e);
                 }
                 StopModifyingLink();
                 return new Default(this).OnMouseDown(e);

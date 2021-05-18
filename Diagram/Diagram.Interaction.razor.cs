@@ -1,87 +1,36 @@
 ﻿using Microsoft.AspNetCore.Components.Web;
-using System;
 
 namespace Excubo.Blazor.Diagrams
 {
     public partial class Diagram
     {
-        private class ActiveElementContainer
-        {
-            internal NodeBase Node { get; private set; }
-            internal LinkBase Link { get; private set; }
-            internal ControlPoint ControlPoint { get; private set; }
-            internal NodeAnchor Anchor { get; private set; }
-            internal Point Point { get; private set; }
-            internal Point Origin { get; private set; }
-            internal void Set(NodeBase node)
-            {
-                Node = node;
-                Link = null;
-                ControlPoint = null;
-                Anchor = null;
-                Point = null;
-            }
-            internal void Set(LinkBase link)
-            {
-                Node = null;
-                Link = link;
-                ControlPoint = null;
-                Anchor = null;
-                Point = null;
-            }
-            internal void Set(LinkBase link, ControlPoint control_point)
-            {
-                Node = null;
-                Link = link;
-                ControlPoint = control_point;
-                Anchor = null;
-                Point = null;
-            }
-            internal void Set(LinkBase link, NodeAnchor anchor)
-            {
-                Node = null;
-                Link = link;
-                ControlPoint = null;
-                Anchor = anchor;
-                Point = null;
-            }
-            internal void Clear()
-            {
-                Node = null;
-                Link = null;
-                ControlPoint = null;
-                Anchor = null;
-                Point = null;
-                Origin = null;
-            }
-        }
-        private ActiveElementContainer ActiveElement { get; } = new ActiveElementContainer();
+        private object ActiveElement { get; set; }
+        private HoverType ActiveElementType { get; set; }
         internal void SetActiveElement(NodeBase node, HoverType hover_type)
         {
-            ActiveElement.Set(node);
+            ActiveElement = node;
             ActiveElementType = hover_type;
         }
-        internal void SetActiveElement(LinkBase link, HoverType hover_type)
+        internal void SetActiveElement(LinkBase link)
         {
-            ActiveElement.Set(link);
-            ActiveElementType = hover_type;
+            ActiveElement = link;
+            ActiveElementType = HoverType.Link;
         }
-        internal void SetActiveElement(LinkBase link, ControlPoint control_point, HoverType hover_type)
+        internal void SetActiveElement(ControlPoint control_point)
         {
-            ActiveElement.Set(link, control_point);
-            ActiveElementType = hover_type;
+            ActiveElement = control_point;
+            ActiveElementType = HoverType.ControlPoint;
         }
-        internal void SetActiveElement(LinkBase link, NodeAnchor anchor, HoverType hover_type)
+        internal void SetActiveElement(NodeAnchor anchor)
         {
-            ActiveElement.Set(link, anchor);
-            ActiveElementType = hover_type;
+            ActiveElement = anchor;
+            ActiveElementType = HoverType.Anchor;
         }
         internal void DeactivateElement()
         {
-            ActiveElement.Clear();
+            ActiveElement = null;
             ActiveElementType = HoverType.Unknown;
         }
-        internal HoverType ActiveElementType;
         private bool rendering_disabled;
         internal void DisableRendering()
         {

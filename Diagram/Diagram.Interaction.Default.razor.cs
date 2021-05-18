@@ -60,13 +60,13 @@ namespace Excubo.Blazor.Diagrams
                         return this;
                     case HoverType.Border:
                         // we create a new link if we simply press on the border of a node
-                        return new CreatingLink(this, diagram.ActiveElement.Node, e);
+                        return new CreatingLink(this, diagram.ActiveElement as NodeBase, e);
                     case HoverType.Node:
-                        return new SelectingNode(this, diagram.ActiveElement.Node, e);
+                        return new SelectingNode(this, diagram.ActiveElement as NodeBase, e);
                     case HoverType.Link:
-                        return new ModifyingLink(this, diagram.ActiveElement.Link);
+                        return new ModifyingLink(this, diagram.ActiveElement as LinkBase);
                     case HoverType.NewNode:
-                        return new CreatingNewNode(this, diagram.ActiveElement.Node);
+                        return new CreatingNewNode(this, diagram.ActiveElement as NodeBase);
                     default:
                         throw new InvalidOperationException("The mouse interaction state machine wen't into a weird state. Please file this as a BUG and describe how you interacted with the diagram");
                 }

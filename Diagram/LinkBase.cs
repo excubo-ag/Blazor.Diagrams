@@ -115,11 +115,11 @@ namespace Excubo.Blazor.Diagrams
         internal void TriggerStateHasChanged() => StateHasChanged();
         protected double Zoom => Diagram.NavigationSettings.Zoom;
         #region control points
-        protected void OnLinkOver(MouseEventArgs _) => Diagram.SetActiveElement(this, HoverType.Link);
+        protected void OnLinkOver(MouseEventArgs _) => Diagram.SetActiveElement(this);
         protected void OnLinkOut(MouseEventArgs _) => Diagram.DeactivateElement();
-        private void OnControlPointOver(ControlPoint control_point) => Diagram.SetActiveElement(this, control_point, HoverType.ControlPoint);
+        private void OnControlPointOver(ControlPoint control_point) => Diagram.SetActiveElement(control_point);
         private void OnControlPointOut() => Diagram.DeactivateElement();
-        private void OnAnchorOver(NodeAnchor anchor) => Diagram.SetActiveElement(this, anchor, HoverType.Anchor);
+        private void OnAnchorOver(NodeAnchor anchor) => Diagram.SetActiveElement(anchor);
         private void OnSourceOver(ControlPoint _) => OnAnchorOver(Source);
         private void OnTargetOver(ControlPoint _) => OnAnchorOver(Target);
         private void OnSourceOut() => Diagram.DeactivateElement();

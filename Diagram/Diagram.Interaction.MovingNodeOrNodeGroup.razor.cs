@@ -12,7 +12,7 @@ namespace Excubo.Blazor.Diagrams
             private readonly Point originalCoordinates;
             private readonly NodeBase grabbedNode;
 
-            public MovingNodeOrNodeGroup(InteractionState previous, NodeBase node, MouseEventArgs e) : base(previous) 
+            public MovingNodeOrNodeGroup(InteractionState previous, NodeBase node, MouseEventArgs e) : base(previous)
             {
                 referencePoint = new Point(e.ClientX, e.ClientY);
                 originalCoordinates = new Point(node.X, node.Y);
