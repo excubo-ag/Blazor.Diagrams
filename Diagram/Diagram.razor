@@ -78,7 +78,7 @@
     private Renderer node_border_renderer;
     private Overview Overview;
     private NodeLibraryWrapper node_library_wrapper;
-    private SelectRegion select_region;
+    internal SelectRegion select_region;
     internal void AddNodeContentFragment(RenderFragment<string> content) => node_content_renderer.Add(content);
     internal void AddNodeTemplateContentFragment(RenderFragment<string> content) => node_library_wrapper.Add(content);
     internal void AddNodeBorderFragment(RenderFragment<string> content) => node_border_renderer.Add(content);
