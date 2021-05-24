@@ -54,6 +54,7 @@ namespace Excubo.Blazor.Diagrams
             TriggerSizeChanged();
             node_border_reference?.TriggerStateHasChanged();
             StateHasChanged();
+            Diagram?.AutoLayoutSettings?.RunIfRequested();
         }
         protected override void OnAfterRender(bool first_render)
         {

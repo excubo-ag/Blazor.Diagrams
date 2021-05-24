@@ -76,8 +76,18 @@ namespace Excubo.Blazor.Diagrams
                 Run();
             }
         }
+        private bool runIsRequested;
+        internal void RunIfRequested()
+        {
+            if (!runIsRequested)
+            {
+                return;
+            }
+            Run();
+        }
         public void Run()
         {
+            runIsRequested = true;
             if (Diagram != null && Diagram.IsInitialized && Diagram.Nodes != null && Diagram.Nodes.all_nodes.Any() && Diagram.Nodes.all_nodes.All(n => n.HasSize) && Diagram.Links != null)
             {
                 Diagram.DisableRendering();
@@ -89,6 +99,7 @@ namespace Excubo.Blazor.Diagrams
                 finally
                 {
                     Diagram.EnableRendering();
+                    runIsRequested = false;
                 }
             }
         }
