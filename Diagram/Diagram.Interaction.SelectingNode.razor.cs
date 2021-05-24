@@ -72,7 +72,7 @@ namespace Excubo.Blazor.Diagrams
                         node.Select();
                         return new MovingNodeOrNodeGroup(this, node, e);
                     default:
-                        throw new ArgumentException("This state should never be reached and points to a bug. Please raise an isue");
+                        throw new ArgumentException("This state should never be reached and points to a bug. Please raise an issue");
                 }
             }
             public override InteractionState OnMouseUp(MouseEventArgs e)
@@ -94,7 +94,7 @@ namespace Excubo.Blazor.Diagrams
                         node.Select();
                         break;
                     default:
-                        throw new ArgumentException("This state should never be reached and points to a bug. Please raise an isue");
+                        throw new ArgumentException("This state should never be reached and points to a bug. Please raise an issue");
                 }
                 return new Default(this);
             }

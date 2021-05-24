@@ -22,10 +22,6 @@ namespace Excubo.Blazor.Diagrams
             {
                 return new Default(this);
             }
-            public override InteractionState OnMouseDown(MouseEventArgs e)
-            {
-                throw new InvalidOperationException($"The mouse cannot be pressed while the state is {nameof(Panning)}");
-            }
             private void Pan(MouseEventArgs e)
             {
                 MoveOrigin(e.ClientX - referencePoint.X, e.ClientY - referencePoint.Y);

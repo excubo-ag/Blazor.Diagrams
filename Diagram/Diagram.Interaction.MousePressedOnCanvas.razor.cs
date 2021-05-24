@@ -17,10 +17,6 @@ namespace Excubo.Blazor.Diagrams
                 diagram.Group.Clear();
                 return new Default(this);
             }
-            public override InteractionState OnMouseDown(MouseEventArgs e)
-            {
-                throw new InvalidOperationException($"The mouse cannot be pressed while the state is {nameof(MousePressedOnCanvas)}");
-            }
         }
     }
 }
