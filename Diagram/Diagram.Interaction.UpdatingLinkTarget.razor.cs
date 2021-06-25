@@ -26,18 +26,18 @@ namespace Excubo.Blazor.Diagrams
                 {
                     return this; // this link is not yet done! The user probably did not intend to end this yet, so let's pretend it didn't happen.
                 }
-                EndLink(e);
-                return new Default(this);
-            }
-
-            private void EndLink(MouseEventArgs e)
-            {
                 var node = diagram.ActiveElement as NodeBase;
                 if (node == null && !link.Links.AllowFreeFloatingLinks)
                 {
                     // free-floating links are not allowed and this action would not attach the link to a node
-                    return;
+                    return this;
                 }
+                EndLink(e, node);
+                return new Default(this);
+            }
+
+            private void EndLink(MouseEventArgs e, NodeBase node)
+            {
                 if (node != null)
                 {
                     link.Target.Node = node;

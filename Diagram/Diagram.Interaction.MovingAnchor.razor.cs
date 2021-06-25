@@ -30,7 +30,13 @@ namespace Excubo.Blazor.Diagrams
             }
             public override InteractionState OnMouseUp(MouseEventArgs e)
             {
-                FixNodeAnchor(e);
+                var node = diagram.ActiveElement as NodeBase;
+                if (node == null && !diagram.Links.AllowFreeFloatingLinks)
+                {
+                    // free-floating links are not allowed and this action would not attach the link to a node
+                    return this;
+                }
+                FixNodeAnchor(e, node);
                 return new Default(this);
             }
             private void MoveNodeAnchor(MouseEventArgs e)
@@ -39,14 +45,8 @@ namespace Excubo.Blazor.Diagrams
                 anchor.RelativeY = e.RelativeYToOrigin(diagram);
                 diagram.Overview?.TriggerUpdate();
             }
-            private void FixNodeAnchor(MouseEventArgs e)
+            private void FixNodeAnchor(MouseEventArgs e, NodeBase node)
             {
-                var node = diagram.ActiveElement as NodeBase;
-                if (node == null && !link.Links.AllowFreeFloatingLinks)
-                {
-                    // free-floating links are not allowed and this action would not attach the link to a node
-                    return;
-                }
                 var (x, y) = (node != null) ? e.RelativeTo(node) : e.RelativeToOrigin(diagram);
                 diagram.Changes.NewAndDo(new ChangeAction(() =>
                 {
