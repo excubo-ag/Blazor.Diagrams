@@ -97,6 +97,10 @@ A complete example of how to design a custom node is available [here](https://gi
 
 ## Changelog
 
+### 4.X.Y
+
+Starting with version 4.0.0, only the net6.0 TFM is targeted. This is a change to simplify dependency management and we strongly encourage all users to upgrade to net6.0.
+
 ### 3.0.0 ![category: breaking change](https://img.shields.io/badge/category-breaking%20change-orange)![impact: low](https://img.shields.io/badge/impact-low-green)
 
 When implementing custom nodes, one must now decide between a node that has a fixed size (i.e. has a parameter for both width and height) or one that determines its size by the size of the node's content.
