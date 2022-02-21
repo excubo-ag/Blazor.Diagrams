@@ -3,7 +3,7 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Excubo.Blazor.Grids" Version="3.0.6" />
+    <PackageReference Include="Excubo.Blazor.Grids" Version="3.0.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Diagram\Blazor.Diagrams.csproj" />
