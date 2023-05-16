@@ -76,6 +76,20 @@ namespace Excubo.Blazor.Diagrams
                 Run();
             }
         }
+        private bool preservePorts;
+        [Parameter]
+        public bool PreservePorts
+        {
+            get => preservePorts;
+            set
+            {
+                if (value == preservePorts)
+                {
+                    return;
+                }
+                preservePorts = value;
+            }
+        }
         private bool runIsRequested;
         internal void RunIfRequested()
         {
@@ -989,16 +1003,19 @@ namespace Excubo.Blazor.Diagrams
             {
                 node.MoveTo(gnode.Center.X - gnode.Width / 2 - graph.Left, gnode.Center.Y - gnode.Height / 2 - graph.Bottom);
             }
-            foreach (var (link, glink) in all_links.Zip(graph.Edges, (a, b) => (a, b)))
+            if (!PreservePorts)
             {
-                if (link.Source.Node != null && link.Target.Node != null)
+                foreach (var (link, glink) in all_links.Zip(graph.Edges, (a, b) => (a, b)))
                 {
-                    var raw_angle = Math.Atan2(glink.Target.Center.Y - glink.Source.Center.Y, glink.Target.Center.X - glink.Source.Center.X) * 180 / Math.PI + 450;
-                    var iangle = (int)Math.Floor(raw_angle) % 360;
-                    var angle = iangle / 45;
-                    link.Source.Port = ToPort(angle);
-                    link.Target.Port = ToPort((angle + 4) % 8);
-                    link.TriggerStateHasChanged();
+                    if (link.Source.Node != null && link.Target.Node != null)
+                    {
+                        var raw_angle = Math.Atan2(glink.Target.Center.Y - glink.Source.Center.Y, glink.Target.Center.X - glink.Source.Center.X) * 180 / Math.PI + 450;
+                        var iangle = (int)Math.Floor(raw_angle) % 360;
+                        var angle = iangle / 45;
+                        link.Source.Port = ToPort(angle);
+                        link.Target.Port = ToPort((angle + 4) % 8);
+                        link.TriggerStateHasChanged();
+                    }
                 }
             }
         }
