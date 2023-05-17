@@ -76,20 +76,8 @@ namespace Excubo.Blazor.Diagrams
                 Run();
             }
         }
-        private bool preservePorts;
         [Parameter]
-        public bool PreservePorts
-        {
-            get => preservePorts;
-            set
-            {
-                if (value == preservePorts)
-                {
-                    return;
-                }
-                preservePorts = value;
-            }
-        }
+        public bool PreservePorts { get; set; }
         private bool runIsRequested;
         internal void RunIfRequested()
         {
