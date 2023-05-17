@@ -991,19 +991,18 @@ namespace Excubo.Blazor.Diagrams
             {
                 node.MoveTo(gnode.Center.X - gnode.Width / 2 - graph.Left, gnode.Center.Y - gnode.Height / 2 - graph.Bottom);
             }
-            if (!PreservePorts)
+            if (PreservePorts)
+                return;
+            foreach (var (link, glink) in all_links.Zip(graph.Edges, (a, b) => (a, b)))
             {
-                foreach (var (link, glink) in all_links.Zip(graph.Edges, (a, b) => (a, b)))
+                if (link.Source.Node != null && link.Target.Node != null)
                 {
-                    if (link.Source.Node != null && link.Target.Node != null)
-                    {
-                        var raw_angle = Math.Atan2(glink.Target.Center.Y - glink.Source.Center.Y, glink.Target.Center.X - glink.Source.Center.X) * 180 / Math.PI + 450;
-                        var iangle = (int)Math.Floor(raw_angle) % 360;
-                        var angle = iangle / 45;
-                        link.Source.Port = ToPort(angle);
-                        link.Target.Port = ToPort((angle + 4) % 8);
-                        link.TriggerStateHasChanged();
-                    }
+                    var raw_angle = Math.Atan2(glink.Target.Center.Y - glink.Source.Center.Y, glink.Target.Center.X - glink.Source.Center.X) * 180 / Math.PI + 450;
+                    var iangle = (int)Math.Floor(raw_angle) % 360;
+                    var angle = iangle / 45;
+                    link.Source.Port = ToPort(angle);
+                    link.Target.Port = ToPort((angle + 4) % 8);
+                    link.TriggerStateHasChanged();
                 }
             }
         }
