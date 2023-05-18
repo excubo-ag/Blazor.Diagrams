@@ -76,6 +76,8 @@ namespace Excubo.Blazor.Diagrams
                 Run();
             }
         }
+        [Parameter]
+        public bool PreservePorts { get; set; }
         private bool runIsRequested;
         internal void RunIfRequested()
         {
@@ -989,6 +991,8 @@ namespace Excubo.Blazor.Diagrams
             {
                 node.MoveTo(gnode.Center.X - gnode.Width / 2 - graph.Left, gnode.Center.Y - gnode.Height / 2 - graph.Bottom);
             }
+            if (PreservePorts)
+                return;
             foreach (var (link, glink) in all_links.Zip(graph.Edges, (a, b) => (a, b)))
             {
                 if (link.Source.Node != null && link.Target.Node != null)

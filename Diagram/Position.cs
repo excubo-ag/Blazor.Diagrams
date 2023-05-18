@@ -22,6 +22,6 @@ namespace Excubo.Blazor.Diagrams
         TopRight = NorthEast,
         BottomLeft = SouthWest,
         BottomRight = SouthEast,
-
+        Center = 16
     }
 }
