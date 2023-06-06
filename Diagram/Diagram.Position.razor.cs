@@ -20,6 +20,12 @@ namespace Excubo.Blazor.Diagrams
             Nodes.ReRenderIfOffCanvasChanged();
             UpdateOverview(just_pan_or_zoom: true);
         }
+        public void ZoomToFitCentered()
+        {
+            NavigationSettings.ZoomToFit(true);
+            Nodes.ReRenderIfOffCanvasChanged();
+            UpdateOverview(just_pan_or_zoom: true);
+        }
         private async Task GetPositionAsync()
         {
             (CanvasLeft, CanvasTop) = await js.GetPositionAsync(canvas);
