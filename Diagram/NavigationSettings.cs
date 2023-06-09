@@ -128,7 +128,7 @@ namespace Excubo.Blazor.Diagrams
             OriginChanged?.Invoke(Origin);
         }
 
-        internal void ZoomToFit()
+        internal void ZoomToFit(bool pan_to_center=false)
         {
             var non_deleted_nodes = Diagram.Nodes.all_nodes.Where(n => !n.Deleted).ToList();
             if (non_deleted_nodes.Any())
@@ -160,7 +160,14 @@ namespace Excubo.Blazor.Diagrams
                     // this is not a normal situation, abort!
                     return;
                 }
-                (Origin.X, Origin.Y) = (min_x - 0.05 * (max_x - min_x), min_y - 0.05 * (max_y - min_y));
+                if (pan_to_center)
+                {
+                    (Origin.X, Origin.Y) = (min_x - Math.Abs((Diagram.CanvasWidth / 2) / zoom - (max_x - min_x) / 2), min_y - Math.Abs((Diagram.CanvasHeight / 2) / zoom - (max_y - min_y) / 2));
+                }
+                else
+                {
+                    (Origin.X, Origin.Y) = (min_x - 0.05 * (max_x - min_x), min_y - 0.05 * (max_y - min_y));
+                }
                 OriginChanged?.Invoke(Origin);
                 Zoom = zoom;
                 ZoomChanged?.Invoke(Zoom);
