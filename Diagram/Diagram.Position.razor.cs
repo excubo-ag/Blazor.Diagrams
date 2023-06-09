@@ -22,7 +22,7 @@ namespace Excubo.Blazor.Diagrams
         }
         public void ZoomToFitCentered()
         {
-            NavigationSettings.ZoomToFit(true);
+            NavigationSettings.ZoomToFit(pan_to_center: true);
             Nodes.ReRenderIfOffCanvasChanged();
             UpdateOverview(just_pan_or_zoom: true);
         }
