@@ -142,8 +142,8 @@ L5_N0
 				var layer_1 = nodes.Where(n => n.Id is "2").ToList();
 				var layer_2 = nodes.Where(n => n.Id is "3").ToList();
 				Assert.That(1, Is.EqualTo(layer_0.Select(n => n.Y).Distinct().Count()));
-				Assert.That(1, Is.LessThan(layer_1.Select(n => n.Y).Distinct().Count()));
-				Assert.That(1, Is.LessThan(layer_2.Select(n => n.Y).Distinct().Count()));
+				Assert.That(1, Is.EqualTo((layer_1.Select(n => n.Y).Distinct().Count()));
+				Assert.That(1, Is.EqualTo((layer_2.Select(n => n.Y).Distinct().Count()));
 				Assert.That(layer_0.Select(n => n.Y).First(), Is.LessThan(layer_1.Select(n => n.Y).First()));
 				Assert.That(layer_1.Select(n => n.Y).First(), Is.LessThan(layer_2.Select(n => n.Y).First()));
 			}
