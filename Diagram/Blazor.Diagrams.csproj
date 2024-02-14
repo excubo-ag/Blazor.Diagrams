@@ -8,9 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutomaticGraphLayout" Version="1.1.12" />
-    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.40" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
+    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.42" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="js\" />
