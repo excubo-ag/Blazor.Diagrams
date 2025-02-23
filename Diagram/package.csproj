@@ -20,7 +20,7 @@
   <!--PackageId, Version-->
   <PropertyGroup>
     <PackageId>Excubo.Blazor.Diagrams</PackageId>
-    <Version>4.1.90</Version>
+    <Version>4.1.98</Version>
   </PropertyGroup>
   <!--Self Include-->
   <ItemGroup>
@@ -36,5 +36,8 @@
       <PackagePath>
       </PackagePath>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../README.md" pack="true" PackagePath="." />
   </ItemGroup>
 </Project>

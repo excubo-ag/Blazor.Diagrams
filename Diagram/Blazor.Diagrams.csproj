@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="package.csproj" Condition="Exists('package.csproj')" />
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Excubo.Blazor.Diagrams</PackageId>
     <RootNamespace>Excubo.Blazor.Diagrams</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutomaticGraphLayout" Version="1.1.12" />
-    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.68" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
+    <PackageReference Include="Excubo.Blazor.Canvas" Version="3.2.72" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="js\" />
