@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="package.csproj" Condition="Exists('package.csproj')" />
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>Excubo.Blazor.Diagrams</PackageId>
     <RootNamespace>Excubo.Blazor.Diagrams</RootNamespace>
